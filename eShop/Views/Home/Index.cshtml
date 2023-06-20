@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <div class="row">
+        <div class="col-3">
+            <h4>General</h4>
+            <ul class="nav nav-underline flex-column align-items-center gap-0">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Currencies">Currencies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Categories">Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Products">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Compositions">Compositions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Clients">Clients</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-3">
+            <h4>Telegram</h4>
+            <ul class="nav nav-underline flex-column align-items-center gap-0">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="TelegramUsers">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="TelegramChats">Chats</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-3">
+            <h4>Viber</h4>
+            <ul class="nav nav-underline flex-column align-items-center gap-0">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="ViberUsers">Users</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

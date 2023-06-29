@@ -26,7 +26,6 @@ namespace eShop.Controllers
         {
             var userId = User.GetSub();
             var currencies = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .ToListAsync();
             return View(currencies);
         }
@@ -41,7 +40,6 @@ namespace eShop.Controllers
 
             var userId = User.GetSub();
             var currency = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (currency == null)
             {
@@ -66,8 +64,6 @@ namespace eShop.Controllers
         {
             if (ModelState.IsValid)
             {
-                currency.OwnerId = User.GetSub();
-
                 _context.Add(currency);
                 await _context.SaveChangesAsync();
 
@@ -87,7 +83,6 @@ namespace eShop.Controllers
 
             var userId = User.GetSub();
             var currency = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (currency == null)
             {
@@ -113,7 +108,6 @@ namespace eShop.Controllers
             {
                 var userId = User.GetSub();
                 var currencyExists = await _context.Currencies
-                    .Where(e => e.OwnerId == userId)
                     .AnyAsync(e => e.Id == currency.Id);
                 if (!currencyExists)
                 {
@@ -122,7 +116,6 @@ namespace eShop.Controllers
 
                 try
                 {
-                    currency.OwnerId = userId;
                     _context.Update(currency);
                     await _context.SaveChangesAsync();
                 }
@@ -153,7 +146,6 @@ namespace eShop.Controllers
 
             var userId = User.GetSub();
             var currency = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (currency == null)
             {
@@ -170,7 +162,6 @@ namespace eShop.Controllers
         {
             var userId = User.GetSub();
             var currency = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (currency != null)
             {

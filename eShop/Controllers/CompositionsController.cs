@@ -1,5 +1,6 @@
 ﻿using eShop.Database.Data;
 using eShop.Extensions;
+using eShop.Models;
 using eShop.Models.Compositions;
 using eShop.Services;
 using eShop.ViberBot;
@@ -97,6 +98,7 @@ namespace eShop.Controllers
                 {
                     var product = new Product
                     {
+                        OwnerId = userId,
                         Name = compositionProduct.Name,
                         Url = compositionProduct.Url,
                         Prices = new List<ProductPrice>
@@ -233,10 +235,12 @@ namespace eShop.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendToTelegram(
+        public async Task<IActionResult> Broadcast(
             [FromRoute] string id,
-            [FromServices] ITelegramBotClient botClient,
-            [FromServices] IPublicUriBuilder publicUriBuilder)
+            [FromServices] ITelegramBotClient telegramBotClient,
+            [FromServices] IViberBotClient viberBotClient,
+            [FromServices] IPublicUriBuilder publicUriBuilder,
+            [FromServices] ITelegramContextConverter telegramContextConverter)
         {
             if (id == null)
             {
@@ -254,61 +258,55 @@ namespace eShop.Controllers
                 return NotFound();
             }
 
-            var telegramChat = await _context.TelegramChats
-                .FirstOrDefaultAsync(e => e.Type == ChatType.Channel);
-            if (telegramChat != null)
+            var clients = await _context.Users
+                .Include(e => e.TelegramChats)
+                    .ThenInclude(e => e.TelegramChat)
+                .Include(e => e.ViberUser)
+                .Include(e => e.ViberChatSettings)
+                .Where(e => e.ProviderId == userId)
+                .ToListAsync();
+
+            var image = composition.Images.FirstOrDefault();
+            if (image != null)
             {
-                var image = composition.Images.FirstOrDefault();
-                if (image != null)
+                var imageLink = publicUriBuilder.Path(image.Path);
+                var text = string.Join("\n\n", composition.Products.Select(e => $"{e.Name} - {e.Prices.LastOrDefault()}"));
+
+                foreach (var client in clients)
                 {
-                    var imageLink = publicUriBuilder.Path(image.Path);
-                    var media = new InputMediaPhoto(new InputFileUrl(imageLink));
-                    media.Caption = string.Join("\n\n", composition.Products.Select(e => $"{e.Name} - {e.Prices.LastOrDefault()}"));
-                    await botClient.SendMediaGroupAsync(new ChatId(telegramChat.ExternalId), new List<IAlbumInputMedia>() { media });
-                }
-            }
-
-            return RedirectToAction(nameof(Details), new { id });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendToViber(
-            [FromRoute] string id,
-            [FromServices] IViberBotClient botClient,
-            [FromServices] IPublicUriBuilder publicUriBuilder)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userId = User.GetSub();
-            var composition = await _context.Compositions
-                .Include(e => e.Images)
-                .Include(e => e.Products)
-                .Where(e => e.OwnerId == userId)
-                .FirstOrDefaultAsync(e => e.Id == id);
-            if (composition == null)
-            {
-                return NotFound();
-            }
-
-            var viberUser = await _context.ViberUsers
-                .Where(e => e.IsSubcribed)
-                .FirstOrDefaultAsync();
-            if (viberUser != null)
-            {
-                var image = composition.Images.FirstOrDefault();
-                if (image != null)
-                {
-                    var imageLink = publicUriBuilder.Path(image.Path);
-                    var text = string.Join("\n\n", composition.Products.Select(e => $"{e.Name} - {e.Prices.LastOrDefault()}"));
-                    var sender = new ViberBot.User
+                    var telegramChats = client.TelegramChats
+                        .Where(e => e.IsEnabled)
+                        .Select(e => e.TelegramChat);
+                    foreach (var telegramChat in telegramChats)
                     {
-                        Name = "Test",
-                    };
-                    await botClient.SendPictureMessageAsync(viberUser.ExternalId, sender, imageLink, text);
+                            var media = new InputMediaPhoto(new InputFileUrl(imageLink));
+                            media.Caption = text;
+                            await telegramBotClient.SendMediaGroupAsync(new ChatId(telegramChat.ExternalId), new List<IAlbumInputMedia>() { media });
+                    }
+
+                    var viberChat = client.ViberChatSettings;
+                    if (viberChat != null && viberChat.IsEnabled)
+                    {
+                        var viberUser = client.ViberUser;
+
+                        var sender = new ViberBot.User
+                        {
+                            Name = "Test",
+                        };
+                        var keyboard = new Keyboard
+                        {
+                            Buttons = new[]
+                            {
+                                new Button
+                                {
+                                    Rows = 1,
+                                    Text = "Налаштування анонсів",
+                                    ActionBody = telegramContextConverter.Serialize(ViberContext.Settings),
+                                },
+                            },
+                        };
+                        await viberBotClient.SendPictureMessageAsync(viberUser.ExternalId, sender, imageLink, text, keyboard: keyboard);
+                    }
                 }
             }
 

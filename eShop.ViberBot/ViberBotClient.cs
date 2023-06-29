@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
-using System.Threading;
 
 namespace eShop.ViberBot
 {
@@ -41,7 +40,7 @@ namespace eShop.ViberBot
             }
         }
 
-        public async Task SendPictureMessageAsync(string receiver, User sender, string media, string text, string? thumbnail = null, string? trackingData = null, string? minApiVersion = null, CancellationToken cancellationToken = default)
+        public async Task SendPictureMessageAsync(string receiver, User sender, string media, string text, string? thumbnail = null, string? trackingData = null, int? minApiVersion = null, Keyboard? keyboard = null, CancellationToken cancellationToken = default)
         {
             var message = new Message
             {
@@ -53,6 +52,34 @@ namespace eShop.ViberBot
                 Media = media,
                 Text = text,
                 Thumbnail = thumbnail,
+                Keyboard = keyboard,
+            };
+
+            var httpContent = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
+
+            var httpResponse = await _httpClient.PostAsync("/pa/send_message", httpContent, cancellationToken);
+            httpResponse.EnsureSuccessStatusCode();
+
+            var content = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+            var response = JsonConvert.DeserializeObject<SendMessageResponse>(content);
+
+            if (response.Status != 0)
+            {
+                throw new Exception(response.StatusMessage);
+            }
+        }
+
+        public async Task SendTextMessageAsync(string receiver, User sender, string text, string? trackingData = null, int? minApiVersion = null, Keyboard? keyboard = null, CancellationToken cancellationToken = default)
+        {
+            var message = new Message
+            {
+                Type = MessageType.Text,
+                Receiver = receiver,
+                Sender = sender,
+                TrackingData = trackingData,
+                MinApiVersion = minApiVersion,
+                Text = text,
+                Keyboard = keyboard,
             };
 
             var httpContent = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");

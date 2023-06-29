@@ -21,7 +21,7 @@ namespace eShop.ViberBot
         Contact,
         [EnumMember(Value = "sticker")]
         Sticker,
-        [EnumMember(Value = "carousel content")]
+        [EnumMember(Value = "rich_media")]
         CarouselContent,
         [EnumMember(Value = "url")]
         Url,

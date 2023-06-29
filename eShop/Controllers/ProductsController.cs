@@ -61,7 +61,6 @@ namespace eShop.Controllers
                 .Where(e => e.OwnerId == userId)
                 .ToListAsync();
             var currencies = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .ToListAsync();
 
             ViewData["CategoryId"] = new SelectList(categories, nameof(Category.Id), nameof(Category.Name));
@@ -92,7 +91,6 @@ namespace eShop.Controllers
                 .Where(e => e.OwnerId == userId)
                 .ToListAsync();
             var currencies = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .ToListAsync();
 
             ViewData["CategoryId"] = new SelectList(categories, nameof(Category.Id), nameof(Category.Name), product.CategoryId);
@@ -124,7 +122,6 @@ namespace eShop.Controllers
                 .Where(e => e.OwnerId == userId)
                 .ToListAsync();
             var currencies = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .ToListAsync();
 
             ViewData["CategoryId"] = new SelectList(categories, nameof(Category.Id), nameof(Category.Name), product.CategoryId);
@@ -182,7 +179,6 @@ namespace eShop.Controllers
                 .Where(e => e.OwnerId == userId)
                 .ToListAsync();
             var currencies = await _context.Currencies
-                .Where(e => e.OwnerId == userId)
                 .ToListAsync();
 
             ViewData["CategoryId"] = new SelectList(categories, nameof(Category.Id), nameof(Category.Name), product.CategoryId);

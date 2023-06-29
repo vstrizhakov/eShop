@@ -9,5 +9,9 @@ namespace eShop.Database.Data
         public string ExternalId { get; set; }
         public string Name { get; set; }
         public bool IsSubcribed { get; set; }
+        public string? OwnerId { get; set; }
+
+        public User? Owner { get; set; }
+        public ViberChatSettings ChatSettings { get; set; }
     }
 }

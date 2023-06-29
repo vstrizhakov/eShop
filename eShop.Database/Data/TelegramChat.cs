@@ -15,5 +15,6 @@ namespace eShop.Database.Data
 
         public ICollection<TelegramChatMember> Members { get; set; } = new List<TelegramChatMember>();
         public TelegramChat? Supergroup { get; set; }
+        public TelegramChatSettings Settings { get; set; }
     }
 }

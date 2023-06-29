@@ -17,7 +17,7 @@ namespace eShop.Database.Data
         public DbSet<TelegramUser> TelegramUsers { get; set; }
         public DbSet<TelegramChat> TelegramChats { get; set; }
         public DbSet<TelegramChatMember> TelegramChatMembers { get; set; }
-        public DbSet<TelegramRequest> TelegramRequests { get; set; }
+        public DbSet<TelegramChatSettings> TelegramChatSettings { get; set; }
 
         public DbSet<ViberUser> ViberUsers { get; set; }
 

@@ -46,6 +46,7 @@ namespace eShop.Services
                         {
                             UpdateType.Message,
                             UpdateType.ChannelPost,
+                            UpdateType.CallbackQuery,
                         },
                         cancellationToken: cancellationToken);
                 }

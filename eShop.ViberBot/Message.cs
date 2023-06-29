@@ -37,7 +37,7 @@ namespace eShop.ViberBot
         /// optional. client version support the API version. Certain features may not work as expected if set to a number that’s below their requirements.
         /// </summary>
         [JsonProperty("min_api_version", NullValueHandling = NullValueHandling.Ignore)]
-        public string? MinApiVersion { get; set; }
+        public int? MinApiVersion { get; set; }
 
         /// <summary>
         /// The text of the message
@@ -47,10 +47,26 @@ namespace eShop.ViberBot
         [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
         public string? Text { get; set; }
 
+        /// <summary>
+        /// URL of the image (JPEG, PNG, non-animated GIF)
+        /// 
+        /// required. The URL must have a resource with a .jpeg, .png or .gif file extension as the last path segment. Example: http://www.example.com/path/image.jpeg. Animated GIFs can be sent as URL messages or file messages. Max image size: 1MB on iOS, 3MB on Android.
+        /// </summary>
         [JsonProperty("media", NullValueHandling = NullValueHandling.Ignore)]
         public string? Media { get; set; }
 
+        /// <summary>
+        /// URL of a reduced size image (JPEG, PNG, GIF)
+        /// 
+        /// optional. Recommended: 400x400. Max size: 100kb.
+        /// </summary>
         [JsonProperty("thumbnail", NullValueHandling = NullValueHandling.Ignore)]
         public string? Thumbnail { get; set; }
+
+        [JsonProperty("rich_media", NullValueHandling = NullValueHandling.Ignore)]
+        public CarouselContent? CarouselContent { get; set; }
+
+        [JsonProperty("keyboard", NullValueHandling = NullValueHandling.Ignore)]
+        public Keyboard? Keyboard { get; set; }
     }
 }

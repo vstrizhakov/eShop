@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShop.Database.Data;
 
@@ -10,9 +11,11 @@ using eShop.Database.Data;
 namespace eShop.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230628153103_7")]
+    partial class _7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
@@ -495,27 +498,6 @@ namespace eShop.Database.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("eShop.Database.Data.ViberChatSettings", b =>
-                {
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ViberUserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsEnabled")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("OwnerId", "ViberUserId");
-
-                    b.HasIndex("OwnerId")
-                        .IsUnique();
-
-                    b.HasIndex("ViberUserId");
-
-                    b.ToTable("ViberChatSettings");
-                });
-
             modelBuilder.Entity("eShop.Database.Data.ViberUser", b =>
                 {
                     b.Property<string>("Id")
@@ -540,8 +522,7 @@ namespace eShop.Database.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.HasIndex("OwnerId")
-                        .IsUnique();
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("ViberUsers");
                 });
@@ -765,30 +746,11 @@ namespace eShop.Database.Migrations
                     b.Navigation("Provider");
                 });
 
-            modelBuilder.Entity("eShop.Database.Data.ViberChatSettings", b =>
-                {
-                    b.HasOne("eShop.Database.Data.User", "Owner")
-                        .WithOne("ViberChatSettings")
-                        .HasForeignKey("eShop.Database.Data.ViberChatSettings", "OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eShop.Database.Data.ViberUser", "ViberUser")
-                        .WithMany()
-                        .HasForeignKey("ViberUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("ViberUser");
-                });
-
             modelBuilder.Entity("eShop.Database.Data.ViberUser", b =>
                 {
                     b.HasOne("eShop.Database.Data.User", "Owner")
-                        .WithOne("ViberUser")
-                        .HasForeignKey("eShop.Database.Data.ViberUser", "OwnerId");
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
                 });
@@ -832,10 +794,6 @@ namespace eShop.Database.Migrations
                     b.Navigation("TelegramChats");
 
                     b.Navigation("TelegramUser");
-
-                    b.Navigation("ViberChatSettings");
-
-                    b.Navigation("ViberUser");
                 });
 #pragma warning restore 612, 618
         }

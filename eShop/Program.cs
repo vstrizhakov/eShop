@@ -88,6 +88,8 @@ namespace eShop
                     options.SaveTokens = true;
                 });
 
+            builder.Services.AddTransient<ITelegramContextConverter, TelegramContextConverter>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -15,9 +15,9 @@ namespace eShop.Database.Data
 
         public long ExternalId { get; set; }
 
-        public string? LinkedUserId { get; set; }
+        public string? OwnerId { get; set; }
 
         public ICollection<TelegramChatMember> Chats { get; set; } = new List<TelegramChatMember>();
-        public User? LinkedUser { get; set; }
+        public User? Owner { get; set; }
     }
 }

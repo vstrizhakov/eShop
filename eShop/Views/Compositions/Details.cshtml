@@ -18,16 +18,10 @@
         </dd>
     </dl>
     
-    <form asp-action="SendToTelegram" asp-route-id="@Model.Id">
+    <form asp-action="Broadcast" asp-route-id="@Model.Id">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <input type="submit" value="Send To Telegram" class="btn btn-primary" />
-        </div>
-    </form>
-    <form asp-action="SendToViber" asp-route-id="@Model.Id">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <input type="submit" value="Send To Viber" class="btn btn-primary" />
+            <input type="submit" value="Broadcast" class="btn btn-primary" />
         </div>
     </form>
 </div>

@@ -1,12 +1,12 @@
 using eShop.Configurations;
 using eShop.Database.Data;
+using eShop.RabbitMq.Extensions;
 using eShop.Services;
 using eShop.ViberBot;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
-using Telegram.Bot;
 
 namespace eShop
 {
@@ -18,9 +18,6 @@ namespace eShop
 
             // Add services to the container.
 
-            var botConfigurationSection = builder.Configuration.GetSection("TelegramBot");
-            builder.Services.Configure<TelegramBotConfiguration>(botConfigurationSection);
-            builder.Services.Configure<ViberBotConfiguration>(builder.Configuration.GetSection("ViberBot"));
             builder.Services.Configure<ApplicationConfiguration>(builder.Configuration.GetSection("Application"));
 
             var mvcBuilder = builder.Services.AddControllersWithViews()
@@ -31,24 +28,6 @@ namespace eShop
                 mvcBuilder.AddRazorRuntimeCompilation();
             }
 
-            builder.Services.AddHttpClient("Telegram")
-                .AddTypedClient<ITelegramBotClient>((httpClient, serviceProvider) =>
-                {
-                    var botConfiguration = serviceProvider.GetRequiredService<IOptions<TelegramBotConfiguration>>();
-                    var options = new TelegramBotClientOptions(botConfiguration.Value.Token);
-                    return new TelegramBotClient(options, httpClient);
-                });
-
-            builder.Services.AddHttpClient("Viber")
-                .AddTypedClient<IViberBotClient>((httpClient, serviceProvider) =>
-                {
-                    var configuration = serviceProvider.GetRequiredService<IOptions<ViberBotConfiguration>>();
-                    var options = new ViberBotClientOptions(configuration.Value.Token);
-                    return new ViberBotClient(options, httpClient);
-                });
-
-            builder.Services.AddHostedService<TelegramBotConfigurationService>();
-
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"),
                 innerOptions => innerOptions.MigrationsAssembly("eShop.Database")));
@@ -58,9 +37,6 @@ namespace eShop
 
             builder.Services.AddScoped<IFileManager, FileManager>();
             //builder.Services.AddHostedService<PromService>();
-
-            builder.Services.AddTransient<IPublicUriBuilder, PublicUriBuilder>();
-            builder.Services.AddHostedService<ViberBotConfigurationService>();
 
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
@@ -88,7 +64,7 @@ namespace eShop
                     options.SaveTokens = true;
                 });
 
-            builder.Services.AddTransient<ITelegramContextConverter, TelegramContextConverter>();
+            builder.Services.AddRabbitMqProducer();
 
             var app = builder.Build();
 

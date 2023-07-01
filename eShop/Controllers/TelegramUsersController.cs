@@ -40,6 +40,7 @@ namespace eShop.Controllers
                 .Include(e => e.Chats)
                     .ThenInclude(e => e.Chat)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (telegramUser == null)
             {
                 return NotFound();

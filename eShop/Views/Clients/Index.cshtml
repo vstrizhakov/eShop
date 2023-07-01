@@ -1,5 +1,9 @@
 ﻿@model eShop.Models.Clients.IndexModel
 
+@{
+    ViewData["Title"] = "Index";
+}
+
 @section Scripts {
     <script>
         function copyInvintationLink(invintationLink) {
@@ -19,3 +23,36 @@
         </p>
     </div>
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Username
+            </th>
+            <th>
+                Email
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Clients)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

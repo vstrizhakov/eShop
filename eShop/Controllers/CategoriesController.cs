@@ -31,7 +31,7 @@ namespace eShop.Controllers
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null)
             {
                 return NotFound();
             }

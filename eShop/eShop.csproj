@@ -16,13 +16,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.6" />
-    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\eShop.Database\eShop.Database.csproj" />
+    <ProjectReference Include="..\eShop.Messaging\eShop.Messaging.csproj" />
     <ProjectReference Include="..\eShop.PromUaApi\eShop.PromUaApi.csproj" />
-    <ProjectReference Include="..\eShop.ViberBot\eShop.ViberBot.csproj" />
+    <ProjectReference Include="..\eShop.RabbitMq\eShop.RabbitMq.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,13 @@ using eShop.Messaging.Extensions;
 using eShop.Telegram.MessageHandlers;
 using eShop.Telegram.Repositories;
 using eShop.RabbitMq.Extensions;
+using eShop.Common.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace eShop.Telegram
 {
@@ -20,7 +27,11 @@ namespace eShop.Telegram
             // Add services to the container.
 
             builder.Services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -43,26 +54,32 @@ namespace eShop.Telegram
             builder.Services.AddBotContextConverter();
 
             builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
+            builder.Services.AddScoped<ITelegramChatRepository, TelegramChatRepository>();
 
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddScoped<TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddRabbitMqMessageHandler();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    options.Authority = "https://localhost:7000";
+                    options.Audience = "api";
+                });
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
+
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
 
             app.MapControllers();
 

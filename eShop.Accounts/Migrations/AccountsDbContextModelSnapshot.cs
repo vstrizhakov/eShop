@@ -38,6 +38,9 @@ namespace eShop.Accounts.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("IdentityUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -52,9 +55,17 @@ namespace eShop.Accounts.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdentityUserId")
+                        .IsUnique()
+                        .HasFilter("[IdentityUserId] IS NOT NULL");
+
                     b.HasIndex("TelegramUserId")
                         .IsUnique()
                         .HasFilter("[TelegramUserId] IS NOT NULL");
+
+                    b.HasIndex("ViberUserId")
+                        .IsUnique()
+                        .HasFilter("[ViberUserId] IS NOT NULL");
 
                     b.ToTable("Accounts");
                 });

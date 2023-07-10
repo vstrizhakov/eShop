@@ -22,7 +22,7 @@ namespace eShop.Viber.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("eShop.Database.Data.ViberChatSettings", b =>
+            modelBuilder.Entity("eShop.Viber.Entities.ViberChatSettings", b =>
                 {
                     b.Property<Guid>("ViberUserId")
                         .HasColumnType("uniqueidentifier");
@@ -32,10 +32,10 @@ namespace eShop.Viber.Migrations
 
                     b.HasKey("ViberUserId");
 
-                    b.ToTable("ViberChatSettings", (string)null);
+                    b.ToTable("ViberChatSettings");
                 });
 
-            modelBuilder.Entity("eShop.Database.Data.ViberUser", b =>
+            modelBuilder.Entity("eShop.Viber.Entities.ViberUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,26 +55,32 @@ namespace eShop.Viber.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("RegistrationProviderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.ToTable("ViberUsers", (string)null);
+                    b.ToTable("ViberUsers");
                 });
 
-            modelBuilder.Entity("eShop.Database.Data.ViberChatSettings", b =>
+            modelBuilder.Entity("eShop.Viber.Entities.ViberChatSettings", b =>
                 {
-                    b.HasOne("eShop.Database.Data.ViberUser", "ViberUser")
+                    b.HasOne("eShop.Viber.Entities.ViberUser", "ViberUser")
                         .WithOne("ChatSettings")
-                        .HasForeignKey("eShop.Database.Data.ViberChatSettings", "ViberUserId")
+                        .HasForeignKey("eShop.Viber.Entities.ViberChatSettings", "ViberUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ViberUser");
                 });
 
-            modelBuilder.Entity("eShop.Database.Data.ViberUser", b =>
+            modelBuilder.Entity("eShop.Viber.Entities.ViberUser", b =>
                 {
                     b.Navigation("ChatSettings")
                         .IsRequired();

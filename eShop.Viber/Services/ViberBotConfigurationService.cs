@@ -1,7 +1,7 @@
-﻿using eShop.Configurations;
+﻿using eShop.Common;
 using eShop.ViberBot;
 
-namespace eShop.Services
+namespace eShop.Viber.Services
 {
     public class ViberBotConfigurationService : BackgroundService
     {

@@ -20,6 +20,20 @@ namespace eShop.Accounts.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Account?> GetAccountByIdAsync(Guid id)
+        {
+            var account = await _context.Accounts
+                .FindAsync(id);
+            return account;
+        }
+
+        public async Task<Account?> GetAccountByPhoneNumberAsync(string phoneNumber)
+        {
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(e => e.PhoneNumber.Contains(phoneNumber));
+            return account;
+        }
+
         public async Task<Account?> GetAccountByTelegramUserIdAsync(Guid telegramUserId)
         {
             var account = await _context.Accounts
@@ -32,6 +46,11 @@ namespace eShop.Accounts.Repositories
             var account = await _context.Accounts
                 .FirstOrDefaultAsync(e => e.ViberUserId == viberUserId);
             return account;
+        }
+
+        public async Task UpdateAccountAsync(Account account)
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -68,5 +68,8 @@ namespace eShop.ViberBot
 
         [JsonProperty("keyboard", NullValueHandling = NullValueHandling.Ignore)]
         public Keyboard? Keyboard { get; set; }
+
+        [JsonProperty("contact", NullValueHandling = NullValueHandling.Ignore)]
+        public Contact? Contact { get; set; }
     }
 }

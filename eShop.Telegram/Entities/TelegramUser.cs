@@ -13,7 +13,11 @@ namespace eShop.Telegram.Entities
 
         public string? Username { get; set; }
 
+        public string? PhoneNumber { get; set; }
+
         public long ExternalId { get; set; }
+
+        public Guid? RegistrationProviderId { get; set; }
 
         public Guid? AccountId { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;

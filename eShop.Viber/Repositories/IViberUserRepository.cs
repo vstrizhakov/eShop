@@ -1,4 +1,4 @@
-﻿using eShop.Database.Data;
+﻿using eShop.Viber.Entities;
 
 namespace eShop.Viber.Repositories
 {
@@ -6,7 +6,7 @@ namespace eShop.Viber.Repositories
     {
         Task CreateViberUserAsync(ViberUser viberUser);
         Task<ViberUser?> GetViberUserByExternalIdAsync(string externalId);
-        Task<ViberUser?> GetViberUserByIdAsync(Guid viberUserId);
+        Task<ViberUser?> GetViberUserByIdAsync(Guid id);
         Task UpdateAccountIdAsync(ViberUser viberUser, Guid accountId);
         Task UpdateChatSettingsAsync(ViberUser viberUser, bool isEnabled);
         Task UpdateViberUserAsync(ViberUser viberUser);

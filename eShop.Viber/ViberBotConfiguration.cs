@@ -1,4 +1,4 @@
-﻿namespace eShop.Configurations
+﻿namespace eShop.Viber
 {
     public class ViberBotConfiguration
     {

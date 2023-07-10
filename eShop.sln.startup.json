@@ -52,18 +52,16 @@
         }
     */
   "MultiProjectConfigurations": {
-    "eShop - Telegram": {
+    "eShop": {
       "Projects": {
+        "eShop": {},
+        "eShop.Accounts": {},
+        "eShop.Catalog": {},
+        "eShop.Distribution": {},
+        "eShop.Gateway": {},
+        "eShop.Identity": {},
         "eShop.Telegram": {},
-        "eShop.Accounts": {},
-        "eShop.Distribution": {}
-      }
-    },
-    "eShop - Viber": {
-      "Projects": {
-        "eShop.Viber": {},
-        "eShop.Accounts": {},
-        "eShop.Distribution": {}
+        "eShop.Viber": {}
       }
     }
   }

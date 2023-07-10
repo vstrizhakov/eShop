@@ -1,4 +1,4 @@
-﻿namespace eShop.Models
+﻿namespace eShop.Viber.Models
 {
     public static class ViberContext
     {

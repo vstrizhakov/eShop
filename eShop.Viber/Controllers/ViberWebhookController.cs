@@ -1,16 +1,15 @@
 ﻿using eShop.Bots.Common;
-using eShop.Configurations;
-using eShop.Database.Data;
 using eShop.Messaging.Models;
-using eShop.Models;
 using eShop.RabbitMq;
 using eShop.Messaging.Extensions;
 using eShop.Viber.Repositories;
 using eShop.ViberBot;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using eShop.Viber.Models;
+using eShop.Viber.Entities;
 
-namespace eShop.Controllers
+namespace eShop.Viber.Controllers
 {
     [Route(ViberBotConfiguration.WebhookRoute)]
     [ApiController]
@@ -33,7 +32,7 @@ namespace eShop.Controllers
             CancellationToken cancellationToken)
         {
             object? response = null;
-            ViberBot.User? sender = null;
+            User? sender = null;
             bool? isSubscribed = null;
             string? senderId = null;
 
@@ -83,6 +82,7 @@ namespace eShop.Controllers
                     {
                         ExternalId = senderId,
                         Name = sender.Name,
+                        ChatSettings = new ViberChatSettings(),
                     };
 
                     await _repository.CreateViberUserAsync(viberUser);
@@ -103,10 +103,9 @@ namespace eShop.Controllers
 
                 await _repository.UpdateViberUserAsync(viberUser);
 
-                if (callback.Event == EventType.ConversationStarted /*|| true*/)
+                if (callback.Event == EventType.ConversationStarted)
                 {
                     var callbackData = callback.Context;
-                    //callbackData = botContextConverter.Serialize(ViberContext.RegisterClient, Guid.NewGuid().ToString());
                     if (!string.IsNullOrEmpty(callbackData))
                     {
                         var context = botContextConverter.Deserialize(callbackData);
@@ -121,14 +120,28 @@ namespace eShop.Controllers
                                     {
                                         if (viberUser.AccountId == null)
                                         {
-                                            var internalMessage = new ViberUserCreateAccountRequestMessage
-                                            {
-                                                ViberUserId = viberUser.Id,
-                                                ProviderId = providerId,
-                                                Name = viberUser.Name,
-                                            };
+                                            viberUser.RegistrationProviderId = providerId;
 
-                                            producer.Publish(internalMessage);
+                                            await _repository.UpdateViberUserAsync(viberUser);
+
+                                            response = new Message
+                                            {
+                                                Type = MessageType.Text,
+                                                Text = "Для завершення реєстрації надішліть свій номер телефону, будь ласка",
+                                                MinApiVersion = 7,
+                                                Keyboard = new Keyboard
+                                                {
+                                                    Buttons = new[]
+                                                    {
+                                                        new Button
+                                                        {
+                                                            Text = "Відправити номер телефону",
+                                                            ActionType = "share-phone",
+                                                            ActionBody = string.Empty,
+                                                        },
+                                                    },
+                                                },
+                                            };
                                         }
                                         else
                                         {
@@ -146,40 +159,43 @@ namespace eShop.Controllers
                 }
                 else if (callback.Event == EventType.Message)
                 {
-                    var data = callback.Message!.Text;
-                    if (!string.IsNullOrEmpty(data))
+                    var message = callback.Message!;
+                    if (message.Type == MessageType.Text)
                     {
-                        var context = Array.Empty<string>();
-                        try
+                        var data = message.Text;
+                        if (!string.IsNullOrEmpty(data))
                         {
-                            context = botContextConverter.Deserialize(data);
-                        }
-                        catch
-                        {
-                        }
-                        if (context.Length > 0)
-                        {
-                            var action = context[0];
-                            if (action == ViberContext.SettingsEnable)
+                            var context = Array.Empty<string>();
+                            try
                             {
-                                if (viberUser.AccountId != null)
+                                context = botContextConverter.Deserialize(data);
+                            }
+                            catch
+                            {
+                            }
+                            if (context.Length > 0)
+                            {
+                                var action = context[0];
+                                if (action == ViberContext.SettingsEnable)
                                 {
-                                    await _repository.UpdateChatSettingsAsync(viberUser, true);
-
-                                    var internalMessage = new ViberChatUpdatedEvent
+                                    if (viberUser.AccountId != null)
                                     {
-                                        AccountId = viberUser.AccountId.Value,
-                                        ViberUserId = viberUser.Id,
-                                        IsEnabled = true,
-                                    };
+                                        await _repository.UpdateChatSettingsAsync(viberUser, true);
 
-                                    producer.Publish(internalMessage);
-
-                                    var replyText = "Надсилання анонсів увімкнено";
-                                    var keyboard = new Keyboard
-                                    {
-                                        Buttons = new[]
+                                        var internalMessage = new ViberChatUpdatedEvent
                                         {
+                                            AccountId = viberUser.AccountId.Value,
+                                            ViberUserId = viberUser.Id,
+                                            IsEnabled = true,
+                                        };
+
+                                        producer.Publish(internalMessage);
+
+                                        var replyText = "Надсилання анонсів увімкнено";
+                                        var keyboard = new Keyboard
+                                        {
+                                            Buttons = new[]
+                                            {
                                             new Button
                                             {
                                                 Rows = 1,
@@ -187,30 +203,30 @@ namespace eShop.Controllers
                                                 ActionBody = botContextConverter.Serialize(ViberContext.SettingsDisable),
                                             },
                                         },
-                                    };
-                                    await _botClient.SendTextMessageAsync(viberUser.ExternalId, null, replyText, keyboard: keyboard);
+                                        };
+                                        await _botClient.SendTextMessageAsync(viberUser.ExternalId, null, replyText, keyboard: keyboard);
+                                    }
                                 }
-                            }
-                            else if (action == ViberContext.SettingsDisable)
-                            {
-                                if (viberUser.AccountId != null)
+                                else if (action == ViberContext.SettingsDisable)
                                 {
-                                    await _repository.UpdateChatSettingsAsync(viberUser, false);
-
-                                    var internalMessage = new ViberChatUpdatedEvent
+                                    if (viberUser.AccountId != null)
                                     {
-                                        AccountId = viberUser.AccountId.Value,
-                                        ViberUserId = viberUser.Id,
-                                        IsEnabled = false,
-                                    };
+                                        await _repository.UpdateChatSettingsAsync(viberUser, false);
 
-                                    producer.Publish(internalMessage);
-
-                                    var replyText = "Надсилання анонсів ввимкнено";
-                                    var keyboard = new Keyboard
-                                    {
-                                        Buttons = new[]
+                                        var internalMessage = new ViberChatUpdatedEvent
                                         {
+                                            AccountId = viberUser.AccountId.Value,
+                                            ViberUserId = viberUser.Id,
+                                            IsEnabled = false,
+                                        };
+
+                                        producer.Publish(internalMessage);
+
+                                        var replyText = "Надсилання анонсів ввимкнено";
+                                        var keyboard = new Keyboard
+                                        {
+                                            Buttons = new[]
+                                            {
                                             new Button
                                             {
                                                 Rows = 1,
@@ -218,21 +234,21 @@ namespace eShop.Controllers
                                                 ActionBody = botContextConverter.Serialize(ViberContext.SettingsEnable),
                                             },
                                         },
-                                    };
-                                    await _botClient.SendTextMessageAsync(viberUser.ExternalId, null, replyText, keyboard: keyboard);
+                                        };
+                                        await _botClient.SendTextMessageAsync(viberUser.ExternalId, null, replyText, keyboard: keyboard);
+                                    }
                                 }
-                            }
-                            else if (action == ViberContext.Settings)
-                            {
-                                if (viberUser.AccountId != null)
+                                else if (action == ViberContext.Settings)
                                 {
-                                    var isEnabled = viberUser.ChatSettings.IsEnabled;
-
-                                    var replyText = isEnabled ? "Надсилання анонсів увімкнено" : "Надсилання анонсів ввимкнено";
-                                    var keyboard = new Keyboard
+                                    if (viberUser.AccountId != null)
                                     {
-                                        Buttons = new[]
+                                        var isEnabled = viberUser.ChatSettings.IsEnabled;
+
+                                        var replyText = isEnabled ? "Надсилання анонсів увімкнено" : "Надсилання анонсів ввимкнено";
+                                        var keyboard = new Keyboard
                                         {
+                                            Buttons = new[]
+                                            {
                                             new Button
                                             {
                                                 Rows = 1,
@@ -240,10 +256,36 @@ namespace eShop.Controllers
                                                 ActionBody = botContextConverter.Serialize(isEnabled ? ViberContext.SettingsDisable : ViberContext.SettingsEnable),
                                             },
                                         },
-                                    };
-                                    await _botClient.SendTextMessageAsync(viberUser.ExternalId, null, replyText, keyboard: keyboard);
+                                        };
+                                        await _botClient.SendTextMessageAsync(viberUser.ExternalId, null, replyText, keyboard: keyboard);
+                                    }
                                 }
                             }
+                        }
+                    }
+                    else if (message.Type == MessageType.Contact)
+                    {
+                        var contact = message.Contact!;
+
+                        var providerId = viberUser.RegistrationProviderId;
+                        if (providerId.HasValue)
+                        {
+                            var phoneNumber = contact.PhoneNumber;
+
+                            viberUser.PhoneNumber = phoneNumber;
+                            viberUser.RegistrationProviderId = null;
+
+                            await _repository.UpdateViberUserAsync(viberUser);
+
+                            var internalMessage = new ViberUserCreateAccountRequestMessage
+                            {
+                                ViberUserId = viberUser.Id,
+                                ProviderId = providerId.Value,
+                                Name = viberUser.Name,
+                                PhoneNumber = phoneNumber,
+                            };
+
+                            producer.Publish(internalMessage);
                         }
                     }
                 }

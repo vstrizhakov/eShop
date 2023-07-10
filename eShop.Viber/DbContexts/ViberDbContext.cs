@@ -1,4 +1,4 @@
-﻿using eShop.Database.Data;
+﻿using eShop.Viber.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Viber.DbContexts

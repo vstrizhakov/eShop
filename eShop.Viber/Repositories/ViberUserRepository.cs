@@ -1,5 +1,5 @@
-﻿using eShop.Database.Data;
-using eShop.Viber.DbContexts;
+﻿using eShop.Viber.DbContexts;
+using eShop.Viber.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Viber.Repositories

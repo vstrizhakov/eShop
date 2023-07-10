@@ -1,0 +1,187 @@
+﻿{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/accounts/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/api/accounts/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Patch",
+        "Delete"
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/catalog/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/catalog/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Patch",
+        "Delete"
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/distribution/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/api/distribution/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Patch",
+        "Delete"
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/.well-known/openid-configuration",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/.well-known/openid-configuration",
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-Host": "{UpstreamHost}",
+        "X-Forwarded-Proto": "https"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/.well-known/openid-configuration/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/.well-known/openid-configuration/{everything}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-Host": "{UpstreamHost}",
+        "X-Forwarded-Proto": "https"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/connect/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/connect/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-Host": "{UpstreamHost}",
+        "X-Forwarded-Proto": "https"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-Host": "{UpstreamHost}",
+        "X-Forwarded-Proto": "https"
+      }
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/telegram/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5005
+        }
+      ],
+      "UpstreamPathTemplate": "/api/telegram/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Patch",
+        "Delete"
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/viber/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5006
+        }
+      ],
+      "UpstreamPathTemplate": "/api/viber/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Patch",
+        "Delete"
+      ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 3000
+        }
+      ],
+      "UpstreamPathTemplate": "/{everything}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/ws",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 3000
+        }
+      ],
+      "UpstreamPathTemplate": "/ws"
+    }
+  ]
+}

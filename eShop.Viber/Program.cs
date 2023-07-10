@@ -1,6 +1,4 @@
 using eShop.Bots.Common.Extensions;
-using eShop.Configurations;
-using eShop.Services;
 using eShop.Viber.DbContexts;
 using eShop.Viber.MessageHandlers;
 using eShop.Viber.Repositories;
@@ -9,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using eShop.RabbitMq.Extensions;
 using eShop.Messaging.Extensions;
+using eShop.Viber.Services;
+using eShop.Common.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace eShop.Viber
 {
@@ -21,7 +24,11 @@ namespace eShop.Viber
             // Add services to the container.
 
             builder.Services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -52,6 +59,13 @@ namespace eShop.Viber
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    options.Authority = "https://localhost:7000";
+                    options.Audience = "api";
+                });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -61,10 +75,7 @@ namespace eShop.Viber
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
 
             app.MapControllers();
 

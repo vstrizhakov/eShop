@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace eShop.Database.Data
+namespace eShop.Viber.Entities
 {
     [PrimaryKey(nameof(ViberUserId))]
     public class ViberChatSettings

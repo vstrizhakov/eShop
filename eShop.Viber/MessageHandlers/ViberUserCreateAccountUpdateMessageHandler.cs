@@ -2,7 +2,7 @@
 using eShop.Bots.Common;
 using eShop.Messaging;
 using eShop.Messaging.Models;
-using eShop.Models;
+using eShop.Viber.Models;
 using eShop.Viber.Repositories;
 using eShop.ViberBot;
 

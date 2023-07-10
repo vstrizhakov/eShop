@@ -22,31 +22,68 @@ namespace eShop.Accounts.MessageHandlers
 
         public async Task HandleMessageAsync(TelegramUserCreateAccountRequestMessage message)
         {
-            var telegramUserId = message.TelegramUserId;
-            var account = await _repository.GetAccountByTelegramUserIdAsync(telegramUserId);
-            if (account == null)
+            var providerId = message.ProviderId;
+            var provider = await _repository.GetAccountByIdAsync(providerId);
+            if (provider != null)
             {
-                account = new Account
+                var telegramUserId = message.TelegramUserId;
+                var account = await _repository.GetAccountByTelegramUserIdAsync(telegramUserId);
+                if (account == null)
                 {
-                    FirstName = message.FirstName,
-                    LastName = message.LastName,
-                    TelegramUserId = telegramUserId, 
-                };
+                    var phoneNumber = message.PhoneNumber;
+                    account = await _repository.GetAccountByPhoneNumberAsync(phoneNumber);
+                    if (account == null)
+                    {
+                        account = new Account
+                        {
+                            FirstName = message.FirstName,
+                            LastName = message.LastName,
+                            PhoneNumber = phoneNumber,
+                            TelegramUserId = telegramUserId,
+                        };
 
-                await _repository.CreateAccountAsync(account);
+                        await _repository.CreateAccountAsync(account);
 
-                var responseMessage = new TelegramUserCreateAccountResponseMessage
+                        var responseMessage = new TelegramUserCreateAccountResponseMessage
+                        {
+                            AccountId = account.Id,
+                            TelegramUserId = telegramUserId,
+                            ProviderId = message.ProviderId,
+                        };
+
+                        _producer.Publish(responseMessage);
+                    }
+                    else
+                    {
+                        if (account.Id != providerId)
+                        {
+                            account.TelegramUserId = telegramUserId;
+
+                            await _repository.UpdateAccountAsync(account);
+
+                            var responseMessage = new TelegramUserCreateAccountResponseMessage
+                            {
+                                AccountId = account.Id,
+                                TelegramUserId = telegramUserId,
+                                ProviderId = message.ProviderId,
+                            };
+
+                            _producer.Publish(responseMessage);
+                        }
+                        else
+                        {
+                            // TODO: Handle
+                        }
+                    }
+                }
+                else
                 {
-                    AccountId = account.Id,
-                    TelegramUserId = telegramUserId,
-                    ProviderId = message.ProviderId,
-                };
-
-                _producer.Publish(responseMessage);
+                    // TODO:
+                }
             }
             else
             {
-                // TODO:
+                // TODO:: Handle provider is wrong
             }
         }
     }

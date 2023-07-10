@@ -13,11 +13,29 @@ namespace eShop.Telegram.Repositories
             _context = context;
         }
 
+        public async Task CreateTelegramUserAsync(TelegramUser telegramUser)
+        {
+            _context.TelegramUsers.Add(telegramUser);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public Task<TelegramUser?> GetTelegramUserByExternalIdAsync(long externalId)
+        {
+            var telegramUser = _context.TelegramUsers
+                .Include(e => e.Chats)
+                    .ThenInclude(e => e.Chat)
+                .Include(e => e.ChatSettings)
+                .FirstOrDefaultAsync(e => e.ExternalId == externalId);
+            return telegramUser;
+        }
+
         public Task<TelegramUser?> GetTelegramUserByIdAsync(Guid id)
         {
             var telegramUser = _context.TelegramUsers
                 .Include(e => e.Chats)
                     .ThenInclude(e => e.Chat)
+                .Include(e => e.ChatSettings)
                 .FirstOrDefaultAsync(e => e.Id == id);
             return telegramUser;
         }
@@ -26,6 +44,11 @@ namespace eShop.Telegram.Repositories
         {
             telegramUser.AccountId = accountId;
 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateTelegramUserAsync(TelegramUser telegramUser)
+        {
             await _context.SaveChangesAsync();
         }
     }

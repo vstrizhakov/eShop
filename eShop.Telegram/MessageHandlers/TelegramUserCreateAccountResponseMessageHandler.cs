@@ -37,9 +37,10 @@ namespace eShop.Telegram.MessageHandlers
                 if (chatId != null)
                 {
                     {
-                        var replyText = $"{message.ProviderEmail} встановлений як Ваш постачальник анонсів.";
+                        var replyMarkup = new ReplyKeyboardRemove();
+                        var replyText = $"Вас успішно зареєстровано\n\n{message.ProviderEmail} встановлений як Ваш постачальник анонсів.";
 
-                        await _botClient.SendTextMessageAsync(new ChatId(chatId.Value), replyText);
+                        await _botClient.SendTextMessageAsync(new ChatId(chatId.Value), replyText, replyMarkup: replyMarkup);
                     }
 
                     var telegramUserChats = telegramUser.Chats

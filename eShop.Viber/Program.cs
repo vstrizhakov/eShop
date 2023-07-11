@@ -12,6 +12,7 @@ using eShop.Common.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Newtonsoft.Json.Converters;
 
 namespace eShop.Viber
 {
@@ -28,7 +29,9 @@ namespace eShop.Viber
                 {
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -56,6 +59,7 @@ namespace eShop.Viber
             builder.Services.AddRabbitMqMessageHandler();
 
             builder.Services.AddScoped<ViberUserCreateAccountUpdateMessageHandler>();
+            builder.Services.AddScoped<BroadcastCompositionToViberMessageHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

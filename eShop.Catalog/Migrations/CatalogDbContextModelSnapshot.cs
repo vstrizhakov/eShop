@@ -74,6 +74,9 @@ namespace eShop.Catalog.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("DistributionGroupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 

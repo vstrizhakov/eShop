@@ -29,15 +29,25 @@ namespace eShop.Distribution.Repositories
             return account;
         }
 
+        public async Task<IEnumerable<Account>> GetAccountsByProviderIdAsync(Guid providerId)
+        {
+            var accounts = await _context.Accounts
+                .Include(e => e.TelegramChats)
+                .Include(e => e.ViberChat)
+                .Where(e => e.ProviderId == providerId)
+                .ToListAsync();
+            return accounts;
+        }
+
         public async Task UpdateTelegramChatAsync(Account account, Guid telegramChatId, bool isEnabled)
         {
             var telegramChats = account.TelegramChats;
-            var telegramChat = telegramChats.FirstOrDefault(e => e.TelegramChatId == telegramChatId);
+            var telegramChat = telegramChats.FirstOrDefault(e => e.Id == telegramChatId);
             if (telegramChat == null)
             {
                 telegramChat = new TelegramChat
                 {
-                    TelegramChatId = telegramChatId,
+                    Id = telegramChatId,
                 };
 
                 telegramChats.Add(telegramChat);
@@ -55,7 +65,7 @@ namespace eShop.Distribution.Repositories
             {
                 viberChat = new ViberChat
                 {
-                    ViberUserId = viberUserId,
+                    Id = viberUserId,
                 };
 
                 account.ViberChat = viberChat;

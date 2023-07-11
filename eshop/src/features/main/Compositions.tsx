@@ -1,16 +1,24 @@
 import React from "react";
-import { useGetCompositionsQuery } from "../api/catalogSlice";
+import { Composition, useGetCompositionsQuery } from "../api/catalogSlice";
 
-const Compositions: React.FC = () => {
+interface IProps {
+    onCompositionSelected: (composition: Composition) => void,
+};
+
+const Compositions: React.FC<IProps> = props => {
+    const {
+        onCompositionSelected,
+    } = props;
+
     const {
         data: compositions,
     } = useGetCompositionsQuery(undefined);
 
     return (
         <>
-        {compositions && compositions.map(composition => (
-            <div>{composition.id}</div>
-        ))}
+            {compositions && compositions.map(composition => (
+                <div onClick={() => onCompositionSelected(composition)}>{composition.id}</div>
+            ))}
         </>
     );
 };

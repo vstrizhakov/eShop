@@ -36,6 +36,15 @@ namespace eShop.Viber.Repositories
             return viberUser;
         }
 
+        public async Task<IEnumerable<ViberUser>> GetViberUsersByIdsAsync(IEnumerable<Guid> ids)
+        {
+            var viberUsers = await _context.ViberUsers
+                .Include(e => e.ChatSettings)
+                .Where(e => ids.Contains(e.Id))
+                .ToListAsync();
+            return viberUsers;
+        }
+
         public async Task UpdateAccountIdAsync(ViberUser viberUser, Guid accountId)
         {
             viberUser.AccountId = accountId;

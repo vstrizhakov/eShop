@@ -5,6 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using eShop.RabbitMq.Extensions;
+using eShop.Common.Extensions;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using eShop.Messaging.Extensions;
+using eShop.Catalog.MessageHandlers;
+using Newtonsoft.Json.Converters;
 
 namespace eShop.Catalog
 {
@@ -21,6 +28,7 @@ namespace eShop.Catalog
                 {
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -48,6 +56,13 @@ namespace eShop.Catalog
 
             builder.Services.Configure<FilesConfiguration>(options => builder.Configuration.Bind("Files", options));
 
+            builder.Services.AddRabbitMqProducer();
+            builder.Services.AddRabbitMqMessageHandler();
+
+            builder.Services.AddScoped<BroadcastCompositionUpdateEventHandler>();
+
+            builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -56,6 +71,19 @@ namespace eShop.Catalog
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            var filesConfiguration = app.Services.GetRequiredService<IOptions<FilesConfiguration>>();
+            var staticFilesDirectory = Path.Combine(filesConfiguration.Value.Root, "Catalog");
+            if (!Directory.Exists(staticFilesDirectory))
+            {
+                Directory.CreateDirectory(staticFilesDirectory);
+            }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(staticFilesDirectory),
+                RequestPath = "/catalog",
+            });
 
             app.UseAuthorization();
 

@@ -37,6 +37,20 @@
         "Delete"
       ]
     },
+    {
+      "DownstreamPathTemplate": "/catalog/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/catalog/{everything}",
+      "UpstreamHttpMethod": [
+        "Get"
+      ]
+    },
 
     {
       "DownstreamPathTemplate": "/api/distribution/{everything}",

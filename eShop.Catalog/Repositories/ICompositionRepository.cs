@@ -8,5 +8,6 @@ namespace eShop.Catalog.Repositories
         Task<Composition?> GetCompositionByIdAsync(Guid id);
         Task CreateCompositionAsync(Composition composition);
         Task DeleteCompositionAsync(Composition composition);
+        Task UpdateCompositionAsync(Composition composition);
     }
 }

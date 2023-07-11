@@ -35,6 +35,7 @@ const CreateComposition: React.FC = () => {
                         name="image"
                         label="Image"
                         type="file"
+                        accept=".png,.jpg,.jpeg"
                         component={FileField} />
 
                     <Field

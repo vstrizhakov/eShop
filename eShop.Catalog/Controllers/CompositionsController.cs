@@ -4,6 +4,8 @@ using eShop.Catalog.Models.Compositions;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common;
+using eShop.Messaging.Extensions;
+using eShop.RabbitMq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,10 +47,12 @@ namespace eShop.Catalog.Controllers
             return composition;
         }
 
-        [HttpPost]
+        [HttpPost] // TODO: Add URL validation, etc.
         public async Task<ActionResult<Composition>> PostComposition(
             [FromForm] CreateCompositionRequest request,
-            [FromServices] IFileManager fileManager)
+            [FromServices] IFileManager fileManager,
+            [FromServices] IRabbitMqProducer producer,
+            [FromServices] IPublicUriBuilder publicUriBuilder)
         {
             if (!ModelState.IsValid)
             {
@@ -56,12 +60,12 @@ namespace eShop.Catalog.Controllers
             }
 
             var composition = _mapper.Map<Composition>(request);
-            var ownerId = User.GetAccountId();
-            composition.OwnerId = ownerId.Value;
+            var userId = User.GetAccountId().Value;
+            composition.OwnerId = userId;
 
             var image = request.Image;
             using var imageStream = image.OpenReadStream();
-            var imagePath = await fileManager.SaveAsync(Path.Combine("Compositions", composition.Id.ToString(), "Images"), Path.GetExtension(image.FileName), imageStream);
+            var imagePath = await fileManager.SaveAsync(Path.Combine("Catalog", "Compositions", composition.Id.ToString(), "Images"), Path.GetExtension(image.FileName), imageStream);
 
             // TODO: Handle products` images (request.Products.Images)
 
@@ -71,6 +75,23 @@ namespace eShop.Catalog.Controllers
             });
 
             await _repository.CreateCompositionAsync(composition);
+
+            var broadcastMessage = new Messaging.Models.BroadcastCompositionMessage
+            {
+                ProviderId = userId,
+                Composition = new Messaging.Models.Composition
+                {
+                    Id = composition.Id,
+                    Images = composition.Images.Select(e => new Uri(publicUriBuilder.Path(e.Path))),
+                    Products = composition.Products.Select(e => new Messaging.Models.Product
+                    {
+                        Name = e.Name,
+                        Url = new Uri(e.Url),
+                        Price = e.Prices.FirstOrDefault().Value,
+                    }),
+                },
+            };
+            producer.Publish(broadcastMessage);
 
             return CreatedAtAction("GetComposition", new { id = composition.Id }, composition);
         }
@@ -97,85 +118,5 @@ namespace eShop.Catalog.Controllers
 
             return NoContent();
         }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Broadcast(
-        //    [FromRoute] string id,
-        //    [FromServices] ITelegramBotClient telegramBotClient,
-        //    [FromServices] IViberBotClient viberBotClient,
-        //    [FromServices] IPublicUriBuilder publicUriBuilder,
-        //    [FromServices] ITelegramContextConverter telegramContextConverter)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var userId = User.GetSub();
-        //    var composition = await _context.Compositions
-        //        .Include(e => e.Images)
-        //        .Include(e => e.Products)
-        //        .Where(e => e.OwnerId == userId)
-        //        .FirstOrDefaultAsync(e => e.Id == id);
-        //    if (composition == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var clients = await _context.Users
-        //        .Include(e => e.TelegramChats)
-        //            .ThenInclude(e => e.TelegramChat)
-        //        .Include(e => e.ViberUser)
-        //        .Include(e => e.ViberChatSettings)
-        //        .Where(e => e.ProviderId == userId)
-        //        .ToListAsync();
-
-        //    var image = composition.Images.FirstOrDefault();
-        //    if (image != null)
-        //    {
-        //        var imageLink = publicUriBuilder.Path(image.Path);
-        //        var text = string.Join("\n\n", composition.Products.Select(e => $"{e.Name} - {e.Prices.LastOrDefault()}"));
-
-        //        foreach (var client in clients)
-        //        {
-        //            var telegramChats = client.TelegramChats
-        //                .Where(e => e.IsEnabled)
-        //                .Select(e => e.TelegramChat);
-        //            foreach (var telegramChat in telegramChats)
-        //            {
-        //                var media = new InputMediaPhoto(new InputFileUrl(imageLink));
-        //                media.Caption = text;
-        //                await telegramBotClient.SendMediaGroupAsync(new ChatId(telegramChat.ExternalId), new List<IAlbumInputMedia>() { media });
-        //            }
-
-        //            var viberChat = client.ViberChatSettings;
-        //            if (viberChat != null && viberChat.IsEnabled)
-        //            {
-        //                var viberUser = client.ViberUser;
-
-        //                var sender = new ViberBot.User
-        //                {
-        //                    Name = "Test",
-        //                };
-        //                var keyboard = new Keyboard
-        //                {
-        //                    Buttons = new[]
-        //                    {
-        //                        new Button
-        //                        {
-        //                            Rows = 1,
-        //                            Text = "Налаштування анонсів",
-        //                            ActionBody = telegramContextConverter.Serialize(ViberContext.Settings),
-        //                        },
-        //                    },
-        //                };
-        //                await viberBotClient.SendPictureMessageAsync(viberUser.ExternalId, sender, imageLink, text, keyboard: keyboard);
-        //            }
-        //        }
-        //    }
-
-        //    return RedirectToAction(nameof(Details), new { id });
-        //}
     }
 }

@@ -24,11 +24,12 @@ interface Product {
     url: string,
 };
 
-interface Composition {
+export interface Composition {
     id: string,
     name: string,
     images: string[],
     products: Product[],
+    distributionGroupId?: string,
 };
 
 interface ProductPrice {

@@ -8,5 +8,6 @@ namespace eShop.Telegram.Repositories
         Task CreateTelegramChatAsync(TelegramChat chat);
         Task UpdateTelegramChatAsync(TelegramChat telegramChat);
         Task<TelegramChat?> GetTelegramChatByIdAsync(Guid telegramChatId);
+        Task<IEnumerable<TelegramChat>> GetTelegramChatsByIdsAsync(IEnumerable<Guid> ids);
     }
 }

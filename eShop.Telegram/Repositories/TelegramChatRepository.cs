@@ -40,6 +40,17 @@ namespace eShop.Telegram.Repositories
             return telegramChat;
         }
 
+        public async Task<IEnumerable<TelegramChat>> GetTelegramChatsByIdsAsync(IEnumerable<Guid> ids)
+        {
+            var telegramChats = await _context.TelegramChats
+                .Include(e => e.Members)
+                .Include(e => e.Supergroup)
+                .Include(e => e.Settings)
+                .Where(e => ids.Contains(e.Id))
+                .ToListAsync();
+            return telegramChats;
+        }
+
         public async Task UpdateTelegramChatAsync(TelegramChat telegramChat)
         {
             await _context.SaveChangesAsync();

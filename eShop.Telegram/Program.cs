@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace eShop.Telegram
 {
@@ -31,6 +32,7 @@ namespace eShop.Telegram
                 {
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -57,8 +59,10 @@ namespace eShop.Telegram
             builder.Services.AddScoped<ITelegramChatRepository, TelegramChatRepository>();
 
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddScoped<TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddRabbitMqMessageHandler();
+
+            builder.Services.AddScoped<TelegramUserCreateAccountResponseMessageHandler>();
+            builder.Services.AddScoped<BroadcastCompositionToTelegramMessageHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

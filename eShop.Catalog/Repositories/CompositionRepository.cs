@@ -39,9 +39,15 @@ namespace eShop.Catalog.Repositories
         {
             var compositions = await _context.Compositions
                 .Where(e => e.OwnerId == ownerId)
+                .OrderBy(e => e.CreatedAt)
                 .ToListAsync();
 
             return compositions;
+        }
+
+        public async Task UpdateCompositionAsync(Composition composition)
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

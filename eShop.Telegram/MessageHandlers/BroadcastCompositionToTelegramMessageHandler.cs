@@ -12,12 +12,12 @@ namespace eShop.Telegram.MessageHandlers
     {
         private readonly ITelegramBotClient _botClient;
         private readonly ITelegramChatRepository _telegramChatRepository;
-        private readonly IRabbitMqProducer _producer;
+        private readonly IProducer _producer;
 
         public BroadcastCompositionToTelegramMessageHandler(
             ITelegramBotClient botClient,
             ITelegramChatRepository telegramChatRepository,
-            IRabbitMqProducer producer)
+            IProducer producer)
         {
             _botClient = botClient;
             _telegramChatRepository = telegramChatRepository;

@@ -51,7 +51,7 @@ namespace eShop.Catalog.Controllers
         public async Task<ActionResult<Composition>> PostComposition(
             [FromForm] CreateCompositionRequest request,
             [FromServices] IFileManager fileManager,
-            [FromServices] IRabbitMqProducer producer,
+            [FromServices] IProducer producer,
             [FromServices] IPublicUriBuilder publicUriBuilder)
         {
             if (!ModelState.IsValid)

@@ -20,7 +20,7 @@ namespace eShop.Identity.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IServerUrls _serverUrls;
         private readonly IMapper _mapper;
-        private readonly IRabbitMqProducer _producer;
+        private readonly IProducer _producer;
 
         public AuthController(
             IIdentityServerInteractionService interaction,
@@ -28,7 +28,7 @@ namespace eShop.Identity.Controllers
             SignInManager<User> signInManager,
             IServerUrls serverUrls,
             IMapper mapper,
-            IRabbitMqProducer producer)
+            IProducer producer)
         {
             _interaction = interaction;
             _userManager = userManager;

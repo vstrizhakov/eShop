@@ -1,17 +1,17 @@
 using eShop.Catalog.DbContexts;
+using eShop.Catalog.MessageHandlers;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using eShop.RabbitMq.Extensions;
 using eShop.Common.Extensions;
+using eShop.Messaging.Extensions;
+using eShop.Messaging.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using eShop.Messaging.Extensions;
-using eShop.Catalog.MessageHandlers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace eShop.Catalog
 {
@@ -57,9 +57,8 @@ namespace eShop.Catalog
             builder.Services.Configure<FilesConfiguration>(options => builder.Configuration.Bind("Files", options));
 
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddRabbitMqMessageHandler();
 
-            builder.Services.AddScoped<BroadcastCompositionUpdateEventHandler>();
+            builder.Services.AddMessageHandler<BroadcastCompositionUpdateEvent, BroadcastCompositionUpdateEventHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

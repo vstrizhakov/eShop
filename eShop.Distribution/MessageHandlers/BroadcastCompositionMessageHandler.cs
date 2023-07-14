@@ -9,12 +9,12 @@ namespace eShop.Distribution.MessageHandlers
 {
     public class BroadcastCompositionMessageHandler : IMessageHandler<BroadcastCompositionMessage>
     {
-        private readonly IRabbitMqProducer _producer;
+        private readonly IProducer _producer;
         private readonly IAccountRepository _accountRepository;
         private readonly IDistributionRepository _distributionRepository;
 
         public BroadcastCompositionMessageHandler(
-            IRabbitMqProducer producer,
+            IProducer producer,
             IAccountRepository accountRepository,
             IDistributionRepository distributionRepository)
         {

@@ -10,11 +10,11 @@ namespace eShop.Accounts.MessageHandlers
     public class IdentityUserCreateAccountRequestMessageHandler : IMessageHandler<IdentityUserCreateAccountRequestMessage>
     {
         private readonly IAccountRepository _repository;
-        private readonly IRabbitMqProducer _producer;
+        private readonly IProducer _producer;
 
         public IdentityUserCreateAccountRequestMessageHandler(
             IAccountRepository repository,
-            IRabbitMqProducer producer)
+            IProducer producer)
         {
             _repository = repository;
             _producer = producer;

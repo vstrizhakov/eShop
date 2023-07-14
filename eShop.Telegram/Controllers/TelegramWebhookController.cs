@@ -23,13 +23,13 @@ namespace eShop.Telegram.Controllers
         private readonly ITelegramUserRepository _telegramUserRepository;
         private readonly ITelegramChatRepository _telegramChatRepository;
         private readonly ITelegramBotClient _botClient;
-        private readonly IRabbitMqProducer _producer;
+        private readonly IProducer _producer;
 
         public TelegramWebhookController(
             ITelegramUserRepository telegramUserRepository,
             ITelegramChatRepository telegramChatRepository,
             ITelegramBotClient botClient,
-            IRabbitMqProducer producer)
+            IProducer producer)
         {
             _telegramUserRepository = telegramUserRepository;
             _telegramChatRepository = telegramChatRepository;

@@ -1,24 +1,30 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using eShop.Messaging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 
 namespace eShop.RabbitMq
 {
-    internal class RabbitMqConsumer : IHostedService, IDisposable
+    internal class RabbitMqConsumer<T> : IConsumer, IDisposable
     {
         private const string Exchange = "eShop";
 
         private readonly IModel _channel;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly RabbitMqConsumerOptions<T> _options;
+
         private readonly EventingBasicConsumer _consumer;
-        private readonly IRabbitMqMessageHandler _messageHandler;
-        private readonly string _queueName;
+
         private string? _consumerTag;
 
-        public RabbitMqConsumer(IModel channel, IRabbitMqMessageHandler messageHandler)
+        public RabbitMqConsumer(IModel channel, IServiceScopeFactory serviceScopeFactory, IOptions<RabbitMqConsumerOptions<T>> options)
         {
             _channel = channel;
-            _messageHandler = messageHandler;
+            _serviceScopeFactory = serviceScopeFactory;
+            _options = options.Value;
 
             _channel.ExchangeDeclare(
                 exchange: Exchange,
@@ -27,24 +33,24 @@ namespace eShop.RabbitMq
                 autoDelete: false,
                 arguments: null);
 
+            var queueName = _options.QueueName;
+
             var result = _channel.QueueDeclare(
-                queue: string.Empty,
+                queue: queueName,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
 
-            _queueName = result.QueueName;
-
             _channel.BasicQos(
-                prefetchSize: 0, 
+                prefetchSize: 0,
                 prefetchCount: 1,
                 global: false);
 
             _channel.QueueBind(
-                queue: _queueName,
+                queue: queueName,
                 exchange: Exchange,
-                routingKey: "#",
+                routingKey: _options.RoutingKey,
                 arguments: null);
 
             _consumer = new EventingBasicConsumer(_channel);
@@ -56,28 +62,30 @@ namespace eShop.RabbitMq
             _consumer.Received -= Consumer_Received;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public void Start()
         {
             _consumerTag = _channel.BasicConsume(
-                queue: _queueName,
+                queue: _options.QueueName,
                 autoAck: false,
                 consumer: _consumer);
-
-            return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public void Stop()
         {
             _channel.BasicCancel(_consumerTag);
-
-            return Task.CompletedTask;
         }
 
         private async void Consumer_Received(object? sender, BasicDeliverEventArgs args)
         {
-            var message = Encoding.UTF8.GetString(args.Body.ToArray());
+            var data = Encoding.UTF8.GetString(args.Body.ToArray());
+            var message = JsonConvert.DeserializeObject<T>(data);
 
-            await _messageHandler.HandleMessageAsync(message);
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var messageHandler = scope.ServiceProvider.GetRequiredService<IMessageHandler<T>>();
+
+                await messageHandler.HandleMessageAsync(message);
+            }
 
             _channel.BasicAck(args.DeliveryTag, false);
         }

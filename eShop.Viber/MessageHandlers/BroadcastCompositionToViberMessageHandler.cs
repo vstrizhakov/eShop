@@ -14,13 +14,13 @@ namespace eShop.Viber.MessageHandlers
         private readonly IViberBotClient _botClient;
         private readonly IViberUserRepository _viberUserRepository;
         private readonly IBotContextConverter _botContextConverter;
-        private readonly IRabbitMqProducer _producer;
+        private readonly IProducer _producer;
 
         public BroadcastCompositionToViberMessageHandler(
             IViberBotClient botClient,
             IViberUserRepository viberUserRepository,
             IBotContextConverter botContextConverter,
-            IRabbitMqProducer producer)
+            IProducer producer)
         {
             _botClient = botClient;
             _viberUserRepository = viberUserRepository;

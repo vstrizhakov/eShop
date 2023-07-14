@@ -28,7 +28,7 @@ namespace eShop.Viber.Controllers
         public async Task<IActionResult> Post(
             [FromBody] Callback callback,
             [FromServices] IBotContextConverter botContextConverter,
-            [FromServices] IRabbitMqProducer producer,
+            [FromServices] IProducer producer,
             CancellationToken cancellationToken)
         {
             object? response = null;

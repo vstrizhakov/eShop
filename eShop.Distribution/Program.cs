@@ -2,12 +2,12 @@ using eShop.Distribution.DbContexts;
 using eShop.Distribution.MessageHandlers;
 using eShop.Distribution.Repositories;
 using eShop.Messaging.Extensions;
-using eShop.RabbitMq.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
+using eShop.Messaging.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace eShop.Distribution
 {
@@ -37,15 +37,14 @@ namespace eShop.Distribution
             builder.Services.AddScoped<IDistributionRepository, DistributionRepository>();
 
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddRabbitMqMessageHandler();
 
-            builder.Services.AddScoped<TelegramUserCreateAccountResponseMessageHandler>();
-            builder.Services.AddScoped<TelegramChatUpdatedEventHandler>();
-            builder.Services.AddScoped<ViberUserCreateAccountUpdateMessageHandler>();
-            builder.Services.AddScoped<ViberChatUpdatedEventHandler>();
-            builder.Services.AddScoped<BroadcastCompositionMessageHandler>();
-            builder.Services.AddScoped<BroadcastCompositionToTelegramUpdateEventHandler>();
-            builder.Services.AddScoped<BroadcastCompositionToViberUpdateEventHandler>();
+            builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
+            builder.Services.AddMessageHandler<TelegramChatUpdatedEvent, TelegramChatUpdatedEventHandler>();
+            builder.Services.AddMessageHandler<ViberUserCreateAccountUpdateMessage, ViberUserCreateAccountUpdateMessageHandler>();
+            builder.Services.AddMessageHandler<ViberChatUpdatedEvent, ViberChatUpdatedEventHandler>();
+            builder.Services.AddMessageHandler<BroadcastCompositionMessage, BroadcastCompositionMessageHandler>();
+            builder.Services.AddMessageHandler<BroadcastCompositionToTelegramUpdateEvent, BroadcastCompositionToTelegramUpdateEventHandler>();
+            builder.Services.AddMessageHandler<BroadcastCompositionToViberUpdateEvent, BroadcastCompositionToViberUpdateEventHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

@@ -1,9 +1,10 @@
-﻿using RabbitMQ.Client;
+﻿using Newtonsoft.Json;
+using RabbitMQ.Client;
 using System.Text;
 
 namespace eShop.RabbitMq
 {
-    internal class RabbitMqProducer : IRabbitMqProducer
+    internal class RabbitMqProducer : IProducer
     {
         private const string Exchange = "eShop";
 
@@ -21,13 +22,15 @@ namespace eShop.RabbitMq
                 arguments: null);
         }
 
-        public void Publish(string message, string routingKey = "")
+        public void Publish<T>(T message)
         {
-            var body = Encoding.UTF8.GetBytes(message);
+            var data = JsonConvert.SerializeObject(message);
+            var body = Encoding.UTF8.GetBytes(data);
 
             var properties = _channel.CreateBasicProperties();
             properties.Persistent = true;
 
+            var routingKey = typeof(T).Name;
             _channel.BasicPublish(
                 exchange: Exchange,
                 routingKey: routingKey,

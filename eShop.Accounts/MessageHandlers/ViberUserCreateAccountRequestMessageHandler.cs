@@ -10,9 +10,9 @@ namespace eShop.Accounts.MessageHandlers
     public class ViberUserCreateAccountRequestMessageHandler : IMessageHandler<ViberUserCreateAccountRequestMessage>
     {
         private readonly IAccountRepository _repository;
-        private readonly IRabbitMqProducer _producer;
+        private readonly IProducer _producer;
 
-        public ViberUserCreateAccountRequestMessageHandler(IAccountRepository repository, IRabbitMqProducer producer)
+        public ViberUserCreateAccountRequestMessageHandler(IAccountRepository repository, IProducer producer)
         {
             _repository = repository;
             _producer = producer;

@@ -2,7 +2,7 @@ using eShop.Accounts.DbContexts;
 using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Repositories;
 using eShop.Messaging.Extensions;
-using eShop.RabbitMq.Extensions;
+using eShop.Messaging.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -32,11 +32,10 @@ namespace eShop.Accounts
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddRabbitMqMessageHandler();
 
-            builder.Services.AddScoped<TelegramUserCreateAccountRequestMessageHandler>();
-            builder.Services.AddScoped<ViberUserCreateAccountRequestMessageHandler>();
-            builder.Services.AddScoped<IdentityUserCreateAccountRequestMessageHandler>();
+            builder.Services.AddMessageHandler<TelegramUserCreateAccountRequestMessage, TelegramUserCreateAccountRequestMessageHandler>();
+            builder.Services.AddMessageHandler<ViberUserCreateAccountRequestMessage, ViberUserCreateAccountRequestMessageHandler>();
+            builder.Services.AddMessageHandler<IdentityUserCreateAccountRequestMessage, IdentityUserCreateAccountRequestMessageHandler>();
 
             builder.Services.AddDbContext<AccountsDbContext>(options
                 => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

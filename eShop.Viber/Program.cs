@@ -1,18 +1,18 @@
 using eShop.Bots.Common.Extensions;
+using eShop.Common.Extensions;
+using eShop.Messaging.Extensions;
+using eShop.Messaging.Models;
 using eShop.Viber.DbContexts;
 using eShop.Viber.MessageHandlers;
 using eShop.Viber.Repositories;
+using eShop.Viber.Services;
 using eShop.ViberBot;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using eShop.RabbitMq.Extensions;
-using eShop.Messaging.Extensions;
-using eShop.Viber.Services;
-using eShop.Common.Extensions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace eShop.Viber
 {
@@ -56,10 +56,9 @@ namespace eShop.Viber
             builder.Services.AddScoped<IViberUserRepository, ViberUserRepository>();
 
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddRabbitMqMessageHandler();
 
-            builder.Services.AddScoped<ViberUserCreateAccountUpdateMessageHandler>();
-            builder.Services.AddScoped<BroadcastCompositionToViberMessageHandler>();
+            builder.Services.AddMessageHandler<ViberUserCreateAccountUpdateMessage, ViberUserCreateAccountUpdateMessageHandler>();
+            builder.Services.AddMessageHandler<BroadcastCompositionToViberMessage, BroadcastCompositionToViberMessageHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

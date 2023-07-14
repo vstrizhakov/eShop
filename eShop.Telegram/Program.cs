@@ -1,21 +1,19 @@
-using eShop.Telegram.Services;
-using Microsoft.Extensions.Options;
-using Telegram.Bot;
 using eShop.Bots.Common.Extensions;
-using Microsoft.EntityFrameworkCore;
-using eShop.Telegram.DbContexts;
+using eShop.Common.Extensions;
 using eShop.Messaging.Extensions;
+using eShop.Messaging.Models;
+using eShop.Telegram.DbContexts;
 using eShop.Telegram.MessageHandlers;
 using eShop.Telegram.Repositories;
-using eShop.RabbitMq.Extensions;
-using eShop.Common.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+using eShop.Telegram.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using Telegram.Bot;
 
 namespace eShop.Telegram
 {
@@ -59,10 +57,9 @@ namespace eShop.Telegram
             builder.Services.AddScoped<ITelegramChatRepository, TelegramChatRepository>();
 
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddRabbitMqMessageHandler();
 
-            builder.Services.AddScoped<TelegramUserCreateAccountResponseMessageHandler>();
-            builder.Services.AddScoped<BroadcastCompositionToTelegramMessageHandler>();
+            builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
+            builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -1,18 +1,16 @@
 ﻿using eShop.Common;
 using eShop.Identity.DbContexts;
 using eShop.Identity.Entities;
+using eShop.Identity.MessageHandlers;
+using eShop.Identity.Services;
+using eShop.Messaging.Extensions;
+using eShop.Messaging.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using eShop.RabbitMq.Extensions;
-using eShop.Messaging.Extensions;
-using eShop.Identity.MessageHandlers;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using eShop.Identity.Services;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace eShop.Identity
 {
@@ -72,9 +70,7 @@ namespace eShop.Identity
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddRabbitMqMessageHandler();
-
-            builder.Services.AddScoped<IdentityUserCreateAccountResponseMessageHandler>();
+            builder.Services.AddMessageHandler<IdentityUserCreateAccountResponseMessage, IdentityUserCreateAccountResponseMessageHandler>();
 
             var app = builder.Build();
 

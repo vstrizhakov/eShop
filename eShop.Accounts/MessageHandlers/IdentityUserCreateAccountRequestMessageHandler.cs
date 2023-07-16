@@ -1,7 +1,6 @@
 ﻿using eShop.Accounts.Entities;
 using eShop.Accounts.Repositories;
 using eShop.Messaging;
-using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using eShop.RabbitMq;
 

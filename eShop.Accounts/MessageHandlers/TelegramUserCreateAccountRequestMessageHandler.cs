@@ -1,7 +1,7 @@
 ﻿using eShop.Accounts.Entities;
-using eShop.Accounts.Repositories;
+using eShop.Accounts.Exceptions;
+using eShop.Accounts.Services;
 using eShop.Messaging;
-using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using eShop.RabbitMq;
 
@@ -9,81 +9,51 @@ namespace eShop.Accounts.MessageHandlers
 {
     public class TelegramUserCreateAccountRequestMessageHandler : IMessageHandler<TelegramUserCreateAccountRequestMessage>
     {
-        private readonly IAccountRepository _repository;
+        private readonly IAccountService _accountService;
         private readonly IProducer _producer;
 
         public TelegramUserCreateAccountRequestMessageHandler(
-            IAccountRepository repository,
+            IAccountService accountService,
             IProducer producer)
         {
-            _repository = repository;
+            _accountService = accountService;
             _producer = producer;
         }
 
         public async Task HandleMessageAsync(TelegramUserCreateAccountRequestMessage message)
         {
-            var providerId = message.ProviderId;
-            var provider = await _repository.GetAccountByIdAsync(providerId);
-            if (provider != null)
+            try
             {
-                var telegramUserId = message.TelegramUserId;
-                var account = await _repository.GetAccountByTelegramUserIdAsync(telegramUserId);
-                if (account == null)
+                var providerId = message.ProviderId;
+                var accountInfo = new Account
                 {
-                    var phoneNumber = message.PhoneNumber;
-                    account = await _repository.GetAccountByPhoneNumberAsync(phoneNumber);
-                    if (account == null)
-                    {
-                        account = new Account
-                        {
-                            FirstName = message.FirstName,
-                            LastName = message.LastName,
-                            PhoneNumber = phoneNumber,
-                            TelegramUserId = telegramUserId,
-                        };
-
-                        await _repository.CreateAccountAsync(account);
-
-                        var responseMessage = new TelegramUserCreateAccountResponseMessage
-                        {
-                            AccountId = account.Id,
-                            TelegramUserId = telegramUserId,
-                            ProviderId = message.ProviderId,
-                        };
-
-                        _producer.Publish(responseMessage);
-                    }
-                    else
-                    {
-                        if (account.Id != providerId)
-                        {
-                            account.TelegramUserId = telegramUserId;
-
-                            await _repository.UpdateAccountAsync(account);
-
-                            var responseMessage = new TelegramUserCreateAccountResponseMessage
-                            {
-                                AccountId = account.Id,
-                                TelegramUserId = telegramUserId,
-                                ProviderId = message.ProviderId,
-                            };
-
-                            _producer.Publish(responseMessage);
-                        }
-                        else
-                        {
-                            // TODO: Handle
-                        }
-                    }
-                }
-                else
+                    FirstName = message.FirstName,
+                    LastName = message.LastName,
+                    PhoneNumber = message.PhoneNumber,
+                    TelegramUserId = message.TelegramUserId,
+                };
+                var account = await _accountService.RegisterAccountByTelegramUserIdAsync(providerId, accountInfo);
+             
+                var responseMessage = new TelegramUserCreateAccountResponseMessage
                 {
-                    // TODO:
-                }
+                    AccountId = account.Id,
+                    TelegramUserId = account.TelegramUserId.Value,
+                    ProviderId = message.ProviderId,
+                };
+
+                _producer.Publish(responseMessage);
             }
-            else
+            catch (AccountAlreadyRegisteredException)
             {
-                // TODO:: Handle provider is wrong
+                // Publish message with error
+            }
+            catch (ProviderNotExistsException)
+            {
+                // Publish message with error
+            }
+            catch (InvalidProviderException)
+            {
+                // Publish message with error
             }
         }
     }

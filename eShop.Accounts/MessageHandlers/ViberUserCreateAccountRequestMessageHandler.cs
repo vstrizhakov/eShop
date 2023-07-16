@@ -1,7 +1,8 @@
 ﻿using eShop.Accounts.Entities;
+using eShop.Accounts.Exceptions;
 using eShop.Accounts.Repositories;
+using eShop.Accounts.Services;
 using eShop.Messaging;
-using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using eShop.RabbitMq;
 
@@ -9,80 +10,50 @@ namespace eShop.Accounts.MessageHandlers
 {
     public class ViberUserCreateAccountRequestMessageHandler : IMessageHandler<ViberUserCreateAccountRequestMessage>
     {
-        private readonly IAccountRepository _repository;
+        private readonly IAccountService _accountService;
         private readonly IProducer _producer;
 
-        public ViberUserCreateAccountRequestMessageHandler(IAccountRepository repository, IProducer producer)
+        public ViberUserCreateAccountRequestMessageHandler(IAccountService accountService, IProducer producer)
         {
-            _repository = repository;
+            _accountService = accountService;
             _producer = producer;
         }
 
         public async Task HandleMessageAsync(ViberUserCreateAccountRequestMessage message)
         {
-            var providerId = message.ProviderId;
-            var provider = await _repository.GetAccountByIdAsync(providerId);
-            if (provider != null)
+            try
             {
-                var viberUserId = message.ViberUserId;
-                var account = await _repository.GetAccountByViberUserIdAsync(viberUserId);
-                if (account == null)
+                var providerId = message.ProviderId;
+                var accountInfo = new Account
                 {
-                    var phoneNumber = message.PhoneNumber;
-                    account = await _repository.GetAccountByPhoneNumberAsync(phoneNumber);
-                    if (account == null)
-                    {
-                        account = new Account
-                        {
-                            FirstName = message.Name,
-                            PhoneNumber = phoneNumber,
-                            ViberUserId = viberUserId,
-                        };
+                    FirstName = message.Name,
+                    PhoneNumber = message.PhoneNumber,
+                    ViberUserId = message.ViberUserId,
+                };
 
-                        await _repository.CreateAccountAsync(account);
+                var account = await _accountService.RegisterAccountByViberUserIdAsync(providerId, accountInfo);
 
-                        var responseMessage = new ViberUserCreateAccountUpdateMessage
-                        {
-                            IsSuccess = true,
-                            AccountId = account.Id,
-                            ProviderId = message.ProviderId,
-                            ViberUserId = viberUserId,
-                        };
-
-                        _producer.Publish(responseMessage);
-                    }
-                    else
-                    {
-                        if (account.Id != providerId)
-                        {
-                            account.ViberUserId = viberUserId;
-
-                            await _repository.UpdateAccountAsync(account);
-
-                            var responseMessage = new ViberUserCreateAccountUpdateMessage
-                            {
-                                IsSuccess = true,
-                                AccountId = account.Id,
-                                ProviderId = message.ProviderId,
-                                ViberUserId = viberUserId,
-                            };
-
-                            _producer.Publish(responseMessage);
-                        }
-                        else
-                        {
-                            // TODO: Handle
-                        }
-                    }
-                }
-                else
+                var responseMessage = new ViberUserCreateAccountUpdateMessage
                 {
-                    // TODO:
-                }
+                    IsSuccess = true,
+                    AccountId = account.Id,
+                    ProviderId = message.ProviderId,
+                    ViberUserId = account.ViberUserId,
+                };
+
+                _producer.Publish(responseMessage);
             }
-            else
+            catch (AccountAlreadyRegisteredException)
             {
-                // TODO: Handle provider is wrong
+                // Publish message with error
+            }
+            catch (ProviderNotExistsException)
+            {
+                // Publish message with error
+            }
+            catch (InvalidProviderException)
+            {
+                // Publish message with error
             }
         }
     }

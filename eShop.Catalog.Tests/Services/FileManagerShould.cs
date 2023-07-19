@@ -1,6 +1,5 @@
 ﻿using eShop.Catalog.Services;
 using Microsoft.Extensions.Options;
-using Moq;
 
 namespace eShop.Catalog.Tests.Services
 {

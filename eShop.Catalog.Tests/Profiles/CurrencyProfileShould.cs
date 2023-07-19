@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using eShop.Catalog.Entities;
-using eShop.Catalog.Models.Products;
 using eShop.Catalog.Profiles;
 
 namespace eShop.Catalog.Tests.Profiles
 {
-    public class CompositionProfileShould
+    public class CurrencyProfileShould
     {
         [Fact]
         public void Map()
@@ -14,10 +12,7 @@ namespace eShop.Catalog.Tests.Profiles
 
             var configuration = new MapperConfiguration(config =>
             {
-                config.AddProfile<CompositionProfile>();
-
-                config.CreateMap<CreateProductRequest, Product>()
-                    .ForAllMembers(options => options.Ignore());
+                config.AddProfile<CurrencyProfile>();
             });
 
             // Assert

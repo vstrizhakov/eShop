@@ -34,7 +34,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("CompositionProduct");
+                    b.ToTable("CompositionProduct", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Category", b =>
@@ -62,7 +62,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Composition", b =>
@@ -84,7 +84,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Compositions");
+                    b.ToTable("Compositions", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.CompositionImage", b =>
@@ -104,7 +104,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasIndex("CompositionId");
 
-                    b.ToTable("CompositionImages");
+                    b.ToTable("CompositionImages", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Currency", b =>
@@ -122,7 +122,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Currencies");
+                    b.ToTable("Currencies", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Product", b =>
@@ -154,7 +154,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.ProductImage", b =>
@@ -177,7 +177,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.ProductPrice", b =>
@@ -204,7 +204,7 @@ namespace eShop.Catalog.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPrices");
+                    b.ToTable("ProductPrices", (string)null);
                 });
 
             modelBuilder.Entity("CompositionProduct", b =>

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using eShop.Common;
+using eShop.Common.Extensions;
 using eShop.Distribution.Models;
 using eShop.Distribution.Repositories;
 using Microsoft.AspNetCore.Authorization;

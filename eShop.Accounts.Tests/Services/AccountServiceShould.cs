@@ -2,7 +2,6 @@
 using eShop.Accounts.Exceptions;
 using eShop.Accounts.Repositories;
 using eShop.Accounts.Services;
-using Moq;
 
 namespace eShop.Accounts.Tests.Services
 {

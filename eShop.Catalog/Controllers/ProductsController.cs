@@ -3,7 +3,7 @@ using eShop.Catalog.Entities;
 using eShop.Catalog.Models.Products;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
-using eShop.Common;
+using eShop.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

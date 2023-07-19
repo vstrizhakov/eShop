@@ -1,4 +1,5 @@
-﻿using eShop.Catalog.Entities;
+﻿using AutoMapper;
+using eShop.Catalog.Entities;
 using eShop.Catalog.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,21 +12,24 @@ namespace eShop.Catalog.Controllers
     public class CurrenciesController : ControllerBase
     {
         private readonly ICurrencyRepository _repository;
+        private readonly IMapper _mapper;
 
-        public CurrenciesController(ICurrencyRepository repository)
+        public CurrenciesController(ICurrencyRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Currency>>> GetCurrencies()
+        public async Task<ActionResult<IEnumerable<Models.Currencies.Currency>>> GetCurrencies()
         {
             var currencies = await _repository.GetCurrenciesAsync();
-            return Ok(currencies);
+            var response = _mapper.Map<IEnumerable<Models.Currencies.Currency>>(currencies);
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Currency>> GetCurrency([FromRoute] Guid id)
+        public async Task<ActionResult<Models.Currencies.Currency>> GetCurrency([FromRoute] Guid id)
         {
             var currency = await _repository.GetCurrencyByIdAsync(id);
 
@@ -34,15 +38,19 @@ namespace eShop.Catalog.Controllers
                 return NotFound();
             }
 
-            return currency;
+            var response = _mapper.Map<Models.Currencies.Currency>(currency);
+            return response;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Currency>> PostCurrency([FromBody] Currency currency)
+        public async Task<ActionResult<Models.Currencies.Currency>> PostCurrency([FromBody] Models.Currencies.CreateCurrencyRequest request)
         {
+            var currency = _mapper.Map<Currency>(request);
+
             await _repository.CreateCurrencyAsync(currency);
 
-            return CreatedAtAction("GetCurrency", new { id = currency.Id }, currency);
+            var response = _mapper.Map<Models.Currencies.Currency>(currency);
+            return CreatedAtAction("GetCurrency", new { id = currency.Id }, response);
         }
 
         [HttpDelete("{id}")]

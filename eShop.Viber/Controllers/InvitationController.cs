@@ -1,5 +1,5 @@
 ﻿using eShop.Bots.Common;
-using eShop.Common;
+using eShop.Common.Extensions;
 using eShop.Viber.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

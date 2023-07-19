@@ -3,7 +3,6 @@ using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Repositories;
 using eShop.Messaging.Models;
 using eShop.RabbitMq;
-using Moq;
 
 namespace eShop.Accounts.Tests.MessageHandlers
 {

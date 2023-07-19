@@ -2,7 +2,7 @@
 {
     public interface IFileManager
     {
-        Task<string> SaveAsync(string directory, string extendsion, Stream stream);
+        Task<string> SaveAsync(string directory, string extension, Stream stream);
         Task DeleteAsync(string path);
     }
 }

@@ -1,5 +1,5 @@
-﻿using eShop.Distribution.Entities;
-using eShop.Distribution.Repositories;
+﻿using eShop.Distribution.Exceptions;
+using eShop.Distribution.Services;
 using eShop.Messaging;
 using eShop.Messaging.Models;
 
@@ -7,26 +7,21 @@ namespace eShop.Distribution.MessageHandlers
 {
     public class TelegramUserCreateAccountResponseMessageHandler : IMessageHandler<TelegramUserCreateAccountResponseMessage>
     {
-        private readonly IAccountRepository _repository;
+        private readonly IAccountService _accountService;
 
-        public TelegramUserCreateAccountResponseMessageHandler(IAccountRepository repository)
+        public TelegramUserCreateAccountResponseMessageHandler(IAccountService accountService)
         {
-            _repository = repository;
+            _accountService = accountService;
         }
         
         public async Task HandleMessageAsync(TelegramUserCreateAccountResponseMessage message)
         {
-            var accountId = message.AccountId;
-            var account = await _repository.GetAccountByIdAsync(accountId);
-            if (account == null)
+            try
             {
-                account = new Account
-                {
-                    Id = accountId,
-                    ProviderId = message.ProviderId,
-                };
-
-                await _repository.CreateAccountAsync(account);
+                await _accountService.CreateNewAccountAsync(message.AccountId, message.ProviderId);
+            }
+            catch (AccountAlreadyExistsException)
+            {
             }
         }
     }

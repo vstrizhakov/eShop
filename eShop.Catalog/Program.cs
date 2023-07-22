@@ -46,6 +46,7 @@ namespace eShop.Catalog
             builder.Services.AddScoped<ICompositionRepository, CompositionRepository>();
 
             builder.Services.AddScoped<IFileManager, FileManager>();
+            builder.Services.AddScoped<ICompositionService, CompositionService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

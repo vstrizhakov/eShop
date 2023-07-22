@@ -50,14 +50,14 @@ namespace eShop.Catalog.Tests.Controllers
                 .Setup(e => e.Map<IEnumerable<Models.Compositions.Composition>>(compositions))
                 .Returns(expectedResponse);
 
-            var controller = new CompositionsController(compositionService.Object, mapper.Object)
+            var sut = new CompositionsController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
 
             // Act
 
-            var result = await controller.GetCompositions();
+            var result = await sut.GetCompositions();
 
             // Assert
 

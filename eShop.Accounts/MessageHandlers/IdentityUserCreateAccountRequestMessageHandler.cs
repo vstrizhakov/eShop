@@ -2,7 +2,6 @@
 using eShop.Accounts.Repositories;
 using eShop.Messaging;
 using eShop.Messaging.Models;
-using eShop.RabbitMq;
 
 namespace eShop.Accounts.MessageHandlers
 {

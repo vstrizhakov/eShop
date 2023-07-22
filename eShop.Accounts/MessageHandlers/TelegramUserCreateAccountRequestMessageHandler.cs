@@ -3,7 +3,6 @@ using eShop.Accounts.Exceptions;
 using eShop.Accounts.Services;
 using eShop.Messaging;
 using eShop.Messaging.Models;
-using eShop.RabbitMq;
 
 namespace eShop.Accounts.MessageHandlers
 {

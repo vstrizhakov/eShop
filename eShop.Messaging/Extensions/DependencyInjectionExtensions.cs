@@ -1,5 +1,4 @@
-﻿using eShop.RabbitMq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 
 namespace eShop.Messaging.Extensions

@@ -6,8 +6,7 @@ namespace eShop.Distribution.Repositories
     {
         Task CreateDistributionGroupAsync(DistributionGroup distributionGroup);
         Task<DistributionGroup?> GetDistributionGroupByIdAsync(Guid id);
-        Task<DistributionGroupItem?> GetDistributionGroupItemByTelegramChatIdAsync(Guid distributionGroupId, Guid telegramChatId);
-        Task<DistributionGroupItem?> GetDistributionGroupItemByViberChatIdAsync(Guid distributionGroupId, Guid viberChatId);
+        Task<DistributionGroupItem?> GetDistributionRequestAsync(Guid distributionRequestId);
         Task UpdateDistributionGroupItemAsync(DistributionGroupItem distributionItem);
     }
 }

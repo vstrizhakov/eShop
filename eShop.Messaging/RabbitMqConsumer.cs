@@ -1,12 +1,11 @@
-﻿using eShop.Messaging;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 
-namespace eShop.RabbitMq
+namespace eShop.Messaging
 {
     internal class RabbitMqConsumer<T> : IConsumer, IDisposable
     {

@@ -2,7 +2,7 @@
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common;
-using eShop.RabbitMq;
+using eShop.Messaging;
 using Microsoft.AspNetCore.Http;
 
 namespace eShop.Catalog.Tests.Services

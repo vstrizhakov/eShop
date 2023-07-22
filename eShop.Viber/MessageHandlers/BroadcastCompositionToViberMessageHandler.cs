@@ -2,7 +2,6 @@
 using eShop.Messaging;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
-using eShop.RabbitMq;
 using eShop.Viber.Models;
 using eShop.Viber.Repositories;
 using eShop.ViberBot;
@@ -30,9 +29,13 @@ namespace eShop.Viber.MessageHandlers
 
         public async Task HandleMessageAsync(BroadcastCompositionToViberMessage message)
         {
-            var viberUsers = await _viberUserRepository.GetViberUsersByIdsAsync(message.ViberChatIds);
+            var requests = message.Requests;
+            var viberUsers = await _viberUserRepository.GetViberUsersByIdsAsync(requests.Select(e => e.TargetId));
+
+            var messageToSend = message.Message;
             foreach (var viberUser in viberUsers)
             {
+                var request = requests.FirstOrDefault(e => e.TargetId == viberUser.Id);
                 var succeeded = true;
                 try
                 {
@@ -52,17 +55,16 @@ namespace eShop.Viber.MessageHandlers
                         },
                     },
                     };
-                    await _botClient.SendPictureMessageAsync(viberUser.ExternalId, sender, message.Image.ToString(), message.Caption, keyboard: keyboard);
+                    await _botClient.SendPictureMessageAsync(viberUser.ExternalId, sender, messageToSend.Image.ToString(), messageToSend.Caption, keyboard: keyboard);
                 }
                 catch
                 {
                     succeeded = false;
                 }
 
-                var update = new BroadcastCompositionToViberUpdateEvent
+                var update = new BroadcastMessageUpdateEvent
                 {
-                    DistributionGroupId = message.DistributionGroupId,
-                    ViberChatId = viberUser.Id,
+                    RequestId = request.RequestId,
                     Succeeded = succeeded,
                 };
                 _producer.Publish(update);

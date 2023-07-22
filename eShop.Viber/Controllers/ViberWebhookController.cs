@@ -1,13 +1,11 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging.Models;
-using eShop.RabbitMq;
-using eShop.Messaging.Extensions;
+using eShop.Messaging;
+using eShop.Viber.Entities;
+using eShop.Viber.Models;
 using eShop.Viber.Repositories;
 using eShop.ViberBot;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using eShop.Viber.Models;
-using eShop.Viber.Entities;
 
 namespace eShop.Viber.Controllers
 {
@@ -182,7 +180,7 @@ namespace eShop.Viber.Controllers
                                     {
                                         await _repository.UpdateChatSettingsAsync(viberUser, true);
 
-                                        var internalMessage = new ViberChatUpdatedEvent
+                                        var internalMessage = new Messaging.Models.ViberChatUpdatedEvent
                                         {
                                             AccountId = viberUser.AccountId.Value,
                                             ViberUserId = viberUser.Id,
@@ -213,7 +211,7 @@ namespace eShop.Viber.Controllers
                                     {
                                         await _repository.UpdateChatSettingsAsync(viberUser, false);
 
-                                        var internalMessage = new ViberChatUpdatedEvent
+                                        var internalMessage = new Messaging.Models.ViberChatUpdatedEvent
                                         {
                                             AccountId = viberUser.AccountId.Value,
                                             ViberUserId = viberUser.Id,
@@ -277,7 +275,7 @@ namespace eShop.Viber.Controllers
 
                             await _repository.UpdateViberUserAsync(viberUser);
 
-                            var internalMessage = new ViberUserCreateAccountRequestMessage
+                            var internalMessage = new Messaging.Models.ViberUserCreateAccountRequestMessage
                             {
                                 ViberUserId = viberUser.Id,
                                 ProviderId = providerId.Value,

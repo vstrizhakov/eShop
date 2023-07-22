@@ -1,5 +1,5 @@
-﻿using eShop.Distribution.Entities;
-using eShop.Distribution.Repositories;
+﻿using eShop.Distribution.Exceptions;
+using eShop.Distribution.Services;
 using eShop.Messaging;
 using eShop.Messaging.Models;
 
@@ -7,28 +7,23 @@ namespace eShop.Distribution.MessageHandlers
 {
     public class ViberUserCreateAccountUpdateMessageHandler : IMessageHandler<ViberUserCreateAccountUpdateMessage>
     {
-        private readonly IAccountRepository _repository;
+        private readonly IAccountService _accountService;
 
-        public ViberUserCreateAccountUpdateMessageHandler(IAccountRepository repository)
+        public ViberUserCreateAccountUpdateMessageHandler(IAccountService accountService)
         {
-            _repository = repository;
+            _accountService = accountService;
         }
 
         public async Task HandleMessageAsync(ViberUserCreateAccountUpdateMessage message)
         {
             if (message.IsSuccess)
             {
-                var accountId = message.AccountId.Value;
-                var account = await _repository.GetAccountByIdAsync(accountId);
-                if (account == null)
+                try
                 {
-                    account = new Account
-                    {
-                        Id = accountId,
-                        ProviderId = message.ProviderId.Value,
-                    };
-
-                    await _repository.CreateAccountAsync(account);
+                    await _accountService.CreateNewAccountAsync(message.AccountId.Value, message.ProviderId.Value);
+                }
+                catch (AccountAlreadyExistsException)
+                {
                 }
             }
         }

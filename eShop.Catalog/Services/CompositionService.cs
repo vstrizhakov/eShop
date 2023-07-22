@@ -1,7 +1,7 @@
 ﻿using eShop.Catalog.Entities;
 using eShop.Catalog.Repositories;
 using eShop.Common;
-using eShop.RabbitMq;
+using eShop.Messaging;
 
 namespace eShop.Catalog.Services
 {

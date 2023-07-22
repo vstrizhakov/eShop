@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eShop.Common.Extensions;
 using eShop.Distribution.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,9 @@ namespace eShop.Distribution.Controllers
             [FromServices] IMapper mapper)
         {
             var distributionGroup = await distributionRepository.GetDistributionGroupByIdAsync(id);
-            if (distributionGroup == null)
+
+            var providerId = User.GetAccountId().Value;
+            if (distributionGroup == null || distributionGroup.ProviderId != providerId)
             {
                 return NotFound();
             }

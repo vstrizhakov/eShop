@@ -15,7 +15,7 @@ namespace eShop.Catalog.Tests.Profiles
                 config.AddProfile<CurrencyProfile>();
             });
 
-            // Assert
+            // Act & Assert
 
             configuration.AssertConfigurationIsValid();
         }

@@ -1,6 +1,7 @@
 using eShop.Distribution.DbContexts;
 using eShop.Distribution.MessageHandlers;
 using eShop.Distribution.Repositories;
+using eShop.Distribution.Services;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,6 +37,10 @@ namespace eShop.Distribution
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IDistributionRepository, DistributionRepository>();
 
+            builder.Services.AddScoped<IDistributionService, DistributionService>();
+            builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
+
             builder.Services.AddRabbitMqProducer();
 
             builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
@@ -43,8 +48,7 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<ViberUserCreateAccountUpdateMessage, ViberUserCreateAccountUpdateMessageHandler>();
             builder.Services.AddMessageHandler<ViberChatUpdatedEvent, ViberChatUpdatedEventHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionMessage, BroadcastCompositionMessageHandler>();
-            builder.Services.AddMessageHandler<BroadcastCompositionToTelegramUpdateEvent, BroadcastCompositionToTelegramUpdateEventHandler>();
-            builder.Services.AddMessageHandler<BroadcastCompositionToViberUpdateEvent, BroadcastCompositionToViberUpdateEventHandler>();
+            builder.Services.AddMessageHandler<BroadcastMessageUpdateEvent, BroadcastMessageUpdateEventHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

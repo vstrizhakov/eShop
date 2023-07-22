@@ -1,14 +1,9 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging.Extensions;
-using eShop.Messaging.Models;
-using eShop.RabbitMq;
-using eShop.Telegram.DbContexts;
+using eShop.Messaging;
 using eShop.Telegram.Entities;
 using eShop.Telegram.Models;
 using eShop.Telegram.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -227,7 +222,7 @@ namespace eShop.Telegram.Controllers
 
                             await _telegramUserRepository.UpdateTelegramUserAsync(telegramUser);
 
-                            var internalMessage = new TelegramUserCreateAccountRequestMessage
+                            var internalMessage = new Messaging.Models.TelegramUserCreateAccountRequestMessage
                             {
                                 TelegramUserId = telegramUser.Id,
                                 FirstName = telegramUser.FirstName,
@@ -322,7 +317,7 @@ namespace eShop.Telegram.Controllers
 
                                             await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
 
-                                            var internalEvent = new TelegramChatUpdatedEvent
+                                            var internalEvent = new Messaging.Models.TelegramChatUpdatedEvent
                                             {
                                                 AccountId = telegramUser.AccountId.Value,
                                                 TelegramChatId = telegramChatId,
@@ -370,7 +365,7 @@ namespace eShop.Telegram.Controllers
 
                                             await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
 
-                                            var internalEvent = new TelegramChatUpdatedEvent
+                                            var internalEvent = new Messaging.Models.TelegramChatUpdatedEvent
                                             {
                                                 AccountId = telegramUser.AccountId.Value,
                                                 TelegramChatId = telegramChatId,

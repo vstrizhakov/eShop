@@ -1,8 +1,8 @@
 using eShop.Accounts.Entities;
 using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Services;
+using eShop.Messaging;
 using eShop.Messaging.Models;
-using eShop.RabbitMq;
 
 namespace eShop.Accounts.Tests.MessageHandlers
 {

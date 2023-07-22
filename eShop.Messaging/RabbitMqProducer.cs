@@ -2,7 +2,7 @@
 using RabbitMQ.Client;
 using System.Text;
 
-namespace eShop.RabbitMq
+namespace eShop.Messaging
 {
     internal class RabbitMqProducer : IProducer
     {

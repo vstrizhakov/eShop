@@ -28,18 +28,11 @@ namespace eShop.Distribution.Repositories
             return distributionGroup;
         }
 
-        public async Task<DistributionGroupItem?> GetDistributionGroupItemByTelegramChatIdAsync(Guid distributionGroupId, Guid telegramChatId)
+        public async Task<DistributionGroupItem?> GetDistributionRequestAsync(Guid distributionRequestId)
         {
-            var distributionGroupItem = await _context.DistributionGroupItems
-                .FirstOrDefaultAsync(e => e.GroupId == distributionGroupId && e.TelegramChatId == telegramChatId);
-            return distributionGroupItem;
-        }
-
-        public async Task<DistributionGroupItem?> GetDistributionGroupItemByViberChatIdAsync(Guid distributionGroupId, Guid viberChatId)
-        {
-            var distributionGroupItem = await _context.DistributionGroupItems
-                .FirstOrDefaultAsync(e => e.GroupId == distributionGroupId && e.ViberChatId == viberChatId);
-            return distributionGroupItem;
+            var distributionRequest = await _context.DistributionGroupItems
+                .FirstOrDefaultAsync(e => e.Id == distributionRequestId);
+            return distributionRequest;
         }
 
         public async Task UpdateDistributionGroupItemAsync(DistributionGroupItem distributionItem)

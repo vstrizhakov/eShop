@@ -1,103 +1,68 @@
-﻿using eShop.Messaging;
+﻿using eShop.Distribution.Services;
+using eShop.Messaging;
 using eShop.Messaging.Models;
-using eShop.RabbitMq;
-using eShop.Messaging.Extensions;
-using eShop.Distribution.Repositories;
-using eShop.Distribution.Entities;
 
 namespace eShop.Distribution.MessageHandlers
 {
     public class BroadcastCompositionMessageHandler : IMessageHandler<BroadcastCompositionMessage>
     {
         private readonly IProducer _producer;
-        private readonly IAccountRepository _accountRepository;
-        private readonly IDistributionRepository _distributionRepository;
+        private readonly IDistributionService _distributionService;
+        private readonly IMessageBuilder _messageBuilder;
 
         public BroadcastCompositionMessageHandler(
             IProducer producer,
-            IAccountRepository accountRepository,
-            IDistributionRepository distributionRepository)
+            IDistributionService distributionService,
+            IMessageBuilder messageBuilder)
         {
             _producer = producer;
-            _accountRepository = accountRepository;
-            _distributionRepository = distributionRepository;
+            _distributionService = distributionService;
+            _messageBuilder = messageBuilder;
         }
 
         public async Task HandleMessageAsync(BroadcastCompositionMessage message)
         {
             var composition = message.Composition;
-            var image = composition.Images.FirstOrDefault();
-            var caption = string.Join("\n\n", composition.Products.Select(e => $"{e.Name} - {e.Price}"));
+            var messageToSend = _messageBuilder.FromComposition(composition);
 
-            var distributionGroup = new DistributionGroup
-            {
-                ProviderId = message.ProviderId,
-            };
+            // TODO: Handle provider is absent
+            var distribution = await _distributionService.CreateDistributionFromProviderIdAsync(message.ProviderId);
 
-            var accounts = await _accountRepository.GetAccountsByProviderIdAsync(message.ProviderId);
-
-            var telegramChatIds = accounts
-                .SelectMany(e => e.TelegramChats)
-                .Where(e => e.IsEnabled)
-                .Select(e => e.Id)
-                .Distinct();
-            foreach (var telegramChatId in telegramChatIds)
-            {
-                var distributionGroupItem = new DistributionGroupItem
-                {
-                    TelegramChatId = telegramChatId,
-                };
-
-                distributionGroup.Items.Add(distributionGroupItem);
-            }
-
-            var viberChatIds = accounts
-                .Where(e => e.ViberChat != null)
-                .Select(e => e.ViberChat)
-                .Where(e => e.IsEnabled)
-                .Select(e => e.Id)
-                .Distinct();
-            foreach (var viberChatId in viberChatIds)
-            {
-                var distributionGroupItem = new DistributionGroupItem
-                {
-                    ViberChatId = viberChatId,
-                };
-
-                distributionGroup.Items.Add(distributionGroupItem);
-            }
-
-            await _distributionRepository.CreateDistributionGroupAsync(distributionGroup);
-
-            var distributionGroupId = distributionGroup.Id;
+            var distributionId = distribution.Id;
             var update = new BroadcastCompositionUpdateEvent
             {
-                CompositionId = message.Composition.Id,
-                DistributionGroupId = distributionGroupId,
+                CompositionId = composition.Id,
+                DistributionGroupId = distributionId,
             };
 
             _producer.Publish(update);
 
-            if (telegramChatIds.Any())
+            var telegramRequests = distribution.Items.Where(e => e.TelegramChatId.HasValue);
+            if (telegramRequests.Any())
             {
                 var telegramMessage = new BroadcastCompositionToTelegramMessage
                 {
-                    DistributionGroupId = distributionGroupId,
-                    TelegramChatIds = telegramChatIds,
-                    Image = image,
-                    Caption = caption,
+                    Requests = telegramRequests.Select(e => new DistributionRequest
+                    {
+                        RequestId = e.Id,
+                        TargetId = e.TelegramChatId.Value,
+                    }),
+                    Message = messageToSend,
                 };
                 _producer.Publish(telegramMessage);
             }
 
-            if (viberChatIds.Any())
+            var viberRequests = distribution.Items.Where(e => e.ViberChatId.HasValue);
+            if (viberRequests.Any())
             {
                 var viberMessage = new BroadcastCompositionToViberMessage
                 {
-                    DistributionGroupId = distributionGroupId,
-                    ViberChatIds = viberChatIds,
-                    Image = image,
-                    Caption = caption,
+                    Requests = viberRequests.Select(e => new DistributionRequest
+                    {
+                        RequestId = e.Id,
+                        TargetId = e.ViberChatId.Value,
+                    }),
+                    Message = messageToSend,
                 };
                 _producer.Publish(viberMessage);
             }

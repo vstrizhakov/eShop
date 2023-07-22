@@ -1,4 +1,4 @@
-﻿namespace eShop.RabbitMq
+﻿namespace eShop.Messaging
 {
     public interface IProducer
     {

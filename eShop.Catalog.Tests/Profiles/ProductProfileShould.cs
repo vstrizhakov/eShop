@@ -14,8 +14,8 @@ namespace eShop.Catalog.Tests.Profiles
             {
                 config.AddProfile<ProductProfile>();
             });
-            
-            // Assert
+
+            // Act & Assert
 
             configuration.AssertConfigurationIsValid();
         }

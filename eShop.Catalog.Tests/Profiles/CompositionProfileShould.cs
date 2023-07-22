@@ -20,7 +20,7 @@ namespace eShop.Catalog.Tests.Profiles
                     .ForAllMembers(options => options.Ignore());
             });
 
-            // Assert
+            // Act & Assert
 
             configuration.AssertConfigurationIsValid();
         }

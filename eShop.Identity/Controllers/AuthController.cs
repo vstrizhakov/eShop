@@ -2,9 +2,9 @@
 using Duende.IdentityServer.Services;
 using eShop.Identity.Entities;
 using eShop.Identity.Models;
+using eShop.Messaging;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
-using eShop.RabbitMq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

@@ -2,9 +2,7 @@
 {
     public class BroadcastCompositionToTelegramMessage
     {
-        public Guid DistributionGroupId { get; set; }
-        public IEnumerable<Guid> TelegramChatIds { get; set; }
-        public Uri Image { get; set; }
-        public string Caption { get; set; }
+        public IEnumerable<DistributionRequest> Requests { get; set; }
+        public Message Message { get; set; }
     }
 }

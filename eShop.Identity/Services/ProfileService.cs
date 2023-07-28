@@ -1,7 +1,5 @@
-﻿using Duende.IdentityServer.Extensions;
-using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
-using Duende.IdentityServer.Validation;
 using eShop.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;

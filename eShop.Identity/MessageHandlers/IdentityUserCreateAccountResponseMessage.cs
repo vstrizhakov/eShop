@@ -21,6 +21,7 @@ namespace eShop.Identity.MessageHandlers
             {
                 user.AccountId = message.AccountId;
 
+                // TODO: Handle failure
                 await _userManager.UpdateAsync(user);
             }
         }

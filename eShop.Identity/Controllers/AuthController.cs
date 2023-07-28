@@ -3,7 +3,6 @@ using Duende.IdentityServer.Services;
 using eShop.Identity.Entities;
 using eShop.Identity.Models;
 using eShop.Messaging;
-using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,38 +14,19 @@ namespace eShop.Identity.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IServerUrls _serverUrls;
-        private readonly IMapper _mapper;
-        private readonly IProducer _producer;
-
-        public AuthController(
-            IIdentityServerInteractionService interaction,
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IServerUrls serverUrls,
-            IMapper mapper,
-            IProducer producer)
-        {
-            _interaction = interaction;
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _serverUrls = serverUrls;
-            _mapper = mapper;
-            _producer = producer;
-        }
-
         [HttpPost("signUp")]
-        public async Task<ActionResult<SignUpResponse>> SignUp([FromBody] SignUpRequest request)
+        public async Task<ActionResult<SignUpResponse>> SignUp(
+            [FromBody] SignUpRequest request,
+            [FromServices] UserManager<User> userManager,
+            [FromServices] IProducer producer,
+            [FromServices] IMapper mapper)
         {
             var succeeded = false;
 
             if (!User.Identity.IsAuthenticated)
             {
-                var user = _mapper.Map<User>(request);
-                var result = await _userManager.CreateAsync(user, request.Password);
+                var user = mapper.Map<User>(request);
+                var result = await userManager.CreateAsync(user, request.Password);
 
                 succeeded = result.Succeeded;
 
@@ -60,7 +40,7 @@ namespace eShop.Identity.Controllers
                         Email = request.Email,
                         PhoneNumber = request.PhoneNumber,
                     };
-                    _producer.Publish(message);
+                    producer.Publish(message);
                 }
             }
 
@@ -73,29 +53,34 @@ namespace eShop.Identity.Controllers
 
 
         [HttpPost("signIn")]
-        public async Task<ActionResult<SignInResponse>> SignIn([FromBody] SignInRequest request)
+        public async Task<ActionResult<SignInResponse>> SignIn(
+            [FromBody] SignInRequest request,
+            [FromServices] IIdentityServerInteractionService interaction,
+            [FromServices] SignInManager<User> signInManager,
+            [FromServices] IServerUrls serverUrls)
         {
             var response = new SignInResponse();
             var succeeded = false;
 
             if (!User.Identity.IsAuthenticated)
             {
-                var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, request.Remember, false);
+                var result = await signInManager.PasswordSignInAsync(request.Username, request.Password, request.Remember, false);
                 succeeded = result.Succeeded;
             }
 
             response.Succeeded = succeeded;
             if (succeeded)
             {
+                // TODO: Check request.ReturnUrl is null
                 var url = request.ReturnUrl;
-                var context = await _interaction.GetAuthorizationContextAsync(url);
+                var context = await interaction.GetAuthorizationContextAsync(url);
                 if (context != null)
                 {
                     response.ValidReturnUrl = url;
                 }
                 else
                 {
-                    response.ValidReturnUrl = _serverUrls.BaseUrl;
+                    response.ValidReturnUrl = serverUrls.BaseUrl;
                 }
             }
 
@@ -104,40 +89,47 @@ namespace eShop.Identity.Controllers
 
         [HttpGet("signOut")]
         [Authorize]
-        public async Task<ActionResult<SignOutInfo>> SignOut([FromQuery] string logoutId)
+        public async Task<ActionResult<SignOutInfo>> SignOut(
+            [FromQuery] string logoutId,
+            [FromServices] IIdentityServerInteractionService interaction,
+            [FromServices] SignInManager<User> signInManager)
         {
-            var logoutInfo = await _interaction.GetLogoutContextAsync(logoutId);
+            var logoutInfo = await interaction.GetLogoutContextAsync(logoutId);
 
-            if (logoutInfo != null)
+            var showSignoutPrompt = logoutInfo?.ShowSignoutPrompt;
+
+            PostSignOutInfo? postSignOutInfo = null;
+            if (showSignoutPrompt != true)
             {
-                if (!logoutInfo.ShowSignoutPrompt || !User.Identity.IsAuthenticated)
+                if (User.Identity.IsAuthenticated)
                 {
-                    await _signInManager.SignOutAsync();
-
-                    return Ok(new SignOutInfo
-                    {
-                        PostInfo = new PostSignOutInfo
-                        {
-                            IFrameUrl = logoutInfo.SignOutIFrameUrl,
-                            RedirectUrl = logoutInfo.PostLogoutRedirectUri,
-                        },
-                    });
+                    await signInManager.SignOutAsync();
                 }
+
+                postSignOutInfo = new PostSignOutInfo
+                {
+                    IFrameUrl = logoutInfo?.SignOutIFrameUrl,
+                    RedirectUrl = logoutInfo?.PostLogoutRedirectUri,
+                };
             }
 
             return Ok(new SignOutInfo
             {
-                Prompt = User.Identity.IsAuthenticated,
+                Prompt = showSignoutPrompt,
+                PostInfo = postSignOutInfo,
             });
         }
 
         [HttpPost("signOut")]
         [Authorize]
-        public async Task<ActionResult<SignOutInfo>> PostSignOut([FromQuery] string logoutId)
+        public async Task<ActionResult<SignOutInfo>> PostSignOut(
+            [FromQuery] string logoutId,
+            [FromServices] IIdentityServerInteractionService interaction,
+            [FromServices] SignInManager<User> signInManager)
         {
-            var logoutInfo = await _interaction.GetLogoutContextAsync(logoutId);
+            var logoutInfo = await interaction.GetLogoutContextAsync(logoutId);
 
-            await _signInManager.SignOutAsync();
+            await signInManager.SignOutAsync();
 
             return Ok(new SignOutInfo
             {

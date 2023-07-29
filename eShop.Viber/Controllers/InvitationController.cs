@@ -1,10 +1,8 @@
-﻿using eShop.Bots.Common;
-using eShop.Common.Extensions;
+﻿using eShop.Common.Extensions;
 using eShop.Viber.Models;
+using eShop.Viber.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 
 namespace eShop.Viber.Controllers
 {
@@ -15,21 +13,13 @@ namespace eShop.Viber.Controllers
     {
         [HttpGet]
         public ActionResult<GetInviteLinkResponse> GetInviteLink(
-            [FromServices] IBotContextConverter botContextConverter,
-            [FromServices] IOptions<ViberBotConfiguration> viberBotConfiguration)
+            [FromServices] IViberInvitationLinkGenerator viberInvitationLinkGenerator)
         {
-            var providerId = User.GetAccountId();
-            var viberContext = botContextConverter.Serialize(ViberContext.RegisterClient, providerId.ToString());
-
+            var providerId = User.GetAccountId().Value;
             var response = new GetInviteLinkResponse
             {
-                InviteLink = QueryHelpers.AddQueryString($"viber://pa", new Dictionary<string, string?>()
-                {
-                    { "chatURI", viberBotConfiguration.Value.ChatUrl },
-                    { "context", viberContext },
-                }),
+                InviteLink = viberInvitationLinkGenerator.Generate(providerId),
             };
-
             return response;
         }
     }

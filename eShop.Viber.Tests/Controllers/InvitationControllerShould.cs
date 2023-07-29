@@ -1,10 +1,15 @@
-﻿using eShop.Telegram.Controllers;
-using eShop.Telegram.Services;
+﻿using eShop.Viber.Controllers;
+using eShop.Viber.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace eShop.Telegram.Tests.Controllers
+namespace eShop.Viber.Tests.Controllers
 {
     public class InvitationControllerShould
     {
@@ -35,12 +40,11 @@ namespace eShop.Telegram.Tests.Controllers
         {
             // Arrange
 
-            var link = "https://t.me/example?start=example";
-
-            var telegramInvitationLinkGenerator = new Mock<ITelegramInvitationLinkGenerator>();
-            telegramInvitationLinkGenerator
+            var inviteLink = Guid.NewGuid().ToString();
+            var viberInvitationLinkGenerator = new Mock<IViberInvitationLinkGenerator>();
+            viberInvitationLinkGenerator
                 .Setup(e => e.Generate(_accountId))
-                .Returns(link);
+                .Returns(inviteLink);
 
             var sut = new InvitationController
             {
@@ -49,15 +53,15 @@ namespace eShop.Telegram.Tests.Controllers
 
             // Act
 
-            var result = sut.GetInviteLink(telegramInvitationLinkGenerator.Object);
+            var result = sut.GetInviteLink(viberInvitationLinkGenerator.Object);
 
             // Assert
 
-            telegramInvitationLinkGenerator.VerifyAll();
+            viberInvitationLinkGenerator.VerifyAll();
 
             Assert.NotNull(result);
             Assert.NotNull(result.Value);
-            Assert.Equal(link, result.Value.InviteLink);
+            Assert.Equal(inviteLink, result.Value.InviteLink);
         }
     }
 }

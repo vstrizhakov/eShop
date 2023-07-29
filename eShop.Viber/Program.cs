@@ -69,6 +69,8 @@ namespace eShop.Viber
                     options.Audience = "api";
                 });
 
+            builder.Services.AddScoped<IViberInvitationLinkGenerator, ViberInvitationLinkGenerator>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

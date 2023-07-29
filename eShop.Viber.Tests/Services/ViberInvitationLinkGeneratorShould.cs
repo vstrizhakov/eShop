@@ -1,15 +1,10 @@
 ﻿using eShop.Bots.Common;
-using eShop.Telegram.Services;
+using eShop.Viber.Services;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace eShop.Telegram.Tests.Services
+namespace eShop.Viber.Tests.Services
 {
-    public class TelegramInvitationLinkGeneratorShould
+    public class ViberInvitationLinkGeneratorShould
     {
         [Fact]
         public void Generate()
@@ -17,23 +12,23 @@ namespace eShop.Telegram.Tests.Services
             // Arrange
 
             var providerId = Guid.NewGuid();
-            var context = "context";
-            var username = "username";
+            var chatUrl = "example";
+            var context = "example";
 
             var botContextConverter = new Mock<IBotContextConverter>();
             botContextConverter
                 .Setup(e => e.Serialize(It.IsAny<string[]>()))
                 .Returns(context);
 
-            var options = new Mock<IOptions<TelegramBotConfiguration>>();
+            var options = new Mock<IOptions<ViberBotConfiguration>>();
             options
                 .Setup(e => e.Value)
-                .Returns(new TelegramBotConfiguration
+                .Returns(new ViberBotConfiguration
                 {
-                    Username = username,
+                    ChatUrl = chatUrl,
                 });
 
-            var sut = new TelegramInvitationLinkGenerator(botContextConverter.Object, options.Object);
+            var sut = new ViberInvitationLinkGenerator(botContextConverter.Object, options.Object);
 
             // Act
 
@@ -44,7 +39,7 @@ namespace eShop.Telegram.Tests.Services
             botContextConverter.VerifyAll();
             options.VerifyAll();
 
-            Assert.Equal($"https://t.me/{username}?start={context}", result);
+            Assert.Equal($"viber://pa?chatURI={chatUrl}&context={context}", result);
         }
     }
 }

@@ -1,6 +1,7 @@
 using eShop.Accounts.DbContexts;
 using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Repositories;
+using eShop.Accounts.Services;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,6 +49,8 @@ namespace eShop.Accounts
                     options.Authority = "https://localhost:7000";
                     options.Audience = "api";
                 });
+
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
             var app = builder.Build();
 

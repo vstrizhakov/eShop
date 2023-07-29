@@ -69,6 +69,8 @@ namespace eShop.Telegram
                     options.Audience = "api";
                 });
 
+            builder.Services.AddScoped<ITelegramInvitationLinkGenerator, TelegramInvitationLinkGenerator>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

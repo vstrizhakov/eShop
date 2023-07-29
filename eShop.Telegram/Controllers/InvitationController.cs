@@ -1,10 +1,8 @@
-﻿using eShop.Bots.Common;
-using eShop.Common.Extensions;
+﻿using eShop.Common.Extensions;
 using eShop.Telegram.Models;
+using eShop.Telegram.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 
 namespace eShop.Telegram.Controllers
 {
@@ -15,17 +13,13 @@ namespace eShop.Telegram.Controllers
     {
         [HttpGet]
         public ActionResult<GetInviteLinkResponse> GetInviteLink(
-            [FromServices] IBotContextConverter botContextConverter,
-            [FromServices] IOptions<TelegramBotConfiguration> telegramBotConfiguration)
+            [FromServices] ITelegramInvitationLinkGenerator linkGenerator)
         {
-            var providerId = User.GetAccountId();
-            var context = botContextConverter.Serialize(TelegramContext.Action.RegisterClient, providerId.ToString());
-
+            var providerId = User.GetAccountId().Value;
             var response = new GetInviteLinkResponse
             {
-                InviteLink = QueryHelpers.AddQueryString($"https://t.me/{telegramBotConfiguration.Value.Username}", "start", context),
+                InviteLink = linkGenerator.Generate(providerId),
             };
-
             return response;
         }
     }

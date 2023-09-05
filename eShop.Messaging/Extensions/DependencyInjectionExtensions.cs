@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace eShop.Messaging.Extensions
@@ -8,7 +9,6 @@ namespace eShop.Messaging.Extensions
         public static IServiceCollection AddMessageHandler<TMessage, THandler>(
             this IServiceCollection services) where THandler : class, IMessageHandler<TMessage>
         {
-            services.AddRabbitMq();
             services.AddHostedService<MessagingManager>();
             services.Configure<RabbitMqConsumerOptions<TMessage>>(options =>
             {
@@ -24,19 +24,20 @@ namespace eShop.Messaging.Extensions
 
         public static IServiceCollection AddRabbitMqProducer(this IServiceCollection services)
         {
-            services.AddRabbitMq();
             services.AddSingleton<IProducer, RabbitMqProducer>();
 
             return services;
         }
 
-        public static IServiceCollection AddRabbitMq(this IServiceCollection services)
+        public static IServiceCollection AddRabbitMq(this IServiceCollection services, Action<RabbitMqOptions> configure)
         {
-            services.AddSingleton<IConnectionFactory, ConnectionFactory>(_ =>
+            services.Configure(configure);
+            services.AddSingleton<IConnectionFactory, ConnectionFactory>(serviceProvider =>
             {
+                var options = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
                 var factory = new ConnectionFactory
                 {
-                    HostName = "localhost",
+                    HostName = options.Value.HostName,
                 };
                 return factory;
             });

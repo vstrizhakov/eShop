@@ -57,8 +57,8 @@ namespace eShop.Catalog
 
             builder.Services.Configure<FilesConfiguration>(options => builder.Configuration.Bind("Files", options));
 
+            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
             builder.Services.AddRabbitMqProducer();
-
             builder.Services.AddMessageHandler<BroadcastCompositionUpdateEvent, BroadcastCompositionUpdateEventHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));

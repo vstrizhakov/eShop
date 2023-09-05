@@ -69,6 +69,7 @@ namespace eShop.Identity
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<IdentityUserCreateAccountResponseMessage, IdentityUserCreateAccountResponseMessageHandler>();
 

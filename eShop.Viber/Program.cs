@@ -55,8 +55,8 @@ namespace eShop.Viber
 
             builder.Services.AddScoped<IViberUserRepository, ViberUserRepository>();
 
+            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
             builder.Services.AddRabbitMqProducer();
-
             builder.Services.AddMessageHandler<ViberUserCreateAccountUpdateMessage, ViberUserCreateAccountUpdateMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToViberMessage, BroadcastCompositionToViberMessageHandler>();
 

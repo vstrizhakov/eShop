@@ -41,8 +41,8 @@ namespace eShop.Distribution
             builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
             builder.Services.AddScoped<IAccountService, AccountService>();
 
+            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
             builder.Services.AddRabbitMqProducer();
-
             builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<TelegramChatUpdatedEvent, TelegramChatUpdatedEventHandler>();
             builder.Services.AddMessageHandler<ViberUserCreateAccountUpdateMessage, ViberUserCreateAccountUpdateMessageHandler>();

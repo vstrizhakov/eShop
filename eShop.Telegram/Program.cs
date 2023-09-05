@@ -56,8 +56,8 @@ namespace eShop.Telegram
             builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
             builder.Services.AddScoped<ITelegramChatRepository, TelegramChatRepository>();
 
+            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
             builder.Services.AddRabbitMqProducer();
-
             builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
 

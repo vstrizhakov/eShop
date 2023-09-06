@@ -42,31 +42,31 @@ const SignUp: React.FC = () => {
                         id="firstName"
                         name="firstName"
                         type="text"
-                        label="First Name"
+                        placeholder="First Name"
                         component={TextField} />
                     <Field
                         id="lastName"
                         name="lastName"
                         type="text"
-                        label="Last Name"
+                        placeholder="Last Name"
                         component={TextField} />
                     <Field
                         id="email"
                         name="email"
                         type="email"
-                        label="Email"
+                        placeholder="Email"
                         component={TextField} />
                     <Field
                         id="phoneNumber"
                         name="phoneNumber"
                         type="text"
-                        label="Phone Number"
+                        placeholder="Phone Number"
                         component={TextField} />
                     <Field
                         id="password"
                         name="password"
                         type="password"
-                        label="Password"
+                        placeholder="Password"
                         component={TextField} />
                     <div>
                         <Button

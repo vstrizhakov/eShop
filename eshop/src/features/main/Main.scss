@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+@import "bootstrap/scss/functions";
+
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+$body-bg-dark: #121519;
+$primary: #448c74;
+
+$border-radius:               .375rem;
+$border-radius-sm:            .15rem;
+$border-radius-lg:            1rem;
+$border-radius-xl:            .60rem;
+$border-radius-xxl:           1rem;
+$border-radius-pill:          25rem;
+
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+
+
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/root";
+
+@import "bootstrap/scss/buttons";

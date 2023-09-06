@@ -40,11 +40,9 @@ const router = createBrowserRouter([
 
 const App: React.FC = () => {
     return (
-        <Container>
-            <Suspense>
-                <RouterProvider router={router} />
-            </Suspense>
-        </Container>
+        <Suspense>
+            <RouterProvider router={router} />
+        </Suspense>
     );
 }
 

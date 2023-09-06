@@ -66,7 +66,7 @@ const CreateComposition: React.FC = () => {
                                 id="products[0].price.currencyId"
                                 name="products[0].price.currencyId"
                                 label="Product Price Currency"
-                                defaultValue={currencies && currencies[0].id}
+                                defaultValue={currencies && currencies.length > 0 && currencies[0].id}
                                 component={Select}>
                                 {currencies && currencies.map(currency => (
                                     <option key={currency.id} value={currency.id}>{currency.name}</option>

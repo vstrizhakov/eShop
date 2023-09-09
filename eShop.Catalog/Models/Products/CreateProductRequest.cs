@@ -7,5 +7,7 @@
         public string Url { get; set; }
         public ProductPrice Price { get; set; }
         public IEnumerable<IFormFile>? Images { get; set; }
+        public bool Sale { get; set; }
+        public double? Discount { get; set; }
     }
 }

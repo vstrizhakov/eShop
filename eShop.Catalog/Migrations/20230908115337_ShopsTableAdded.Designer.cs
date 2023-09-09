@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShop.Catalog.DbContexts;
 
@@ -11,9 +12,11 @@ using eShop.Catalog.DbContexts;
 namespace eShop.Catalog.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230908115337_ShopsTableAdded")]
+    partial class ShopsTableAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,14 +83,9 @@ namespace eShop.Catalog.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("ShopId");
 
                     b.ToTable("Compositions");
                 });
@@ -128,26 +126,6 @@ namespace eShop.Catalog.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("9724739e-e4b8-45eb-ac11-efe2b0558a34"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 18, 9, 54, 383, DateTimeKind.Unspecified).AddTicks(601), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "UAH"
-                        },
-                        new
-                        {
-                            Id = new Guid("bf879fb6-7b4b-41c7-9cc5-df8724d511e5"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 18, 9, 54, 383, DateTimeKind.Unspecified).AddTicks(604), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "USD"
-                        },
-                        new
-                        {
-                            Id = new Guid("41ed0945-7196-4ead-8f5e-db262e62e536"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 18, 9, 54, 383, DateTimeKind.Unspecified).AddTicks(606), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "EUR"
-                        });
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Product", b =>
@@ -162,18 +140,12 @@ namespace eShop.Catalog.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<double?>("Discount")
-                        .HasColumnType("float");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Sale")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -259,19 +231,19 @@ namespace eShop.Catalog.Migrations
                         new
                         {
                             Id = new Guid("7ebdc9b0-4846-415f-af63-29d74e4b7b36"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 18, 9, 54, 383, DateTimeKind.Unspecified).AddTicks(429), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 11, 53, 37, 147, DateTimeKind.Unspecified).AddTicks(4862), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Nike"
                         },
                         new
                         {
                             Id = new Guid("17a27ec2-eb71-4de8-be81-734aeffd28f9"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 18, 9, 54, 383, DateTimeKind.Unspecified).AddTicks(445), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 11, 53, 37, 147, DateTimeKind.Unspecified).AddTicks(4879), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Puma"
                         },
                         new
                         {
                             Id = new Guid("9afc47e2-3866-42f8-96db-1042800aafa7"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 18, 9, 54, 383, DateTimeKind.Unspecified).AddTicks(447), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 9, 8, 11, 53, 37, 147, DateTimeKind.Unspecified).AddTicks(4881), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Adidas"
                         });
                 });
@@ -299,17 +271,6 @@ namespace eShop.Catalog.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ParentCategory");
-                });
-
-            modelBuilder.Entity("eShop.Catalog.Entities.Composition", b =>
-                {
-                    b.HasOne("eShop.Catalog.Entities.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.CompositionImage", b =>

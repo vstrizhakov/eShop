@@ -37,16 +37,22 @@ interface ProductPrice {
     price: number,
 };
 
-interface CreateProductRequest {
+export interface CreateProductRequest {
     name: string,
     url: string,
     price: ProductPrice,
 };
 
 export interface CreateCompositionRequest {
+    shopId: string,
     image: File,
     products: CreateProductRequest[],
 };
+
+interface Shop {
+    id: string,
+    name: string,
+}
 
 function isKey<T extends object>(x: T, k: PropertyKey): k is keyof T {
     return k in x;
@@ -84,6 +90,8 @@ export const catalogSlice = apiSlice.injectEndpoints({
                     fillFormData(formData, `products[${index}]`, product);
                 }
 
+                formData.append("shopId", request.shopId);
+
                 return {
                     url: "/catalog/compositions",
                     method: "POST",
@@ -118,6 +126,11 @@ export const catalogSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["currencies"],
         }),
+
+        getShops: builder.query<Shop[], unknown>({
+            query: () => "/catalog/shops",
+            providesTags: ["shops"],
+        }),
     }),
 });
 
@@ -126,4 +139,5 @@ export const {
     useCreateCompositionMutation,
     useGetCurrenciesQuery,
     useCreateCurrencyMutation,
+    useGetShopsQuery,
 } = catalogSlice;

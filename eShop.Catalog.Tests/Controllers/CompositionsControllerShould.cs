@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using eShop.Catalog.Controllers;
-using eShop.Catalog.Models.Products;
 using eShop.Catalog.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

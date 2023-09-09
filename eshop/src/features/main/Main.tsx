@@ -4,12 +4,12 @@ import { AuthContextProps } from "../auth/authContext";
 import { Anchor, Button, Col, Container, Navbar, Row } from "react-bootstrap";
 import Invitation from "./Invitation";
 import Compositions from "./Compositions";
-import CreateComposition from "./CreateComposition";
-import CreateCurrency from "./CreateCurrency";
 import Clients from "./Clients";
 import { Composition } from "../api/catalogSlice";
 import CompositionComponent from "./Composition";
-import "./Main.scss";
+import { Link, RouterProvider, createBrowserRouter } from "react-router-dom";
+import AddAnnonce from "./AddAnonce";
+import { LinkContainer } from "react-router-bootstrap";
 
 const Main: React.FC<AuthContextProps> = props => {
     const {
@@ -26,30 +26,16 @@ const Main: React.FC<AuthContextProps> = props => {
 
     return (
         <>
-            <Navbar>
-                <Container >
-                    <Navbar.Brand>eShop</Navbar.Brand>
-                    <Navbar.Toggle />
-                    <Navbar.Collapse className="justify-content-end">
-                        {isAuthenticated ? (
-                            <Navbar.Text>Volodymyr Stryzhakov</Navbar.Text>
-                        ) : (
-                            <Button onClick={signIn} size="sm">
-                                Sign In
-                            </Button>
-                        )}
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
-            <Container>
-                {isAuthenticated && (
-                    <>
-                        <div className="d-flex align-items-center justify-content-center" style={{ height: 320 }}>
-                            <Button href="#" size="lg" className="text-white fw-semibold">
+            {isAuthenticated && (
+                <>
+                    <div className="d-flex align-items-center justify-content-center" style={{ height: 240 }}>
+                        <LinkContainer to="/addAnnonce">
+                            <Button size="lg" className="fw-semibold" variant="outline-primary border-start-0 border-end-0 rounded-0 text-white">
                                 ДОДАТИ АНОНС
                             </Button>
-                        </div>
-                        {/* <Clients />
+                        </LinkContainer>
+                    </div>
+                    {/* <Clients />
                         <Invitation />
                         <CreateCurrency />
                         <Row>
@@ -63,9 +49,8 @@ const Main: React.FC<AuthContextProps> = props => {
                                 <CreateComposition />
                             </Col>
                         </Row> */}
-                    </>
-                )}
-            </Container>
+                </>
+            )}
         </>
     );
 };

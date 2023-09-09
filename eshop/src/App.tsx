@@ -5,9 +5,12 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import SignIn from './features/signIn/SignIn';
-import { Container } from 'react-bootstrap';
 import SignUp from './features/signUp/SignUp';
 import SignOut from './features/signOut/SignOut';
+import './App.scss';
+import { Container } from 'react-bootstrap';
+import AddAnnonce from './features/main/AddAnonce';
+import Navigation from './features/Navigation';
 
 const Main = React.lazy(() => import('./features/main/Main'));
 
@@ -33,16 +36,25 @@ const router = createBrowserRouter([
         element: <div>Signing you out...</div>
     },
     {
-        path: "/*",
+        path: "/addAnnonce",
+        element: <AddAnnonce />
+    },
+    {
+        path: "/",
         element: <Main />,
     },
 ]);
 
 const App: React.FC = () => {
     return (
-        <Suspense>
-            <RouterProvider router={router} />
-        </Suspense>
+        <>
+            <Navigation/>
+            <Container className="mt-5">
+                <Suspense>
+                    <RouterProvider router={router} />
+                </Suspense>
+            </Container>
+        </>
     );
 }
 

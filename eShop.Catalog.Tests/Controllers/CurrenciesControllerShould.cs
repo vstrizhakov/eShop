@@ -18,22 +18,20 @@ namespace eShop.Catalog.Tests.Controllers
             var currencyRepository = new Mock<ICurrencyRepository>();
             currencyRepository
                 .Setup(e => e.GetCurrenciesAsync())
-                .ReturnsAsync(currencies)
-                .Verifiable();
+                .ReturnsAsync(currencies);
 
             var expectedResponse = Array.Empty<Models.Currencies.Currency>();
 
             var mapper = new Mock<IMapper>();
             mapper
                 .Setup(e => e.Map<IEnumerable<Models.Currencies.Currency>>(currencies))
-                .Returns(expectedResponse)
-                .Verifiable();
+                .Returns(expectedResponse);
 
-            var controller = new CurrenciesController(currencyRepository.Object, mapper.Object);
+            var sut = new CurrenciesController(currencyRepository.Object, mapper.Object);
 
             // Act
 
-            var result = await controller.GetCurrencies();
+            var result = await sut.GetCurrencies();
 
             // Assert
 

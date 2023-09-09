@@ -38,6 +38,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
             post_logout_redirect_uri: `${window.location.origin}/auth/signOut/callback`,
             response_type: "code",
             scope: "openid profile api",
+            automaticSilentRenew: true,
         };
 
         Oidc.Log.level = Oidc.Log.DEBUG;
@@ -45,13 +46,6 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
 
         return new Oidc.UserManager(config);
     }, []);
-
-    useEffect(() => {
-        manager.startSilentRenew();
-        return () => {
-            manager.stopSilentRenew();
-        };
-    });
 
     const pathname = window.location.pathname;
 
@@ -93,7 +87,6 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
     }, []);
 
     useEffect(() => {
-
         if (pathname === "/auth/signIn/callback") {
             processSignInCallback();
         } else if (pathname === "/auth/signOut/callback") {

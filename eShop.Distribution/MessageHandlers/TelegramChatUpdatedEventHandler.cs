@@ -1,5 +1,4 @@
 ﻿using eShop.Distribution.Exceptions;
-using eShop.Distribution.Repositories;
 using eShop.Distribution.Services;
 using eShop.Messaging;
 using eShop.Messaging.Models;

@@ -3,6 +3,7 @@ import { Navbar, Container, Button, Dropdown } from "react-bootstrap";
 import { AuthContextProps } from "./auth/authContext";
 import { withAuth } from "./auth/withAuth";
 import DropdownAnchorToggle from "../components/DropdownAnchorToggle";
+import { LinkContainer } from "react-router-bootstrap";
 
 const Navigation: React.FC<AuthContextProps> = props => {
     const {
@@ -12,17 +13,21 @@ const Navigation: React.FC<AuthContextProps> = props => {
 
     return (
         <Navbar>
-            <Container >
-                <Navbar.Brand>eShop</Navbar.Brand>
+            <Container>
+                <LinkContainer to="/">
+                    <Navbar.Brand>eShop</Navbar.Brand>
+                </LinkContainer>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                     {isAuthenticated ? (
                         <Dropdown>
-                            <Dropdown.Toggle as={DropdownAnchorToggle} className="text-decoration-none text-resetXZ">
+                            <Dropdown.Toggle as={DropdownAnchorToggle} className="text-decoration-none text-reset">
                                 Володимир Стрижаков
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item>1unique</Dropdown.Item>
+                                <LinkContainer to="/clients">
+                                    <Dropdown.Item>Клієнти</Dropdown.Item>
+                                </LinkContainer>
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : (

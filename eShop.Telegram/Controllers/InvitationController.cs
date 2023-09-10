@@ -8,14 +8,14 @@ namespace eShop.Telegram.Controllers
 {
     [Route("api/telegram/invitation")]
     [ApiController]
-    [Authorize]
     public class InvitationController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("{providerId}")]
         public ActionResult<GetInviteLinkResponse> GetInviteLink(
+            [FromRoute] Guid providerId,
             [FromServices] ITelegramInvitationLinkGenerator linkGenerator)
         {
-            var providerId = User.GetAccountId().Value;
+            // TODO: Add check for providerId
             var response = new GetInviteLinkResponse
             {
                 InviteLink = linkGenerator.Generate(providerId),

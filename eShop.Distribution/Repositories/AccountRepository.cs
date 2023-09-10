@@ -50,10 +50,17 @@ namespace eShop.Distribution.Repositories
                     Id = telegramChatId,
                 };
 
+                var a = _context.Entry(telegramChat).State;
+
                 telegramChats.Add(telegramChat);
+
+
+                var b = _context.Entry(telegramChat).State;
             }
 
             telegramChat.IsEnabled = isEnabled;
+
+            var c = _context.Entry(telegramChat).State;
 
             await _context.SaveChangesAsync();
         }

@@ -6,38 +6,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace eShop.Distribution.Migrations
 {
     /// <inheritdoc />
-    public partial class DistributionTablesAdded : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ViberChats",
-                table: "ViberChats");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_TelegramChats",
-                table: "TelegramChats");
-
-            migrationBuilder.RenameColumn(
-                name: "ViberUserId",
-                table: "ViberChats",
-                newName: "Id");
-
-            migrationBuilder.RenameColumn(
-                name: "TelegramChatId",
-                table: "TelegramChats",
-                newName: "Id");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_ViberChats",
-                table: "ViberChats",
-                column: "Id");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_TelegramChats",
-                table: "TelegramChats",
-                column: "Id");
+            migrationBuilder.CreateTable(
+                name: "Accounts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "DistributionGroups",
@@ -49,6 +33,44 @@ namespace eShop.Distribution.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DistributionGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TelegramChats",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsEnabled = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TelegramChats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TelegramChats_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ViberChats",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsEnabled = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ViberChats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ViberChats_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,11 +105,6 @@ namespace eShop.Distribution.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TelegramChats_AccountId",
-                table: "TelegramChats",
-                column: "AccountId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DistributionGroupItems_TelegramChatId",
                 table: "DistributionGroupItems",
                 column: "TelegramChatId");
@@ -96,6 +113,17 @@ namespace eShop.Distribution.Migrations
                 name: "IX_DistributionGroupItems_ViberChatId",
                 table: "DistributionGroupItems",
                 column: "ViberChatId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TelegramChats_AccountId",
+                table: "TelegramChats",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ViberChats_AccountId",
+                table: "ViberChats",
+                column: "AccountId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -107,37 +135,14 @@ namespace eShop.Distribution.Migrations
             migrationBuilder.DropTable(
                 name: "DistributionGroups");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ViberChats",
-                table: "ViberChats");
+            migrationBuilder.DropTable(
+                name: "TelegramChats");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_TelegramChats",
-                table: "TelegramChats");
+            migrationBuilder.DropTable(
+                name: "ViberChats");
 
-            migrationBuilder.DropIndex(
-                name: "IX_TelegramChats_AccountId",
-                table: "TelegramChats");
-
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "ViberChats",
-                newName: "ViberUserId");
-
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "TelegramChats",
-                newName: "TelegramChatId");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_ViberChats",
-                table: "ViberChats",
-                columns: new[] { "AccountId", "ViberUserId" });
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_TelegramChats",
-                table: "TelegramChats",
-                columns: new[] { "AccountId", "TelegramChatId" });
+            migrationBuilder.DropTable(
+                name: "Accounts");
         }
     }
 }

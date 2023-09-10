@@ -57,6 +57,7 @@ namespace eShop.Accounts.Services
             return result;
         }
 
+        // TODO: Rename to CreateOrUpdate
         private async Task<Account> GetOrCreateAccountAsync(Guid providerId, Account account)
         {
             Account result;

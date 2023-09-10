@@ -1,57 +1,17 @@
 import React, { Suspense } from 'react';
 import './App.css';
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from "react-router-dom";
-import SignIn from './features/signIn/SignIn';
-import SignUp from './features/signUp/SignUp';
-import SignOut from './features/signOut/SignOut';
+import { Outlet } from "react-router-dom";
 import './App.scss';
 import { Container } from 'react-bootstrap';
-import AddAnnonce from './features/main/AddAnonce';
 import Navigation from './features/Navigation';
-
-const Main = React.lazy(() => import('./features/main/Main'));
-
-const router = createBrowserRouter([
-    {
-        path: "/auth/signIn",
-        element: <SignIn />,
-    },
-    {
-        path: "/auth/signIn/callback",
-        element: <div>Signing you in...</div>
-    },
-    {
-        path: "/auth/signUp",
-        element: <SignUp />,
-    },
-    {
-        path: "/auth/signOut",
-        element: <SignOut />,
-    },
-    {
-        path: "/auth/signOut/callback",
-        element: <div>Signing you out...</div>
-    },
-    {
-        path: "/addAnnonce",
-        element: <AddAnnonce />
-    },
-    {
-        path: "/",
-        element: <Main />,
-    },
-]);
 
 const App: React.FC = () => {
     return (
         <>
-            <Navigation/>
+            <Navigation />
             <Container className="mt-5">
                 <Suspense>
-                    <RouterProvider router={router} />
+                    <Outlet />
                 </Suspense>
             </Container>
         </>

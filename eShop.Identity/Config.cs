@@ -6,6 +6,7 @@ namespace eShop.Identity;
 
 public static class Config
 {
+    public const string IdentityAccountScope = "account";
     public const string ApiScope = "api";
 
     public static IEnumerable<IdentityResource> IdentityResources =>
@@ -13,6 +14,14 @@ public static class Config
         {
             new IdentityResources.OpenId(),
             new IdentityResources.Profile(),
+            new IdentityResource
+            {
+                Name = IdentityAccountScope,
+                UserClaims =
+                {
+                    "account_id",
+                },
+            }
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
@@ -54,6 +63,7 @@ public static class Config
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
+                    IdentityAccountScope,
                     ApiScope,
                 },
                 RedirectUris =

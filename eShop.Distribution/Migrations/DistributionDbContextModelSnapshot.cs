@@ -33,7 +33,7 @@ namespace eShop.Distribution.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroup", b =>
@@ -47,7 +47,7 @@ namespace eShop.Distribution.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DistributionGroups", (string)null);
+                    b.ToTable("DistributionGroups");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>
@@ -73,7 +73,7 @@ namespace eShop.Distribution.Migrations
 
                     b.HasIndex("ViberChatId");
 
-                    b.ToTable("DistributionGroupItems", (string)null);
+                    b.ToTable("DistributionGroupItems");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.TelegramChat", b =>
@@ -92,7 +92,7 @@ namespace eShop.Distribution.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("TelegramChats", (string)null);
+                    b.ToTable("TelegramChats");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.ViberChat", b =>
@@ -112,7 +112,7 @@ namespace eShop.Distribution.Migrations
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("ViberChats", (string)null);
+                    b.ToTable("ViberChats");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>

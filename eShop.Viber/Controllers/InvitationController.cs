@@ -8,14 +8,14 @@ namespace eShop.Viber.Controllers
 {
     [Route("api/viber/invitation")]
     [ApiController]
-    [Authorize]
     public class InvitationController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("{providerId}")]
         public ActionResult<GetInviteLinkResponse> GetInviteLink(
+            [FromRoute] Guid providerId,
             [FromServices] IViberInvitationLinkGenerator viberInvitationLinkGenerator)
         {
-            var providerId = User.GetAccountId().Value;
+            // TODO: Add check for providerId
             var response = new GetInviteLinkResponse
             {
                 InviteLink = viberInvitationLinkGenerator.Generate(providerId),

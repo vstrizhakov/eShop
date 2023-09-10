@@ -1,13 +1,13 @@
 import { apiSlice } from "./apiSlice";
 
-interface getInvitationLinkResponse {
+interface GetInvitationLinkResponse {
     inviteLink: string,
 };
 
 export const telegramSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
-        getInvitationLink: builder.query<getInvitationLinkResponse, unknown>({
-            query: () => '/telegram/invitation',
+        getInvitationLink: builder.query<GetInvitationLinkResponse, string>({
+            query: providerId => `/telegram/invitation/${providerId}`,
         }),
     }),
 });

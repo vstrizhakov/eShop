@@ -7,9 +7,7 @@ import { Form } from "react-final-form";
 import { CreateCompositionRequest, CreateProductRequest, useCreateCompositionMutation } from "../api/catalogSlice";
 import Product from "./Product";
 
-
-
-const AddAnnonce: React.FC = () => {
+const AddAnnounce: React.FC = () => {
     const [image, setImage] = useState<File | undefined>(undefined);
     const [shopId, setShopId] = useState<string | undefined>(undefined);
     const [products, setProducts] = useState<CreateProductRequest[]>([]);
@@ -105,4 +103,4 @@ const AddAnnonce: React.FC = () => {
     );
 };
 
-export default AddAnnonce;
+export default AddAnnounce;

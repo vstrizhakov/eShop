@@ -37,7 +37,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
             redirect_uri: `${window.location.origin}/auth/signIn/callback`,
             post_logout_redirect_uri: `${window.location.origin}/auth/signOut/callback`,
             response_type: "code",
-            scope: "openid profile api",
+            scope: "openid profile account api",
             automaticSilentRenew: true,
         };
 
@@ -53,6 +53,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
         const isAuthenticated = user !== null;
         if (isAuthenticated) {
             setToken(user.access_token);
+            console.log(user);
             setClaims(user.profile);
         }
         setIsAuthenticated(isAuthenticated);

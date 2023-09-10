@@ -1,14 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { Suspense, useCallback, useState } from "react";
 import { withAuth } from "../auth/withAuth";
 import { AuthContextProps } from "../auth/authContext";
-import { Anchor, Button, Col, Container, Navbar, Row } from "react-bootstrap";
-import Invitation from "./Invitation";
-import Compositions from "./Compositions";
-import Clients from "./Clients";
+import { Button } from "react-bootstrap";
 import { Composition } from "../api/catalogSlice";
-import CompositionComponent from "./Composition";
-import { Link, RouterProvider, createBrowserRouter } from "react-router-dom";
-import AddAnnonce from "./AddAnonce";
 import { LinkContainer } from "react-router-bootstrap";
 
 const Main: React.FC<AuthContextProps> = props => {
@@ -29,14 +23,13 @@ const Main: React.FC<AuthContextProps> = props => {
             {isAuthenticated && (
                 <>
                     <div className="d-flex align-items-center justify-content-center" style={{ height: 240 }}>
-                        <LinkContainer to="/addAnnonce">
+                        <LinkContainer to="/addAnnounce">
                             <Button size="lg" className="fw-semibold" variant="outline-primary border-start-0 border-end-0 rounded-0 text-white">
                                 ДОДАТИ АНОНС
                             </Button>
                         </LinkContainer>
                     </div>
-                    {/* <Clients />
-                        <Invitation />
+                    {/* 
                         <CreateCurrency />
                         <Row>
                             <Col>

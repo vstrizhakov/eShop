@@ -1,55 +1,28 @@
 ﻿using eShop.Telegram.Controllers;
 using eShop.Telegram.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace eShop.Telegram.Tests.Controllers
 {
     public class InvitationControllerShould
     {
-        private readonly Guid _accountId;
-        private readonly ControllerContext _controllerContext;
-
-        public InvitationControllerShould()
-        {
-            _accountId = Guid.NewGuid();
-            var user = new ClaimsPrincipal(new[]
-            {
-                new ClaimsIdentity(new[]
-                {
-                    new Claim("account_id", _accountId.ToString()),
-                }),
-            });
-            _controllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = user,
-                },
-            };
-        }
-
         [Fact]
         public void GetInviteLink()
         {
             // Arrange
 
+            var providerId = Guid.NewGuid();
             var link = "https://t.me/example?start=example";
 
             var telegramInvitationLinkGenerator = new Mock<ITelegramInvitationLinkGenerator>();
             telegramInvitationLinkGenerator
-                .Setup(e => e.Generate(_accountId))
+                .Setup(e => e.Generate(providerId))
                 .Returns(link);
 
-            var sut = new InvitationController
-            {
-                ControllerContext = _controllerContext,
-            };
+            var sut = new InvitationController();
 
             // Act
 
-            var result = sut.GetInviteLink(telegramInvitationLinkGenerator.Object);
+            var result = sut.GetInviteLink(providerId, telegramInvitationLinkGenerator.Object);
 
             // Assert
 
@@ -58,6 +31,29 @@ namespace eShop.Telegram.Tests.Controllers
             Assert.NotNull(result);
             Assert.NotNull(result.Value);
             Assert.Equal(link, result.Value.InviteLink);
+        }
+
+        [Fact]
+        public void Fail_WhenInvalidProvider_OnGetInviteLink()
+        {
+            // Arrange
+
+            var providerId = Guid.NewGuid();
+            var link = "https://t.me/example?start=example";
+
+            var telegramInvitationLinkGenerator = new Mock<ITelegramInvitationLinkGenerator>();
+
+            var sut = new InvitationController();
+
+            // Act
+
+            var result = sut.GetInviteLink(providerId, telegramInvitationLinkGenerator.Object);
+
+            // Assert
+
+            telegramInvitationLinkGenerator.VerifyAll();
+
+            Assert.Fail("Need to implement");
         }
     }
 }

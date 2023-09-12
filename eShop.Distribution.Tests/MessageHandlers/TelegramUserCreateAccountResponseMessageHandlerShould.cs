@@ -16,11 +16,13 @@ namespace eShop.Distribution.Tests.MessageHandlers
             {
                 AccountId = Guid.NewGuid(),
                 ProviderId = Guid.NewGuid(),
+                FirstName = "John",
+                LastName = "Smith",
             };
 
             var accountService = new Mock<IAccountService>();
             accountService
-                .Setup(e => e.CreateNewAccountAsync(message.AccountId, message.ProviderId))
+                .Setup(e => e.CreateNewAccountAsync(message.AccountId, message.FirstName, message.LastName, message.ProviderId))
                 .Returns(Task.CompletedTask);
 
             var sut = new TelegramUserCreateAccountResponseMessageHandler(accountService.Object);
@@ -43,11 +45,13 @@ namespace eShop.Distribution.Tests.MessageHandlers
             {
                 AccountId = Guid.NewGuid(),
                 ProviderId = Guid.NewGuid(),
+                FirstName = "John",
+                LastName = "Smith",
             };
 
             var accountService = new Mock<IAccountService>();
             accountService
-                .Setup(e => e.CreateNewAccountAsync(message.AccountId, message.ProviderId))
+                .Setup(e => e.CreateNewAccountAsync(message.AccountId, message.FirstName, message.LastName, message.ProviderId))
                 .ThrowsAsync(new AccountAlreadyExistsException());
 
             var sut = new TelegramUserCreateAccountResponseMessageHandler(accountService.Object);

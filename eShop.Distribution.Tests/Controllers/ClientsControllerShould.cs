@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
 using eShop.Distribution.Controllers;
 using eShop.Distribution.Entities;
+using eShop.Distribution.Models;
 using eShop.Distribution.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eShop.Distribution.Tests.Controllers
 {
@@ -45,7 +41,7 @@ namespace eShop.Distribution.Tests.Controllers
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountsByProviderIdAsync(_accountId))
+                .Setup(e => e.GetAccountsByProviderIdAsync(_accountId, null))
                 .ReturnsAsync(accounts);
 
             var expectedResult = Array.Empty<Models.Client>();
@@ -54,14 +50,14 @@ namespace eShop.Distribution.Tests.Controllers
                 .Setup(e => e.Map<IEnumerable<Models.Client>>(accounts))
                 .Returns(expectedResult);
 
-            var controller = new ClientsController
+            var controller = new ClientsController(accountRepository.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
 
             // Act
 
-            var result = await controller.GetClients(accountRepository.Object, mapper.Object);
+            var result = await controller.GetClients();
 
             // Assert
 
@@ -70,6 +66,138 @@ namespace eShop.Distribution.Tests.Controllers
 
             Assert.IsType<OkObjectResult>(result.Result);
             Assert.Equal(expectedResult, (result.Result as OkObjectResult).Value);
+        }
+
+        [Fact]
+        public async Task ReturnOk_WhenClientExists_OnActivateClient()
+        {
+            // Arrange
+
+            var clientId = Guid.NewGuid();
+            var account = new Account();
+            var expectedResult = new Client();
+
+            var accountRepository = new Mock<IAccountRepository>();
+            accountRepository
+                .Setup(e => e.GetAccountByIdAsync(clientId, _accountId))
+                .ReturnsAsync(account);
+            accountRepository
+                .Setup(e => e.UpdateIsActivatedAsync(account, true))
+                .Returns(Task.CompletedTask);
+
+            var mapper = new Mock<IMapper>();
+            mapper
+                .Setup(e => e.Map<Client>(account))
+                .Returns(expectedResult);
+
+            var sut = new ClientsController(accountRepository.Object, mapper.Object)
+            {
+                ControllerContext = _controllerContext,
+            };
+
+            // Act
+
+            var result = await sut.ActivateClient(clientId);
+
+            // Assert
+
+            Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(expectedResult, (result.Result as OkObjectResult).Value);
+        }
+
+        [Fact]
+        public async Task ReturnNotFound_WhenClientNotExists_OnActivateClient()
+        {
+            // Arrange
+
+            var clientId = Guid.NewGuid();
+            var expectedResult = new Client();
+
+            var accountRepository = new Mock<IAccountRepository>();
+            accountRepository
+                .Setup(e => e.GetAccountByIdAsync(clientId, _accountId))
+                .ReturnsAsync(default(Account));
+
+            var mapper = new Mock<IMapper>();
+
+            var sut = new ClientsController(accountRepository.Object, mapper.Object)
+            {
+                ControllerContext = _controllerContext,
+            };
+
+            // Act
+
+            var result = await sut.ActivateClient(clientId);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task ReturnOk_WhenClientExists_OnDeactivateClient()
+        {
+            // Arrange
+
+            var clientId = Guid.NewGuid();
+            var account = new Account();
+            var expectedResult = new Client();
+
+            var accountRepository = new Mock<IAccountRepository>();
+            accountRepository
+                .Setup(e => e.GetAccountByIdAsync(clientId, _accountId))
+                .ReturnsAsync(account);
+            accountRepository
+                .Setup(e => e.UpdateIsActivatedAsync(account, false))
+                .Returns(Task.CompletedTask);
+
+            var mapper = new Mock<IMapper>();
+            mapper
+                .Setup(e => e.Map<Client>(account))
+                .Returns(expectedResult);
+
+            var sut = new ClientsController(accountRepository.Object, mapper.Object)
+            {
+                ControllerContext = _controllerContext,
+            };
+
+            // Act
+
+            var result = await sut.DeactivateClient(clientId);
+
+            // Assert
+
+            Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(expectedResult, (result.Result as OkObjectResult).Value);
+        }
+
+        [Fact]
+        public async Task ReturnNotFound_WhenClientNotExists_OnDeactivateClient()
+        {
+            // Arrange
+
+            var clientId = Guid.NewGuid();
+            var expectedResult = new Client();
+
+            var accountRepository = new Mock<IAccountRepository>();
+            accountRepository
+                .Setup(e => e.GetAccountByIdAsync(clientId, _accountId))
+                .ReturnsAsync(default(Account));
+
+            var mapper = new Mock<IMapper>();
+
+            var sut = new ClientsController(accountRepository.Object, mapper.Object)
+            {
+                ControllerContext = _controllerContext,
+            };
+
+            // Act
+
+            var result = await sut.DeactivateClient(clientId);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result.Result);
         }
     }
 }

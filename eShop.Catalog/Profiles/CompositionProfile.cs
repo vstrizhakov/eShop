@@ -11,7 +11,8 @@ namespace eShop.Catalog.Profiles
                 .ForMember(dest => dest.OwnerId, options => options.Ignore())
                 .ForMember(dest => dest.CreatedAt, options => options.Ignore())
                 .ForMember(dest => dest.DistributionGroupId, options => options.Ignore())
-                .ForMember(dest => dest.Images, options => options.Ignore());
+                .ForMember(dest => dest.Images, options => options.Ignore())
+                .ForMember(dest => dest.Shop, options => options.Ignore());
             CreateMap<Entities.Composition, Models.Compositions.Composition>()
                 .ForMember(dest => dest.DistributionId, options => options.MapFrom(src => src.DistributionGroupId));
         }

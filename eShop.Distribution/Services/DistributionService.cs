@@ -22,7 +22,7 @@ namespace eShop.Distribution.Services
                 ProviderId = providerId,
             };
 
-            var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId);
+            var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId, true);
 
             var telegramChatIds = accounts
                 .SelectMany(e => e.TelegramChats)

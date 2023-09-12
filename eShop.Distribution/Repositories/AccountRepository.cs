@@ -20,23 +20,43 @@ namespace eShop.Distribution.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Account?> GetAccountByIdAsync(Guid id)
+        public async Task<Account?> GetAccountByIdAsync(Guid id, Guid? providerId = null)
         {
-            var account = await _context.Accounts
+            var query = _context.Accounts
                 .Include(e => e.TelegramChats)
                 .Include(e => e.ViberChat)
-                .FirstOrDefaultAsync(e => e.Id == id);
+                .Where(e => e.Id == id);
+
+            if (providerId.HasValue)
+            {
+                query = query.Where(e => e.ProviderId == providerId.Value);
+            }
+
+            var account = await query.FirstOrDefaultAsync();
             return account;
         }
 
-        public async Task<IEnumerable<Account>> GetAccountsByProviderIdAsync(Guid providerId)
+        public async Task<IEnumerable<Account>> GetAccountsByProviderIdAsync(Guid providerId, bool? isActivated = null)
         {
-            var accounts = await _context.Accounts
+            var query = _context.Accounts
                 .Include(e => e.TelegramChats)
                 .Include(e => e.ViberChat)
-                .Where(e => e.ProviderId == providerId)
-                .ToListAsync();
+                .Where(e => e.ProviderId == providerId);
+
+            if (isActivated.HasValue)
+            {
+                query = query.Where(e => e.IsActivated == isActivated.Value);
+            }
+                
+            var accounts = await query.ToListAsync();
             return accounts;
+        }
+
+        public async Task UpdateIsActivatedAsync(Account clientAccount, bool isActivated)
+        {
+            clientAccount.IsActivated = isActivated;
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateTelegramChatAsync(Account account, Guid telegramChatId, bool isEnabled)

@@ -22,6 +22,7 @@ export const apiSlice = createApi({
         "categories",
         "currencies",
         "shops",
+        "clients",
     ],
     endpoints: () => ({}),
 });

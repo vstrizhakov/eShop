@@ -52,7 +52,7 @@ namespace eShop.Distribution.Tests.Services
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountsByProviderIdAsync(providerId))
+                .Setup(e => e.GetAccountsByProviderIdAsync(providerId, true))
                 .ReturnsAsync(accounts);
 
             DistributionGroup? result = null;

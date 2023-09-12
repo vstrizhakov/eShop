@@ -26,7 +26,7 @@ namespace eShop.Distribution.Tests.Services
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountByIdAsync(accountId))
+                .Setup(e => e.GetAccountByIdAsync(accountId, null))
                 .ReturnsAsync(account);
             accountRepository
                 .Setup(e => e.UpdateTelegramChatAsync(account, telegramChatId, isEnabled))
@@ -53,7 +53,7 @@ namespace eShop.Distribution.Tests.Services
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountByIdAsync(accountId))
+                .Setup(e => e.GetAccountByIdAsync(accountId, null))
                 .ReturnsAsync(default(Account));
 
             var sut = new AccountService(accountRepository.Object);
@@ -80,7 +80,7 @@ namespace eShop.Distribution.Tests.Services
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountByIdAsync(accountId))
+                .Setup(e => e.GetAccountByIdAsync(accountId, null))
                 .ReturnsAsync(account);
             accountRepository
                 .Setup(e => e.UpdateViberChatAsync(account, viberChatId, isEnabled))
@@ -107,7 +107,7 @@ namespace eShop.Distribution.Tests.Services
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountByIdAsync(accountId))
+                .Setup(e => e.GetAccountByIdAsync(accountId, null))
                 .ReturnsAsync(default(Account));
 
             var sut = new AccountService(accountRepository.Object);
@@ -127,12 +127,14 @@ namespace eShop.Distribution.Tests.Services
 
             var accountId = Guid.NewGuid();
             var providerId = Guid.NewGuid();
+            var firstName = "John";
+            var lastName = "Smith";
 
             Account? result = null;
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountByIdAsync(accountId))
+                .Setup(e => e.GetAccountByIdAsync(accountId, null))
                 .ReturnsAsync(default(Account));
             accountRepository
                 .Setup(e => e.CreateAccountAsync(It.IsAny<Account>()))
@@ -143,7 +145,7 @@ namespace eShop.Distribution.Tests.Services
 
             // Act
 
-            await sut.CreateNewAccountAsync(accountId, providerId);
+            await sut.CreateNewAccountAsync(accountId, firstName, lastName, providerId);
 
             // Assert
 
@@ -162,10 +164,12 @@ namespace eShop.Distribution.Tests.Services
 
             var accountId = account.Id;
             var providerId = Guid.NewGuid();
+            var firstName = "John";
+            var lastName = "Smith";
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountByIdAsync(accountId))
+                .Setup(e => e.GetAccountByIdAsync(accountId, null))
                 .ReturnsAsync(account);
 
             var sut = new AccountService(accountRepository.Object);
@@ -174,7 +178,7 @@ namespace eShop.Distribution.Tests.Services
 
             await Assert.ThrowsAsync<AccountAlreadyExistsException>(async () =>
             {
-                await sut.CreateNewAccountAsync(accountId, providerId);
+                await sut.CreateNewAccountAsync(accountId, firstName, lastName, providerId);
             });
         }
     }

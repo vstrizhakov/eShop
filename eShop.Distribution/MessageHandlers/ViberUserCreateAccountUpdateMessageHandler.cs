@@ -20,7 +20,7 @@ namespace eShop.Distribution.MessageHandlers
             {
                 try
                 {
-                    await _accountService.CreateNewAccountAsync(message.AccountId.Value, message.ProviderId.Value);
+                    await _accountService.CreateNewAccountAsync(message.AccountId.Value, message.FirstName, message.LastName, message.ProviderId.Value);
                 }
                 catch (AccountAlreadyExistsException)
                 {

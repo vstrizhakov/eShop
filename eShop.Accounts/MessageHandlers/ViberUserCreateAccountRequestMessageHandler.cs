@@ -36,6 +36,8 @@ namespace eShop.Accounts.MessageHandlers
                 {
                     IsSuccess = true,
                     AccountId = account.Id,
+                    FirstName = account.FirstName,
+                    LastName = account.LastName,
                     ProviderId = message.ProviderId,
                     ViberUserId = account.ViberUserId,
                 };

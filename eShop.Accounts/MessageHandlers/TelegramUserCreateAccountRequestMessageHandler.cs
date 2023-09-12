@@ -36,6 +36,8 @@ namespace eShop.Accounts.MessageHandlers
                 var responseMessage = new TelegramUserCreateAccountResponseMessage
                 {
                     AccountId = account.Id,
+                    FirstName = account.FirstName,
+                    LastName = account.LastName,
                     TelegramUserId = account.TelegramUserId.Value,
                     ProviderId = message.ProviderId,
                 };

@@ -4,6 +4,6 @@
     {
         Task UpdateTelegramChatAsync(Guid accountId, Guid telegramChatId, bool isEnabled);
         Task UpdateViberChatAsync(Guid accountId, Guid viberChatId, bool isEnabled);
-        Task CreateNewAccountAsync(Guid accountId, Guid providerId);
+        Task CreateNewAccountAsync(Guid accountId, string firstName, string lastName, Guid providerId);
     }
 }

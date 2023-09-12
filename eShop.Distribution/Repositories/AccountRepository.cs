@@ -50,17 +50,12 @@ namespace eShop.Distribution.Repositories
                     Id = telegramChatId,
                 };
 
-                var a = _context.Entry(telegramChat).State;
-
                 telegramChats.Add(telegramChat);
 
-
-                var b = _context.Entry(telegramChat).State;
+                _context.Entry(telegramChat).State = EntityState.Added;
             }
 
             telegramChat.IsEnabled = isEnabled;
-
-            var c = _context.Entry(telegramChat).State;
 
             await _context.SaveChangesAsync();
         }
@@ -76,6 +71,8 @@ namespace eShop.Distribution.Repositories
                 };
 
                 account.ViberChat = viberChat;
+
+                _context.Entry(viberChat).State = EntityState.Added;
             }
 
             viberChat.IsEnabled = isEnabled;

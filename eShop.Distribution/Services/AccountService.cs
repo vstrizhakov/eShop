@@ -35,7 +35,7 @@ namespace eShop.Distribution.Services
             await _accountRepository.UpdateViberChatAsync(account, viberChatId, isEnabled);
         }
 
-        public async Task CreateNewAccountAsync(Guid accountId, Guid providerId)
+        public async Task CreateNewAccountAsync(Guid accountId, string firstName, string lastName, Guid providerId)
         {
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             if (account != null)
@@ -46,6 +46,8 @@ namespace eShop.Distribution.Services
             account = new Account
             {
                 Id = accountId,
+                FirstName = firstName,
+                LastName = lastName,
                 ProviderId = providerId,
             };
 

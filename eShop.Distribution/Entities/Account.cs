@@ -3,7 +3,8 @@
     public class Account
     {
         public Guid Id { get; set; }
-
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public Guid ProviderId { get; set; }
 
         public ICollection<TelegramChat> TelegramChats { get; set; } = new List<TelegramChat>();

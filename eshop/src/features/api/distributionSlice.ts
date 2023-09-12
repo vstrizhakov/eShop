@@ -8,6 +8,8 @@ interface Chat {
 
 interface Client {
     id: string,
+    firstName: string,
+    lastName: string,
     telegramChats: Chat[],
     viberChat: Chat,
 };

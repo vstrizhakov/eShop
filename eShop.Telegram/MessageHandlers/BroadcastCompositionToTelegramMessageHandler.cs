@@ -42,6 +42,7 @@ namespace eShop.Telegram.MessageHandlers
                 }
                 catch
                 {
+                    // TODO: Handle 'bot was kicked from chat'
                     succeeded = false;
                 }
 

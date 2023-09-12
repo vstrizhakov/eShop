@@ -7,8 +7,6 @@ const MyInvitation: React.FC = () => {
         claims,
     } = useAuth();
 
-    console.log(claims);
-
     const providerId = claims.account_id;
     const announcerLink = `https://localhost:7000/announcer/${providerId}`;
 

@@ -37,7 +37,7 @@ const Invitation: React.FC = () => {
                             </center>
                         </a>
                         <a target="_blank" href={viberInvitation.inviteLink} className="d-block text-reset text-decoration-none">
-                            <Viber className="text-white" fill="white" width="4rem" height="4rem" />
+                            <Viber fill="white" width="4rem" height="4rem" />
                             <center>
                                 <span>Viber</span>
                             </center>

@@ -45,12 +45,14 @@ namespace eShop.Distribution
             
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IDistributionRepository, DistributionRepository>();
+            builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 
             builder.Services.AddScoped<IDistributionService, DistributionService>();
             builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
-            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
+            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<TelegramChatUpdatedEvent, TelegramChatUpdatedEventHandler>();
@@ -58,11 +60,12 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<ViberChatUpdatedEvent, ViberChatUpdatedEventHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionMessage, BroadcastCompositionMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastMessageUpdateEvent, BroadcastMessageUpdateEventHandler>();
+            builder.Services.AddMessageHandler<SyncCurrenciesMessage, SyncCurrenciesMessageHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
-                    options.Authority = "https://localhost:7000";
+                    options.Authority = builder.Configuration["PublicUri:Identity"];
                     options.Audience = "api";
                 });
 

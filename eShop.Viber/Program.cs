@@ -64,7 +64,7 @@ namespace eShop.Viber
 
             builder.Services.AddScoped<IViberUserRepository, ViberUserRepository>();
 
-            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
+            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<ViberUserCreateAccountUpdateMessage, ViberUserCreateAccountUpdateMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToViberMessage, BroadcastCompositionToViberMessageHandler>();
@@ -74,7 +74,7 @@ namespace eShop.Viber
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
-                    options.Authority = "https://localhost:7000";
+                    options.Authority = builder.Configuration["PublicUri:Identity"];
                     options.Audience = "api";
                 });
 

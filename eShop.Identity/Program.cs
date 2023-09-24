@@ -51,21 +51,20 @@ namespace eShop.Identity
                 .AddEntityFrameworkStores<IdentityDbContext>()
                 .AddDefaultTokenProviders();
 
-            var publicUriSection = builder.Configuration.GetRequiredSection("PublicUri");
-            var publicUriConfiguration = publicUriSection.Get<PublicUriConfiguration>();
+            var identity = new Uri(builder.Configuration["PublicUri:Identity"]);
 
             builder.Services
                 .AddIdentityServer(options =>
                 {
                     options.UserInteraction.LoginReturnUrlParameter = "returnUrl";
                     options.UserInteraction.AllowOriginInReturnUrl = true;
-                    options.UserInteraction.LoginUrl = new Uri(publicUriConfiguration.Host, "/auth/signIn").ToString();
-                    options.UserInteraction.LogoutUrl = new Uri(publicUriConfiguration.Host, "/auth/signOut").ToString();
+                    options.UserInteraction.LoginUrl = new Uri(identity, "/auth/signIn").ToString();
+                    options.UserInteraction.LogoutUrl = new Uri(identity, "/auth/signOut").ToString();
                 })
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryApiResources(Config.ApiResources)
-                .AddInMemoryClients(Config.Clients(publicUriConfiguration.Host.OriginalString))
+                .AddInMemoryClients(Config.Clients(identity.OriginalString))
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
 
@@ -78,7 +77,7 @@ namespace eShop.Identity
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
+            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<IdentityUserCreateAccountResponseMessage, IdentityUserCreateAccountResponseMessageHandler>();
 

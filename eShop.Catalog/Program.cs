@@ -59,21 +59,24 @@ namespace eShop.Catalog
             builder.Services.AddScoped<IFileManager, FileManager>();
             builder.Services.AddScoped<ICompositionService, CompositionService>();
             builder.Services.AddScoped<IShopService, ShopService>();
+            builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
-                    options.Authority = "https://localhost:7000";
+                    options.Authority = builder.Configuration["PublicUri:Identity"];
                     options.Audience = "api";
                 });
 
             builder.Services.Configure<FilesConfiguration>(options => builder.Configuration.Bind("Files", options));
 
-            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
+            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<BroadcastCompositionUpdateEvent, BroadcastCompositionUpdateEventHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
+
+            builder.Services.AddHostedService<CurrenciesSyncService>();
 
             var app = builder.Build();
 

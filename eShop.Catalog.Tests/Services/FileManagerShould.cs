@@ -1,4 +1,5 @@
 ﻿using eShop.Catalog.Services;
+using eShop.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace eShop.Catalog.Tests.Services

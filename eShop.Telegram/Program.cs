@@ -66,7 +66,7 @@ namespace eShop.Telegram
             builder.Services.AddScoped<ITelegramUserRepository, TelegramUserRepository>();
             builder.Services.AddScoped<ITelegramChatRepository, TelegramChatRepository>();
 
-            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
+            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
@@ -75,7 +75,7 @@ namespace eShop.Telegram
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
-                    options.Authority = "https://localhost:7000";
+                    options.Authority = builder.Configuration["PublicUri:Identity"];
                     options.Audience = "api";
                 });
 

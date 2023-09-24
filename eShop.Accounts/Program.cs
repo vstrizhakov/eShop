@@ -33,7 +33,7 @@ namespace eShop.Accounts
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddRabbitMq(options => options.HostName = "moonnightscout.pp.ua");
+            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<TelegramUserCreateAccountRequestMessage, TelegramUserCreateAccountRequestMessageHandler>();
             builder.Services.AddMessageHandler<ViberUserCreateAccountRequestMessage, ViberUserCreateAccountRequestMessageHandler>();
@@ -55,7 +55,7 @@ namespace eShop.Accounts
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
-                    options.Authority = "https://localhost:7000";
+                    options.Authority = builder.Configuration["PublicUri:Identity"];
                     options.Audience = "api";
                 });
 

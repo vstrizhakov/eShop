@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\eShop.Bots.Common\eShop.Bots.Common.csproj" />
     <ProjectReference Include="..\eShop.Common\eShop.Common.csproj" />
+    <ProjectReference Include="..\eShop.Configuration\eShop.Configuration.csproj" />
     <ProjectReference Include="..\eShop.Messaging\eShop.Messaging.csproj" />
   </ItemGroup>
 

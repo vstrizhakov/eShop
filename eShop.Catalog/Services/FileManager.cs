@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using eShop.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace eShop.Catalog.Services
 {

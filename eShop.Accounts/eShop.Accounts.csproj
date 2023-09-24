@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\eShop.Configuration\eShop.Configuration.csproj" />
     <ProjectReference Include="..\eShop.Messaging\eShop.Messaging.csproj" />
   </ItemGroup>
 

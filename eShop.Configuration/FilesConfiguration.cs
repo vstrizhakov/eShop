@@ -1,4 +1,4 @@
-﻿namespace eShop.Catalog
+﻿namespace eShop.Configuration
 {
     public class FilesConfiguration
     {

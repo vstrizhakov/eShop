@@ -3,6 +3,7 @@ using eShop.Catalog.MessageHandlers;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common.Extensions;
+using eShop.Configuration;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 namespace eShop.Catalog
 {
@@ -35,8 +37,16 @@ namespace eShop.Catalog
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            if (builder.Environment.IsDevelopment())
+            {
+                var executionRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                builder.Configuration.AddJsonFile(Path.Combine(executionRoot, $"appsettings.{builder.Environment.EnvironmentName}.json"), true, true);
+                builder.Configuration.AddJsonFile(Path.Combine(executionRoot, "appsettings.json"), true, true);
+            }
+
             builder.Services.AddDbContext<CatalogDbContext>(options
-                => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                => options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 namespace eShop.Viber
 {
@@ -36,8 +37,16 @@ namespace eShop.Viber
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            if (builder.Environment.IsDevelopment())
+            {
+                var executionRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                builder.Configuration.AddJsonFile(Path.Combine(executionRoot, $"appsettings.{builder.Environment.EnvironmentName}.json"), true, true);
+                builder.Configuration.AddJsonFile(Path.Combine(executionRoot, "appsettings.json"), true, true);
+            }
+
             builder.Services.AddDbContext<ViberDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
 
             builder.Services.Configure<ViberBotConfiguration>(builder.Configuration.GetSection("ViberBot"));
 

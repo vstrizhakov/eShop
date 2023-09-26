@@ -41,7 +41,7 @@ namespace eShop.Distribution.Tests.Controllers
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountsByProviderIdAsync(_accountId, null))
+                .Setup(e => e.GetAccountsByProviderIdAsync(_accountId, null, false))
                 .ReturnsAsync(accounts);
 
             var expectedResult = Array.Empty<Models.Client>();

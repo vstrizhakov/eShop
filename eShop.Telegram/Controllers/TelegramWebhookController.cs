@@ -35,8 +35,7 @@ namespace eShop.Telegram.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(
             [FromBody] Update update,
-            [FromServices] IBotContextConverter botContextConverter,
-            CancellationToken cancellationToken)
+            [FromServices] IBotContextConverter botContextConverter)
         {
             Message? message = null;
             if (update.Type == UpdateType.Message)

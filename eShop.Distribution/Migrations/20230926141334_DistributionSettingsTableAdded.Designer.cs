@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShop.Distribution.DbContexts;
 
@@ -11,9 +12,11 @@ using eShop.Distribution.DbContexts;
 namespace eShop.Distribution.Migrations
 {
     [DbContext(typeof(DistributionDbContext))]
-    partial class DistributionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230926141334_DistributionSettingsTableAdded")]
+    partial class DistributionSettingsTableAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,9 +87,6 @@ namespace eShop.Distribution.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DistributionSettingsId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -97,8 +97,6 @@ namespace eShop.Distribution.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("GroupId", "Id");
-
-                    b.HasIndex("DistributionSettingsId");
 
                     b.HasIndex("TelegramChatId");
 
@@ -172,12 +170,6 @@ namespace eShop.Distribution.Migrations
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>
                 {
-                    b.HasOne("eShop.Distribution.Entities.DistributionSettings", "DistributionSettings")
-                        .WithMany()
-                        .HasForeignKey("DistributionSettingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("eShop.Distribution.Entities.DistributionGroup", "Group")
                         .WithMany("Items")
                         .HasForeignKey("GroupId")
@@ -191,8 +183,6 @@ namespace eShop.Distribution.Migrations
                     b.HasOne("eShop.Distribution.Entities.ViberChat", "ViberChat")
                         .WithMany()
                         .HasForeignKey("ViberChatId");
-
-                    b.Navigation("DistributionSettings");
 
                     b.Navigation("Group");
 

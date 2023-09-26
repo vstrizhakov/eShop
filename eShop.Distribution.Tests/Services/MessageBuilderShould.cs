@@ -43,7 +43,7 @@ namespace eShop.Distribution.Tests.Services
 
             // Act
 
-            var result = sut.FromComposition(composition);
+            var result = sut.FromComposition(composition, new Entities.DistributionSettings());
 
             // Assert
 

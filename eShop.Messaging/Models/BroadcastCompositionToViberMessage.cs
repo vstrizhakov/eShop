@@ -2,7 +2,8 @@
 {
     public class BroadcastCompositionToViberMessage
     {
-        public IEnumerable<DistributionRequest> Requests { get; set; }
+        public Guid RequestId { get; set; }
+        public Guid TargetId { get; set; }
         public Message Message { get; set; }
     }
 }

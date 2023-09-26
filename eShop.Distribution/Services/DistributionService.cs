@@ -22,18 +22,17 @@ namespace eShop.Distribution.Services
                 ProviderId = providerId,
             };
 
-            var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId, true);
+            var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId, true, true);
 
             var telegramChatIds = accounts
                 .SelectMany(e => e.TelegramChats)
-                .Where(e => e.IsEnabled)
-                .Select(e => e.Id)
-                .Distinct();
-            foreach (var telegramChatId in telegramChatIds)
+                .Where(e => e.IsEnabled);
+            foreach (var telegramChat in telegramChatIds)
             {
                 var distributionGroupItem = new DistributionGroupItem
                 {
-                    TelegramChatId = telegramChatId,
+                    TelegramChatId = telegramChat.Id,
+                    DistributionSettings = telegramChat.Account.ActiveDistributionSettings,
                 };
 
                 distributionGroup.Items.Add(distributionGroupItem);
@@ -42,14 +41,13 @@ namespace eShop.Distribution.Services
             var viberChatIds = accounts
                 .Where(e => e.ViberChat != null)
                 .Select(e => e.ViberChat)
-                .Where(e => e.IsEnabled)
-                .Select(e => e.Id)
-                .Distinct();
-            foreach (var viberChatId in viberChatIds)
+                .Where(e => e.IsEnabled);
+            foreach (var viberChat in viberChatIds)
             {
                 var distributionGroupItem = new DistributionGroupItem
                 {
-                    ViberChatId = viberChatId,
+                    ViberChatId = viberChat.Id,
+                    DistributionSettings = viberChat.Account.ActiveDistributionSettings,
                 };
 
                 distributionGroup.Items.Add(distributionGroupItem);

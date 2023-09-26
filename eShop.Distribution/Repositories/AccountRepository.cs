@@ -36,12 +36,17 @@ namespace eShop.Distribution.Repositories
             return account;
         }
 
-        public async Task<IEnumerable<Account>> GetAccountsByProviderIdAsync(Guid providerId, bool? isActivated = null)
+        public async Task<IEnumerable<Account>> GetAccountsByProviderIdAsync(Guid providerId, bool? isActivated = null, bool includeDistributionSettings = false)
         {
             var query = _context.Accounts
                 .Include(e => e.TelegramChats)
                 .Include(e => e.ViberChat)
                 .Where(e => e.ProviderId == providerId);
+
+            if (includeDistributionSettings)
+            {
+                query = query.Include(e => e.DistributionSettings);
+            }
 
             if (isActivated.HasValue)
             {

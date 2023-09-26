@@ -23,7 +23,6 @@ namespace eShop.Distribution.MessageHandlers
         public async Task HandleMessageAsync(BroadcastCompositionMessage message)
         {
             var composition = message.Composition;
-            var messageToSend = _messageBuilder.FromComposition(composition);
 
             // TODO: Handle provider is absent
             var distribution = await _distributionService.CreateDistributionFromProviderIdAsync(message.ProviderId);
@@ -38,30 +37,26 @@ namespace eShop.Distribution.MessageHandlers
             _producer.Publish(update);
 
             var telegramRequests = distribution.Items.Where(e => e.TelegramChatId.HasValue);
-            if (telegramRequests.Any())
+            foreach (var telegramRequest in telegramRequests)
             {
+                var messageToSend = _messageBuilder.FromComposition(composition, telegramRequest.DistributionSettings);
                 var telegramMessage = new BroadcastCompositionToTelegramMessage
                 {
-                    Requests = telegramRequests.Select(e => new DistributionRequest
-                    {
-                        RequestId = e.Id,
-                        TargetId = e.TelegramChatId.Value,
-                    }),
+                    RequestId = telegramRequest.Id,
+                    TargetId = telegramRequest.TelegramChatId!.Value,
                     Message = messageToSend,
                 };
                 _producer.Publish(telegramMessage);
             }
 
             var viberRequests = distribution.Items.Where(e => e.ViberChatId.HasValue);
-            if (viberRequests.Any())
+            foreach (var viberRequest in viberRequests)
             {
+                var messageToSend = _messageBuilder.FromComposition(composition, viberRequest.DistributionSettings);
                 var viberMessage = new BroadcastCompositionToViberMessage
                 {
-                    Requests = viberRequests.Select(e => new DistributionRequest
-                    {
-                        RequestId = e.Id,
-                        TargetId = e.ViberChatId.Value,
-                    }),
+                    RequestId = viberRequest.Id,
+                    TargetId = viberRequest.ViberChatId!.Value,
                     Message = messageToSend,
                 };
                 _producer.Publish(viberMessage);

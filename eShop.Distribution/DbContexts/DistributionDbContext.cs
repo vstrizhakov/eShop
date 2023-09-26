@@ -11,6 +11,7 @@ namespace eShop.Distribution.DbContexts
         public DbSet<DistributionGroup> DistributionGroups { get; set; }
         public DbSet<DistributionGroupItem> DistributionGroupItems { get; set; }
         public DbSet<Currency> Currencies { get; set; }
+        public DbSet<DistributionSettings> DistributionSettings { get; set; }
 
         public DistributionDbContext(DbContextOptions<DistributionDbContext> options) : base(options)
         {

@@ -49,6 +49,10 @@ namespace eShop.Distribution.Services
                 FirstName = firstName,
                 LastName = lastName,
                 ProviderId = providerId,
+                DistributionSettings =
+                {
+                    new DistributionSettings()
+                },
             };
 
             await _accountRepository.CreateAccountAsync(account);

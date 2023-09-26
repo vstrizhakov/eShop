@@ -13,17 +13,14 @@ namespace eShop.Distribution.Tests.Services
             // Arrange
 
             var providerId = Guid.NewGuid();
-
-            var accounts = new[]
+            var enabledAccount = new Account
             {
-                new Account
+                ViberChat = new ViberChat
                 {
-                    ViberChat = new ViberChat
-                    {
-                        Id = Guid.NewGuid(),
-                        IsEnabled = true,
-                    },
-                    TelegramChats = new[]
+                    Id = Guid.NewGuid(),
+                    IsEnabled = true,
+                },
+                TelegramChats = new[]
                     {
                         new TelegramChat
                         {
@@ -31,15 +28,18 @@ namespace eShop.Distribution.Tests.Services
                             IsEnabled = true,
                         },
                     },
-                },
-                new Account
+            };
+            enabledAccount.ViberChat.Account = enabledAccount;
+
+            enabledAccount.TelegramChats.ElementAt(0).Account = enabledAccount;
+            var disabledAccount = new Account
+            {
+                ViberChat = new ViberChat
                 {
-                    ViberChat = new ViberChat
-                    {
-                        Id = Guid.NewGuid(),
-                        IsEnabled = false,
-                    },
-                    TelegramChats = new[]
+                    Id = Guid.NewGuid(),
+                    IsEnabled = false,
+                },
+                TelegramChats = new[]
                     {
                         new TelegramChat
                         {
@@ -47,12 +47,16 @@ namespace eShop.Distribution.Tests.Services
                             IsEnabled = false,
                         },
                     },
-                },
+            };
+            var accounts = new[]
+            {
+                enabledAccount,
+                disabledAccount,
             };
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountsByProviderIdAsync(providerId, true))
+                .Setup(e => e.GetAccountsByProviderIdAsync(providerId, true, true))
                 .ReturnsAsync(accounts);
 
             DistributionGroup? result = null;

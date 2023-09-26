@@ -153,6 +153,7 @@ namespace eShop.Distribution.Tests.Services
 
             Assert.NotNull(result);
             Assert.Equal(providerId, result.ProviderId);
+            Assert.NotNull(result.ActiveDistributionSettings);
         }
 
         [Fact]

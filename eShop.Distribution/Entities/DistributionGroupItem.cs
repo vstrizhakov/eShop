@@ -10,9 +10,11 @@ namespace eShop.Distribution.Entities
         public DistributionGroupItemStatus Status { get; set; }
         public Guid? TelegramChatId { get; set; }
         public Guid? ViberChatId { get; set; }
+        public Guid DistributionSettingsId { get; set; }
 
         public DistributionGroup Group { get; set; }
         public TelegramChat? TelegramChat { get; set; }
         public ViberChat? ViberChat { get; set; }
+        public DistributionSettings DistributionSettings { get; set; }
     }
 }

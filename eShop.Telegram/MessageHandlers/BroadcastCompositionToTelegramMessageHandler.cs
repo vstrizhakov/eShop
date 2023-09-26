@@ -1,9 +1,8 @@
 ﻿using eShop.Messaging;
 using eShop.Messaging.Models;
+using eShop.Telegram.Repositories;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using eShop.Telegram.Repositories;
-using eShop.Messaging.Extensions;
 
 namespace eShop.Telegram.MessageHandlers
 {
@@ -25,19 +24,17 @@ namespace eShop.Telegram.MessageHandlers
 
         public async Task HandleMessageAsync(BroadcastCompositionToTelegramMessage message)
         {
-            var requests = message.Requests;
-            var telegramChats = await _telegramChatRepository.GetTelegramChatsByIdsAsync(requests.Select(e => e.TargetId));
-            // TODO: Handle absent chats
-
-            var messageToSend = message.Message;
-            foreach (var telegramChat in telegramChats)
+            var telegramChat = await _telegramChatRepository.GetTelegramChatByIdAsync(message.TargetId);
+            if (telegramChat != null)
             {
-                var request = requests.FirstOrDefault(e => e.TargetId == telegramChat.Id);
+                var messageToSend = message.Message;
                 var succeeded = true;
                 try
                 {
-                    var media = new InputMediaPhoto(new InputFileUrl(messageToSend.Image));
-                    media.Caption = messageToSend.Caption;
+                    var media = new InputMediaPhoto(new InputFileUrl(messageToSend.Image))
+                    {
+                        Caption = messageToSend.Caption,
+                    };
                     await _botClient.SendMediaGroupAsync(new ChatId(telegramChat.ExternalId), new List<IAlbumInputMedia>() { media });
                 }
                 catch
@@ -48,10 +45,14 @@ namespace eShop.Telegram.MessageHandlers
 
                 var update = new BroadcastMessageUpdateEvent
                 {
-                    RequestId = request.RequestId,
+                    RequestId = message.RequestId,
                     Succeeded = succeeded,
                 };
                 _producer.Publish(update);
+            }
+            else
+            {
+                // TODO: Handle absent chats
             }
         }
     }

@@ -46,11 +46,13 @@ namespace eShop.Distribution
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IDistributionRepository, DistributionRepository>();
             builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+            builder.Services.AddScoped<IDistributionSettingsRepository, DistributionSettingsRepository>();
 
             builder.Services.AddScoped<IDistributionService, DistributionService>();
             builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+            builder.Services.AddScoped<IDistributionSettingsService, DistributionSettingsService>();
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();

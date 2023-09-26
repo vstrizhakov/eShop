@@ -1,6 +1,5 @@
 ﻿using eShop.Bots.Common;
 using eShop.Messaging;
-using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using eShop.Viber.Models;
 using eShop.Viber.Repositories;
@@ -29,13 +28,10 @@ namespace eShop.Viber.MessageHandlers
 
         public async Task HandleMessageAsync(BroadcastCompositionToViberMessage message)
         {
-            var requests = message.Requests;
-            var viberUsers = await _viberUserRepository.GetViberUsersByIdsAsync(requests.Select(e => e.TargetId));
-
-            var messageToSend = message.Message;
-            foreach (var viberUser in viberUsers)
+            var viberUser = await _viberUserRepository.GetViberUserByIdAsync(message.TargetId);
+            if (viberUser != null)
             {
-                var request = requests.FirstOrDefault(e => e.TargetId == viberUser.Id);
+                var messageToSend = message.Message;
                 var succeeded = true;
                 try
                 {
@@ -47,13 +43,13 @@ namespace eShop.Viber.MessageHandlers
                     {
                         Buttons = new[]
                         {
-                        new Button
-                        {
-                            Rows = 1,
-                            Text = "Налаштування анонсів",
-                            ActionBody = _botContextConverter.Serialize(ViberContext.Settings),
-                        },
+                    new Button
+                    {
+                        Rows = 1,
+                        Text = "Налаштування анонсів",
+                        ActionBody = _botContextConverter.Serialize(ViberContext.Settings),
                     },
+                },
                     };
                     await _botClient.SendPictureMessageAsync(viberUser.ExternalId, sender, messageToSend.Image.ToString(), messageToSend.Caption, keyboard: keyboard);
                 }
@@ -64,10 +60,14 @@ namespace eShop.Viber.MessageHandlers
 
                 var update = new BroadcastMessageUpdateEvent
                 {
-                    RequestId = request.RequestId,
+                    RequestId = message.RequestId,
                     Succeeded = succeeded,
                 };
                 _producer.Publish(update);
+            }
+            else
+            {
+                // TODO: handle viber user is absent
             }
         }
     }

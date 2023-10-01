@@ -2,7 +2,10 @@ using eShop.Bots.Common.Extensions;
 using eShop.Common.Extensions;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Catalog;
+using eShop.Messaging.Models.Distribution;
 using eShop.Telegram.DbContexts;
+using eShop.Telegram.Inner;
 using eShop.Telegram.MessageHandlers;
 using eShop.Telegram.Repositories;
 using eShop.Telegram.Services;
@@ -70,6 +73,9 @@ namespace eShop.Telegram
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
+            builder.Services.AddMessageHandler<GetPreferredCurrencyResponse, GetPreferredCurrencyResponseHandler>();
+            builder.Services.AddMessageHandler<GetCurrenciesResponse, GetCurrenciesResponseHandler>();
+            builder.Services.AddMessageHandler<SetPreferredCurrencyResponse, SetPreferredCurrencyResponseHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -80,6 +86,9 @@ namespace eShop.Telegram
                 });
 
             builder.Services.AddScoped<ITelegramInvitationLinkGenerator, TelegramInvitationLinkGenerator>();
+            builder.Services.AddScoped<ITelegramMiddleware, TelegramMiddleware>();
+
+            builder.Services.AddScoped<ITelegramService, TelegramService>();
 
             var app = builder.Build();
 

@@ -20,6 +20,16 @@ namespace eShop.Telegram.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public Task<TelegramUser?> GetTelegramUserByAccountIdAsync(Guid accountId)
+        {
+            var telegramUser = _context.TelegramUsers
+                .Include(e => e.Chats)
+                    .ThenInclude(e => e.Chat)
+                .Include(e => e.ChatSettings)
+                .FirstOrDefaultAsync(e => e.AccountId == accountId);
+            return telegramUser;
+        }
+
         public Task<TelegramUser?> GetTelegramUserByExternalIdAsync(long externalId)
         {
             var telegramUser = _context.TelegramUsers

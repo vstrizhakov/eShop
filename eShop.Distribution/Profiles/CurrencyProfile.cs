@@ -7,6 +7,7 @@ namespace eShop.Distribution.Profiles
         public CurrencyProfile()
         {
             CreateMap<Messaging.Models.Currency, Entities.Currency>();
+            CreateMap<Entities.Currency, Messaging.Models.Currency>();
         }
     }
 }

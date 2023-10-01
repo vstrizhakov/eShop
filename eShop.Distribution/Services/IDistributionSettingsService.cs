@@ -4,7 +4,7 @@ namespace eShop.Distribution.Services
 {
     public interface IDistributionSettingsService
     {
-        Task<DistributionSettings> GetDistributionSettingsAsync(Guid providerId);
-        Task<DistributionSettings> UpdateDistributionSettingsAsync(Guid providerId, DistributionSettings distributionSettings);
+        Task<DistributionSettings> GetDistributionSettingsAsync(Guid accountId);
+        Task<DistributionSettings> UpdateDistributionSettingsAsync(Guid accountId, DistributionSettings distributionSettings);
     }
 }

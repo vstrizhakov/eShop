@@ -18,6 +18,8 @@ namespace eShop.Distribution.Repositories
             _context.DistributionSettings.Add(distributionSettings);
 
             await _context.SaveChangesAsync();
+
+            await _context.DistributionSettings.Entry(distributionSettings).Reference(e => e.PreferredCurrency).LoadAsync();
         }
 
         public async Task<DistributionSettings?> GetActiveDistributionSettingsAsync(Guid accountId)

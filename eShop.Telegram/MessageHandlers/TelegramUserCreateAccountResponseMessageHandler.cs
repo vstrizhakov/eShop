@@ -53,7 +53,7 @@ namespace eShop.Telegram.MessageHandlers
                         var replyMarkup = new InlineKeyboardMarkup(telegramUserChats.Select(e =>
                         {
                             var chat = e.Chat;
-                            var callbackData = _botContextConverter.Serialize(TelegramContext.Action.SetUpGroup, e.ChatId.ToString());
+                            var callbackData = _botContextConverter.Serialize(TelegramAction.SetUpGroup, e.ChatId.ToString());
                             return new List<InlineKeyboardButton>()
                             {
                                 InlineKeyboardButton.WithCallbackData(chat.Title!, callbackData),
@@ -68,7 +68,7 @@ namespace eShop.Telegram.MessageHandlers
                         {
                             new InlineKeyboardButton("Оновити")
                             {
-                                CallbackData = _botContextConverter.Serialize(TelegramContext.Action.Refresh),
+                                CallbackData = _botContextConverter.Serialize(TelegramAction.Refresh),
                             },
                         });
                         await _botClient.SendTextMessageAsync(new ChatId(chatId.Value), replyText, replyMarkup: replyMarkup);

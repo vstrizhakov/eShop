@@ -4,6 +4,7 @@ using eShop.Distribution.Repositories;
 using eShop.Distribution.Services;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Distribution;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -63,6 +64,8 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<BroadcastCompositionMessage, BroadcastCompositionMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastMessageUpdateEvent, BroadcastMessageUpdateEventHandler>();
             builder.Services.AddMessageHandler<SyncCurrenciesMessage, SyncCurrenciesMessageHandler>();
+            builder.Services.AddMessageHandler<GetPreferredCurrencyRequest, GetPreferredCurrencyRequestHandler>();
+            builder.Services.AddMessageHandler<SetPreferredCurrencyRequest, SetPreferredCurrencyRequestHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

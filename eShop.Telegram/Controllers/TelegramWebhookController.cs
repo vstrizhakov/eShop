@@ -1,13 +1,11 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging;
 using eShop.Telegram.Entities;
-using eShop.Telegram.Models;
+using eShop.Telegram.Inner;
 using eShop.Telegram.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.Controllers
 {
@@ -18,24 +16,22 @@ namespace eShop.Telegram.Controllers
         private readonly ITelegramUserRepository _telegramUserRepository;
         private readonly ITelegramChatRepository _telegramChatRepository;
         private readonly ITelegramBotClient _botClient;
-        private readonly IProducer _producer;
 
         public TelegramWebhookController(
             ITelegramUserRepository telegramUserRepository,
             ITelegramChatRepository telegramChatRepository,
-            ITelegramBotClient botClient,
-            IProducer producer)
+            ITelegramBotClient botClient)
         {
             _telegramUserRepository = telegramUserRepository;
             _telegramChatRepository = telegramChatRepository;
             _botClient = botClient;
-            _producer = producer;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(
             [FromBody] Update update,
-            [FromServices] IBotContextConverter botContextConverter)
+            [FromServices] IBotContextConverter botContextConverter,
+            [FromServices] ITelegramMiddleware telegramMiddleware)
         {
             Message? message = null;
             if (update.Type == UpdateType.Message)
@@ -106,338 +102,9 @@ namespace eShop.Telegram.Controllers
 
                     await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
                 }
-
-                if (chat.Type == ChatType.Private)
-                {
-                    if (message.Type == MessageType.Text)
-                    {
-                        var text = message.Text!;
-
-                        var command = text;
-                        var arguments = string.Empty;
-
-                        var seperatorIndex = text.IndexOf(' ');
-                        if (seperatorIndex != -1)
-                        {
-                            command = text.Substring(0, seperatorIndex);
-                            arguments = text.Substring(seperatorIndex + 1, text.Length - seperatorIndex - 1);
-                        }
-
-                        switch (command)
-                        {
-                            case "/start":
-                                if (!string.IsNullOrEmpty(arguments))
-                                {
-                                    var context = botContextConverter.Deserialize(arguments);
-                                    if (context.Length > 0)
-                                    {
-                                        var action = context[0];
-
-                                        if (action == TelegramContext.Action.RegisterClient)
-                                        {
-                                            if (context.Length > 1)
-                                            {
-                                                if (Guid.TryParse(context[1], out var providerId))
-                                                {
-                                                    var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from!.Id);
-                                                    if (telegramUser!.AccountId == null)
-                                                    {
-                                                        telegramUser.RegistrationProviderId = providerId;
-
-                                                        await _telegramUserRepository.UpdateTelegramUserAsync(telegramUser);
-
-                                                        var replyText = "Для завершення реєстрації надішліть свій номер телефону, будь ласка";
-                                                        var replyMarkup = new ReplyKeyboardMarkup(new KeyboardButton("Відправити номер телефону")
-                                                        {
-                                                            RequestContact = true,
-                                                        });
-                                                        await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
-                                                    }
-                                                    else
-                                                    {
-                                                        await _botClient.SendTextMessageAsync(new ChatId(chatId), "Ви вже зареєстровані та маєтє встановленного постачальника анонсів");
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from!.Id);
-                                    if (telegramUser!.AccountId != null)
-                                    {
-                                        var telegramUserChats = telegramUser.Chats
-                                            .Where(e => e.Chat.Type == ChatType.Group || e.Chat.Type == ChatType.Channel || e.Chat.Type == ChatType.Supergroup)
-                                            .Where(e => e.Chat.SupergroupId == null)
-                                            .Where(e => e.Status == ChatMemberStatus.Creator || e.Status == ChatMemberStatus.Administrator);
-                                        if (telegramUserChats.Any())
-                                        {
-                                            var replyText = "Оберіть групу чи канал, до якої хотіли б налаштувати відправку анонсів:";
-                                            var replyMarkup = new InlineKeyboardMarkup(telegramUserChats.Select(e =>
-                                            {
-                                                var chat = e.Chat;
-                                                return new List<InlineKeyboardButton>()
-                                                {
-                                                    new InlineKeyboardButton(chat.Title!)
-                                                    {
-                                                        CallbackData = botContextConverter.Serialize(TelegramContext.Action.SetUpGroup, e.ChatId.ToString()),
-                                                    }
-                                                };
-                                            }));
-                                            await _botClient.SendTextMessageAsync(new ChatId(chat.Id), replyText, replyMarkup: replyMarkup);
-                                        }
-                                        else
-                                        {
-                                            var replyText = "Додайте бота до групи чи каналу, у який хочете налаштувати відправку анонсів, і натисніть кнопку Оновити нижче.";
-                                            var replyMarkup = new InlineKeyboardMarkup(new List<InlineKeyboardButton>()
-                                            {
-                                                new InlineKeyboardButton("Оновити")
-                                                {
-                                                    CallbackData = botContextConverter.Serialize(TelegramContext.Action.Refresh),
-                                                },
-                                            });
-                                            await _botClient.SendTextMessageAsync(new ChatId(chat.Id), replyText, replyMarkup: replyMarkup);
-                                        }
-                                    }
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    else if (message.Type == MessageType.Contact)
-                    {
-                        var contact = message.Contact!;
-
-                        var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from!.Id);
-                        var providerId = telegramUser.RegistrationProviderId;
-                        if (providerId != null)
-                        {
-                            var phoneNumber = contact.PhoneNumber;
-
-                            telegramUser.PhoneNumber = phoneNumber;
-                            telegramUser.RegistrationProviderId = null;
-
-                            await _telegramUserRepository.UpdateTelegramUserAsync(telegramUser);
-
-                            var internalMessage = new Messaging.Models.TelegramUserCreateAccountRequestMessage
-                            {
-                                TelegramUserId = telegramUser.Id,
-                                FirstName = telegramUser.FirstName,
-                                LastName = telegramUser.LastName,
-                                PhoneNumber = phoneNumber,
-                                ProviderId = providerId.Value,
-                            };
-                            _producer.Publish(internalMessage);
-                        }
-                    }
-                }
             }
-            else if (update.Type == UpdateType.CallbackQuery)
-            {
-                var callbackQuery = update.CallbackQuery!;
-                var callbackData = callbackQuery.Data;
-                var from = callbackQuery.From;
-                var chatId = callbackQuery.Message.Chat.Id;
-                if (callbackData != null)
-                {
-                    var context = botContextConverter.Deserialize(callbackData);
-                    if (context.Length > 0)
-                    {
-                        var action = context[0];
-                        if (action == TelegramContext.Action.SetUpGroup)
-                        {
-                            if (context.Length > 1)
-                            {
-                                if (Guid.TryParse(context[1], out var telegramChatId))
-                                {
-                                    var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from!.Id);
-                                    var telegramChat = telegramUser!.Chats.FirstOrDefault(e => e.ChatId == telegramChatId)?.Chat;
-                                    if (telegramChat != null)
-                                    {
-                                        if (telegramChat.Settings == null)
-                                        {
-                                            telegramChat.Settings = new TelegramChatSettings
-                                            {
-                                                Owner = telegramUser,
-                                            };
 
-                                            await _telegramUserRepository.UpdateTelegramUserAsync(telegramUser);
-                                        }
-
-                                        var telegramChatSettings = telegramChat.Settings;
-
-                                        var replyText = $"Налаштування {(telegramChat.Type == ChatType.Channel ? "каналу" : "групи")} {telegramChat.Title}";
-                                        var lines = new List<List<InlineKeyboardButton>>();
-
-                                        var firstLine = new List<InlineKeyboardButton>();
-                                        if (telegramChatSettings.IsEnabled)
-                                        {
-                                            firstLine.Add(new InlineKeyboardButton("Ввимкнути")
-                                            {
-                                                CallbackData = botContextConverter.Serialize(TelegramContext.Action.SettingsDisable, telegramChat.Id.ToString()),
-                                            });
-                                        }
-                                        else
-                                        {
-                                            firstLine.Add(new InlineKeyboardButton("Увімкнути")
-                                            {
-                                                CallbackData = botContextConverter.Serialize(TelegramContext.Action.SettingsEnable, telegramChat.Id.ToString()),
-                                            });
-                                        }
-
-                                        lines.Add(firstLine);
-
-                                        var replyMarkup = new InlineKeyboardMarkup(lines);
-                                        await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
-                                    }
-                                    else
-                                    {
-                                        // TODO:
-                                    }
-                                }
-                            }
-                        }
-                        else if (action == TelegramContext.Action.SettingsEnable)
-                        {
-                            if (context.Length > 1)
-                            {
-                                if (Guid.TryParse(context[1], out var telegramChatId))
-                                {
-                                    var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from!.Id);
-                                    if (telegramUser!.AccountId != null)
-                                    {
-                                        var telegramChat = await _telegramChatRepository.GetTelegramChatByIdAsync(telegramChatId);
-                                        if (telegramChat != null)
-                                        {
-                                            var telegramChatSettings = telegramChat.Settings;
-                                            telegramChatSettings.IsEnabled = true;
-
-                                            await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
-
-                                            var internalEvent = new Messaging.Models.TelegramChatUpdatedEvent
-                                            {
-                                                AccountId = telegramUser.AccountId.Value,
-                                                TelegramChatId = telegramChatId,
-                                                IsEnabled = telegramChatSettings.IsEnabled,
-                                            };
-                                            _producer.Publish(internalEvent);
-
-                                            var replyText = $"Налаштування {(telegramChat.Type == ChatType.Channel ? "каналу" : "групи")} {telegramChat.Title}";
-                                            var lines = new[]
-                                            {
-                                                new[]
-                                                {
-                                                    new InlineKeyboardButton("Ввимкнути")
-                                                    {
-                                                        CallbackData = botContextConverter.Serialize(TelegramContext.Action.SettingsDisable, telegramChat.Id.ToString()),
-                                                    }
-                                                },
-                                            };
-
-                                            var replyMarkup = new InlineKeyboardMarkup(lines);
-                                            await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
-                                        }
-                                        else
-                                        {
-                                            // TODO:
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if (action == TelegramContext.Action.SettingsDisable)
-                        {
-                            if (context.Length > 1)
-                            {
-                                if (Guid.TryParse(context[1], out var telegramChatId))
-                                {
-                                    var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from!.Id);
-                                    if (telegramUser!.AccountId != null)
-                                    {
-                                        var telegramChat = await _telegramChatRepository.GetTelegramChatByIdAsync(telegramChatId);
-                                        if (telegramChat != null)
-                                        {
-                                            var telegramChatSettings = telegramChat.Settings;
-                                            telegramChatSettings.IsEnabled = false;
-
-                                            await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
-
-                                            var internalEvent = new Messaging.Models.TelegramChatUpdatedEvent
-                                            {
-                                                AccountId = telegramUser.AccountId.Value,
-                                                TelegramChatId = telegramChatId,
-                                                IsEnabled = telegramChatSettings.IsEnabled,
-                                            };
-                                            _producer.Publish(internalEvent);
-
-                                            var replyText = $"Налаштування {(telegramChat.Type == ChatType.Channel ? "каналу" : "групи")} {telegramChat.Title}";
-                                            var lines = new[]
-                                            {
-                                                new[]
-                                                {
-                                                    new InlineKeyboardButton("Увімкнути")
-                                                    {
-                                                        CallbackData = botContextConverter.Serialize(TelegramContext.Action.SettingsEnable, telegramChat.Id.ToString()),
-                                                    },
-                                                },
-                                            };
-
-                                            var replyMarkup = new InlineKeyboardMarkup(lines);
-                                            await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
-                                        }
-                                        else
-                                        {
-                                            // TODO:
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if (action == TelegramContext.Action.Refresh)
-                        {
-                            var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from!.Id);
-                            if (telegramUser!.AccountId != null)
-                            {
-                                var telegramUserChats = telegramUser.Chats
-                                    .Where(e => e.Chat.Type == ChatType.Group || e.Chat.Type == ChatType.Channel || e.Chat.Type == ChatType.Supergroup)
-                                    .Where(e => e.Chat.SupergroupId == null)
-                                    .Where(e => e.Status == ChatMemberStatus.Creator || e.Status == ChatMemberStatus.Administrator);
-                                if (telegramUserChats.Any())
-                                {
-                                    var replyText = "Оберіть групу чи канал, до якої хотіли б налаштувати відправку анонсів:";
-                                    var replyMarkup = new InlineKeyboardMarkup(telegramUserChats.Select(e =>
-                                    {
-                                        var chat = e.Chat;
-                                        return new List<InlineKeyboardButton>()
-                                        {
-                                            new InlineKeyboardButton(chat.Title!)
-                                            {
-                                                CallbackData = botContextConverter.Serialize(TelegramContext.Action.SetUpGroup, e.ChatId.ToString()),
-                                            }
-                                        };
-                                    }));
-                                    await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
-                                }
-                                else
-                                {
-
-                                    var replyText = "Додайте бота до групи чи каналу, у який хочете налаштувати відправку анонсів, і натисніть кнопку Оновити нижче.";
-                                    var replyMarkup = new InlineKeyboardMarkup(new List<InlineKeyboardButton>()
-                                    {
-                                        new InlineKeyboardButton("Оновити")
-                                        {
-                                            CallbackData = botContextConverter.Serialize(TelegramContext.Action.Refresh),
-                                        },
-                                    });
-                                    await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            await telegramMiddleware.ProcessAsync(update);
 
             return Ok();
         }

@@ -6,6 +6,7 @@ using eShop.Common.Extensions;
 using eShop.Configuration;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Catalog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -73,6 +74,7 @@ namespace eShop.Catalog
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<BroadcastCompositionUpdateEvent, BroadcastCompositionUpdateEventHandler>();
+            builder.Services.AddMessageHandler<GetCurrenciesRequest, GetCurrenciesRequestHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

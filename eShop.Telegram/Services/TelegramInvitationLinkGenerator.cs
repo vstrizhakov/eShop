@@ -18,7 +18,7 @@ namespace eShop.Telegram.Services
 
         public string Generate(Guid providerId)
         {
-            var context = _botContextConverter.Serialize(TelegramContext.Action.RegisterClient, providerId.ToString());
+            var context = _botContextConverter.Serialize(TelegramAction.RegisterClient, providerId.ToString());
 
             var link = QueryHelpers.AddQueryString($"https://t.me/{_telegramBotConfiguration.Username}", "start", context);
             return link;

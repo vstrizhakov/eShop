@@ -13,6 +13,8 @@ namespace eShop.Distribution.DbContexts
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<DistributionSettings> DistributionSettings { get; set; }
         public DbSet<CurrencyRate> CurrencyRates { get; set; }
+        public DbSet<ComissionSettings> ComissionSettings { get; set; }
+        public DbSet<Shop> Shops { get; set; }
 
         public DistributionDbContext(DbContextOptions<DistributionDbContext> options) : base(options)
         {
@@ -57,6 +59,30 @@ namespace eShop.Distribution.DbContexts
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<ComissionSettings>()
+                .HasOne(e => e.DistributionSettings)
+                .WithOne(e => e.ComissionSettings)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ComissionSettings>()
+                .HasIndex(e => e.DistributionSettingsId)
+                .IsUnique()
+                .HasFilter(null);
+
+            modelBuilder.Entity<ShopSettings>()
+                .HasOne(e => e.DistributionSettings)
+                .WithOne(e => e.ShopSettings)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ShopSettings>()
+                .HasIndex(e => e.DistributionSettingsId)
+                .IsUnique()
+                .HasFilter(null);
+
+            modelBuilder.Entity<ShopSettings>()
+                .HasMany(e => e.PreferredShops)
+                .WithMany();
+
             modelBuilder.Entity<Currency>()
                 .HasData(
                     new Currency
@@ -85,6 +111,7 @@ namespace eShop.Distribution.DbContexts
                         TargetCurrencyId = Guid.Parse("9724739E-E4B8-45EB-AC11-EFE2B0558A34"), // UAH
                         SourceCurrencyId = Guid.Parse("BF879FB6-7B4B-41C7-9CC5-DF8724D511E5"), // USD
                         Rate = 37.09,
+                        CreatedAt = DateTimeOffset.MinValue,
                     },
                     new CurrencyRate
                     {
@@ -92,6 +119,7 @@ namespace eShop.Distribution.DbContexts
                         TargetCurrencyId = Guid.Parse("9724739E-E4B8-45EB-AC11-EFE2B0558A34"), // UAH
                         SourceCurrencyId = Guid.Parse("41ED0945-7196-4EAD-8F5E-DB262E62E536"), // EUR
                         Rate = 39.11,
+                        CreatedAt = DateTimeOffset.MinValue,
                     },
 
                     new CurrencyRate
@@ -100,6 +128,7 @@ namespace eShop.Distribution.DbContexts
                         TargetCurrencyId = Guid.Parse("BF879FB6-7B4B-41C7-9CC5-DF8724D511E5"), // USD
                         SourceCurrencyId = Guid.Parse("9724739E-E4B8-45EB-AC11-EFE2B0558A34"), // UAH
                         Rate = 0.027,
+                        CreatedAt = DateTimeOffset.MinValue,
                     },
                     new CurrencyRate
                     {
@@ -107,6 +136,7 @@ namespace eShop.Distribution.DbContexts
                         TargetCurrencyId = Guid.Parse("BF879FB6-7B4B-41C7-9CC5-DF8724D511E5"), // USD
                         SourceCurrencyId = Guid.Parse("41ED0945-7196-4EAD-8F5E-DB262E62E536"), // EUR
                         Rate = 1.05,
+                        CreatedAt = DateTimeOffset.MinValue,
                     },
 
                     new CurrencyRate
@@ -115,6 +145,7 @@ namespace eShop.Distribution.DbContexts
                         TargetCurrencyId = Guid.Parse("41ED0945-7196-4EAD-8F5E-DB262E62E536"), // EUR
                         SourceCurrencyId = Guid.Parse("9724739E-E4B8-45EB-AC11-EFE2B0558A34"), // UAH
                         Rate = 0.026,
+                        CreatedAt = DateTimeOffset.MinValue,
                     },
                     new CurrencyRate
                     {
@@ -122,6 +153,7 @@ namespace eShop.Distribution.DbContexts
                         TargetCurrencyId = Guid.Parse("41ED0945-7196-4EAD-8F5E-DB262E62E536"), // EUR
                         SourceCurrencyId = Guid.Parse("BF879FB6-7B4B-41C7-9CC5-DF8724D511E5"), // USD
                         Rate = 0.95,
+                        CreatedAt = DateTimeOffset.MinValue,
                     },
                 });
         }

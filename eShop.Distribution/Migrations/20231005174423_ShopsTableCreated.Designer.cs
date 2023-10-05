@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShop.Distribution.DbContexts;
 
@@ -11,9 +12,11 @@ using eShop.Distribution.DbContexts;
 namespace eShop.Distribution.Migrations
 {
     [DbContext(typeof(DistributionDbContext))]
-    partial class DistributionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231005174423_ShopsTableCreated")]
+    partial class ShopsTableCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace eShop.Distribution.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ShopShopSettings", b =>
-                {
-                    b.Property<Guid>("PreferredShopsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShopSettingsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("PreferredShopsId", "ShopSettingsId");
-
-                    b.HasIndex("ShopSettingsId");
-
-                    b.ToTable("ShopShopSettings");
-                });
 
             modelBuilder.Entity("eShop.Distribution.Entities.Account", b =>
                 {
@@ -332,26 +320,6 @@ namespace eShop.Distribution.Migrations
                     b.ToTable("Shops");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.ShopSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DistributionSettingsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Filter")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DistributionSettingsId")
-                        .IsUnique();
-
-                    b.ToTable("ShopSettings");
-                });
-
             modelBuilder.Entity("eShop.Distribution.Entities.TelegramChat", b =>
                 {
                     b.Property<Guid>("Id")
@@ -389,21 +357,6 @@ namespace eShop.Distribution.Migrations
                         .IsUnique();
 
                     b.ToTable("ViberChats");
-                });
-
-            modelBuilder.Entity("ShopShopSettings", b =>
-                {
-                    b.HasOne("eShop.Distribution.Entities.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("PreferredShopsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eShop.Distribution.Entities.ShopSettings", null)
-                        .WithMany()
-                        .HasForeignKey("ShopSettingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.Account", b =>
@@ -527,16 +480,6 @@ namespace eShop.Distribution.Migrations
                     b.Navigation("PreferredCurrency");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.ShopSettings", b =>
-                {
-                    b.HasOne("eShop.Distribution.Entities.DistributionSettings", "DistributionSettings")
-                        .WithOne("ShopSettings")
-                        .HasForeignKey("eShop.Distribution.Entities.ShopSettings", "DistributionSettingsId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("DistributionSettings");
-                });
-
             modelBuilder.Entity("eShop.Distribution.Entities.TelegramChat", b =>
                 {
                     b.HasOne("eShop.Distribution.Entities.Account", "Account")
@@ -577,9 +520,6 @@ namespace eShop.Distribution.Migrations
                         .IsRequired();
 
                     b.Navigation("CurrencyRates");
-
-                    b.Navigation("ShopSettings")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", b =>

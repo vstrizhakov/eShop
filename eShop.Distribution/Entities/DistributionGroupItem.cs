@@ -6,7 +6,7 @@ namespace eShop.Distribution.Entities
     public class DistributionGroupItem
     {
         public Guid GroupId { get; set; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public DistributionGroupItemStatus Status { get; set; }
         public Guid? TelegramChatId { get; set; }
         public Guid? ViberChatId { get; set; }

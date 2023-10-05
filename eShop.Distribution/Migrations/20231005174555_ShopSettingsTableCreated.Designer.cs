@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShop.Distribution.DbContexts;
 
@@ -11,9 +12,11 @@ using eShop.Distribution.DbContexts;
 namespace eShop.Distribution.Migrations
 {
     [DbContext(typeof(DistributionDbContext))]
-    partial class DistributionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231005174555_ShopSettingsTableCreated")]
+    partial class ShopSettingsTableCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace eShop.Distribution.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ShopShopSettings", b =>
-                {
-                    b.Property<Guid>("PreferredShopsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShopSettingsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("PreferredShopsId", "ShopSettingsId");
-
-                    b.HasIndex("ShopSettingsId");
-
-                    b.ToTable("ShopShopSettings");
-                });
 
             modelBuilder.Entity("eShop.Distribution.Entities.Account", b =>
                 {
@@ -389,21 +377,6 @@ namespace eShop.Distribution.Migrations
                         .IsUnique();
 
                     b.ToTable("ViberChats");
-                });
-
-            modelBuilder.Entity("ShopShopSettings", b =>
-                {
-                    b.HasOne("eShop.Distribution.Entities.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("PreferredShopsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eShop.Distribution.Entities.ShopSettings", null)
-                        .WithMany()
-                        .HasForeignKey("ShopSettingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.Account", b =>

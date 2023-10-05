@@ -34,6 +34,24 @@ namespace eShop.Telegram.Services
             return user;
         }
 
+        public async Task<TelegramUser?> GetUserByTelegramUserIdAsync(Guid telegramUserId)
+        {
+            var user = await _telegramUserRepository.GetTelegramUserByIdAsync(telegramUserId);
+            return user;
+        }
+
+        public async Task SetAccountIdAsync(TelegramUser user, Guid accountId)
+        {
+            await _telegramUserRepository.UpdateAccountIdAsync(user, accountId);
+        }
+
+        public async Task SetActiveContextAsync(TelegramUser user, string? context)
+        {
+            user.ActiveContext = context;
+
+            await _telegramUserRepository.UpdateTelegramUserAsync(user);
+        }
+
         public async Task UpdateUser(TelegramUser user)
         {
             await _telegramUserRepository.UpdateTelegramUserAsync(user);

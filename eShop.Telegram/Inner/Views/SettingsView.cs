@@ -27,6 +27,13 @@ namespace eShop.Telegram.Inner.Views
                         CallbackData = botContextConverter.Serialize(TelegramAction.CurrencySettings),
                     },
                 },
+                new[]
+                {
+                    new InlineKeyboardButton("Назад")
+                    {
+                        CallbackData = botContextConverter.Serialize(TelegramAction.)
+                    }
+                },
             });
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }

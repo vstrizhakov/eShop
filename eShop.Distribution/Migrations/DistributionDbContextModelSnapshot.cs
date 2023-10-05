@@ -17,7 +17,7 @@ namespace eShop.Distribution.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -26,6 +26,9 @@ namespace eShop.Distribution.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DistributionSettingsAccountId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FirstName")
@@ -44,6 +47,8 @@ namespace eShop.Distribution.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DistributionSettingsAccountId");
+
                     b.ToTable("Accounts");
                 });
 
@@ -60,6 +65,132 @@ namespace eShop.Distribution.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("9724739e-e4b8-45eb-ac11-efe2b0558a34"),
+                            Name = "UAH"
+                        },
+                        new
+                        {
+                            Id = new Guid("bf879fb6-7b4b-41c7-9cc5-df8724d511e5"),
+                            Name = "USD"
+                        },
+                        new
+                        {
+                            Id = new Guid("41ed0945-7196-4ead-8f5e-db262e62e536"),
+                            Name = "EUR"
+                        });
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.CurrencyRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DistributionSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double>("Rate")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("SourceCurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TargetCurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceCurrencyId");
+
+                    b.HasIndex("TargetCurrencyId");
+
+                    b.HasIndex("DistributionSettingsId", "TargetCurrencyId", "SourceCurrencyId")
+                        .IsUnique();
+
+                    b.ToTable("CurrencyRates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a3b279ea-2a65-4996-b0b5-ec242c90ebb2"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 4, 16, 54, 13, 339, DateTimeKind.Unspecified).AddTicks(853), new TimeSpan(0, 0, 0, 0, 0)),
+                            Rate = 37.090000000000003,
+                            SourceCurrencyId = new Guid("bf879fb6-7b4b-41c7-9cc5-df8724d511e5"),
+                            TargetCurrencyId = new Guid("9724739e-e4b8-45eb-ac11-efe2b0558a34")
+                        },
+                        new
+                        {
+                            Id = new Guid("a05f6d6b-ccb2-43fd-8694-eceafdf0ab31"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 4, 16, 54, 13, 339, DateTimeKind.Unspecified).AddTicks(858), new TimeSpan(0, 0, 0, 0, 0)),
+                            Rate = 39.109999999999999,
+                            SourceCurrencyId = new Guid("41ed0945-7196-4ead-8f5e-db262e62e536"),
+                            TargetCurrencyId = new Guid("9724739e-e4b8-45eb-ac11-efe2b0558a34")
+                        },
+                        new
+                        {
+                            Id = new Guid("d5d120a1-dba7-4e87-a4e1-9670a365dd2d"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 4, 16, 54, 13, 339, DateTimeKind.Unspecified).AddTicks(861), new TimeSpan(0, 0, 0, 0, 0)),
+                            Rate = 0.027,
+                            SourceCurrencyId = new Guid("9724739e-e4b8-45eb-ac11-efe2b0558a34"),
+                            TargetCurrencyId = new Guid("bf879fb6-7b4b-41c7-9cc5-df8724d511e5")
+                        },
+                        new
+                        {
+                            Id = new Guid("6fc5e363-a92e-4412-9dbb-c84841e06f91"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 4, 16, 54, 13, 339, DateTimeKind.Unspecified).AddTicks(863), new TimeSpan(0, 0, 0, 0, 0)),
+                            Rate = 1.05,
+                            SourceCurrencyId = new Guid("41ed0945-7196-4ead-8f5e-db262e62e536"),
+                            TargetCurrencyId = new Guid("bf879fb6-7b4b-41c7-9cc5-df8724d511e5")
+                        },
+                        new
+                        {
+                            Id = new Guid("e4021ee6-1568-448c-a95b-ac76191f235b"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 4, 16, 54, 13, 339, DateTimeKind.Unspecified).AddTicks(866), new TimeSpan(0, 0, 0, 0, 0)),
+                            Rate = 0.025999999999999999,
+                            SourceCurrencyId = new Guid("9724739e-e4b8-45eb-ac11-efe2b0558a34"),
+                            TargetCurrencyId = new Guid("41ed0945-7196-4ead-8f5e-db262e62e536")
+                        },
+                        new
+                        {
+                            Id = new Guid("69d06081-f197-4823-8248-eb6c60cb73a4"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 4, 16, 54, 13, 339, DateTimeKind.Unspecified).AddTicks(904), new TimeSpan(0, 0, 0, 0, 0)),
+                            Rate = 0.94999999999999996,
+                            SourceCurrencyId = new Guid("bf879fb6-7b4b-41c7-9cc5-df8724d511e5"),
+                            TargetCurrencyId = new Guid("41ed0945-7196-4ead-8f5e-db262e62e536")
+                        });
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.CurrencyRateHistoryRecord", b =>
+                {
+                    b.Property<Guid>("DistributionSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DistributionSettingsHistoryRecordId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Rate")
+                        .HasColumnType("float");
+
+                    b.HasKey("DistributionSettingsId", "CurrencyId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("DistributionSettingsHistoryRecordId");
+
+                    b.ToTable("CurrencyRateHistoryRecord");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroup", b =>
@@ -109,26 +240,40 @@ namespace eShop.Distribution.Migrations
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettings", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("AccountId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("PreferredCurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AccountId");
+
+                    b.HasIndex("PreferredCurrencyId");
+
+                    b.ToTable("DistributionSettings");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PreferredCurrencyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
-
                     b.HasIndex("PreferredCurrencyId");
 
-                    b.ToTable("DistributionSettings");
+                    b.ToTable("DistributionSettingsHistoryRecord");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.TelegramChat", b =>
@@ -170,9 +315,69 @@ namespace eShop.Distribution.Migrations
                     b.ToTable("ViberChats");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.Account", b =>
                 {
                     b.HasOne("eShop.Distribution.Entities.DistributionSettings", "DistributionSettings")
+                        .WithMany()
+                        .HasForeignKey("DistributionSettingsAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DistributionSettings");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.CurrencyRate", b =>
+                {
+                    b.HasOne("eShop.Distribution.Entities.DistributionSettings", "DistributionSettings")
+                        .WithMany("CurrencyRates")
+                        .HasForeignKey("DistributionSettingsId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("eShop.Distribution.Entities.Currency", "SourceCurrency")
+                        .WithMany()
+                        .HasForeignKey("SourceCurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("eShop.Distribution.Entities.Currency", "TargetCurrency")
+                        .WithMany()
+                        .HasForeignKey("TargetCurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DistributionSettings");
+
+                    b.Navigation("SourceCurrency");
+
+                    b.Navigation("TargetCurrency");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.CurrencyRateHistoryRecord", b =>
+                {
+                    b.HasOne("eShop.Distribution.Entities.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", null)
+                        .WithMany("CurrencyRates")
+                        .HasForeignKey("DistributionSettingsHistoryRecordId");
+
+                    b.HasOne("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", "DistributionSettings")
+                        .WithMany()
+                        .HasForeignKey("DistributionSettingsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("DistributionSettings");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>
+                {
+                    b.HasOne("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", "DistributionSettings")
                         .WithMany()
                         .HasForeignKey("DistributionSettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -203,16 +408,19 @@ namespace eShop.Distribution.Migrations
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettings", b =>
                 {
-                    b.HasOne("eShop.Distribution.Entities.Account", null)
-                        .WithMany("DistributionSettings")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("eShop.Distribution.Entities.Currency", "PreferredCurrency")
+                        .WithMany()
+                        .HasForeignKey("PreferredCurrencyId");
 
+                    b.Navigation("PreferredCurrency");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", b =>
+                {
                     b.HasOne("eShop.Distribution.Entities.Currency", "PreferredCurrency")
                         .WithMany()
                         .HasForeignKey("PreferredCurrencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PreferredCurrency");
@@ -242,8 +450,6 @@ namespace eShop.Distribution.Migrations
 
             modelBuilder.Entity("eShop.Distribution.Entities.Account", b =>
                 {
-                    b.Navigation("DistributionSettings");
-
                     b.Navigation("TelegramChats");
 
                     b.Navigation("ViberChat");
@@ -252,6 +458,16 @@ namespace eShop.Distribution.Migrations
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroup", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettings", b =>
+                {
+                    b.Navigation("CurrencyRates");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", b =>
+                {
+                    b.Navigation("CurrencyRates");
                 });
 #pragma warning restore 612, 618
         }

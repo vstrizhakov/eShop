@@ -66,6 +66,9 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<SyncCurrenciesMessage, SyncCurrenciesMessageHandler>();
             builder.Services.AddMessageHandler<GetPreferredCurrencyRequest, GetPreferredCurrencyRequestHandler>();
             builder.Services.AddMessageHandler<SetPreferredCurrencyRequest, SetPreferredCurrencyRequestHandler>();
+            builder.Services.AddMessageHandler<GetCurrencyRatesRequest, GetCurrencyRatesRequestHandler>();
+            builder.Services.AddMessageHandler<SetCurrencyRateRequest, SetCurrencyRateRequestHandler>();
+            builder.Services.AddMessageHandler<GetCurrencyRateRequest, GetCurrencyRateRequestHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

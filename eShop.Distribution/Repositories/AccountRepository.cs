@@ -45,7 +45,11 @@ namespace eShop.Distribution.Repositories
 
             if (includeDistributionSettings)
             {
-                query = query.Include(e => e.DistributionSettings);
+                query = query
+                    .Include(e => e.DistributionSettings)
+                        .ThenInclude(e => e.CurrencyRates)
+                    .Include(e => e.DistributionSettings)
+                        .ThenInclude(e => e.PreferredCurrency);
             }
 
             if (isActivated.HasValue)

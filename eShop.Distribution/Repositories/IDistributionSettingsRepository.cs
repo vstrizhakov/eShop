@@ -4,7 +4,8 @@ namespace eShop.Distribution.Repositories
 {
     public interface IDistributionSettingsRepository
     {
-        Task CreateDistributionSettingsAsync(DistributionSettings distributionSettings);
-        Task<DistributionSettings?> GetActiveDistributionSettingsAsync(Guid accountId);
+        Task UpdateDistributionSettingsAsync(DistributionSettings distributionSettings);
+        Task<DistributionSettings?> GetDistributionSettingsAsync(Guid accountId);
+        Task<IEnumerable<CurrencyRate>> GetDefaultCurrencyRatesAsync(Guid targetCurrencyId);
     }
 }

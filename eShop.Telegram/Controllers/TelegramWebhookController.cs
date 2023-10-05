@@ -104,7 +104,20 @@ namespace eShop.Telegram.Controllers
                 }
             }
 
-            await telegramMiddleware.ProcessAsync(update);
+            var activeContext = default(string);
+            if (update.Type == UpdateType.Message)
+            {
+                var from = update.Message!.From;
+                if (from != null)
+                {
+                    var user = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(from.Id);
+                    if (user != null)
+                    {
+                        activeContext = user.ActiveContext;
+                    }
+                }
+            }
+            await telegramMiddleware.ProcessAsync(update, activeContext);
 
             return Ok();
         }

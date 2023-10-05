@@ -13,6 +13,8 @@ namespace eShop.Distribution.Profiles
                     options.Condition(src => src.Currency != null);
                     options.MapFrom(src => src.Currency!.PreferredCurrencyId);
                 });
+            CreateMap<Entities.CurrencyRate, Messaging.Models.Distribution.CurrencyRate>()
+                .ForMember(dest => dest.Currency, options => options.MapFrom(src => src.SourceCurrency));
         }
     }
 }

@@ -14,28 +14,70 @@ namespace eShop.Distribution.Services
 
         public async Task<DistributionSettings> GetDistributionSettingsAsync(Guid accountId)
         {
-            var distributionSettings = await _distributionSettingsRepository.GetActiveDistributionSettingsAsync(accountId);
-            if (distributionSettings == null)
-            {
-                distributionSettings = new DistributionSettings();
-            }
+            var distributionSettings = (await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId))!;
+            return distributionSettings;
+        }
+
+        public async Task<DistributionSettings> SetPreferredCurrencyAsync(Guid accountId, Guid currencyId)
+        {
+            var distributionSettings = (await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId))!;
+
+            distributionSettings.PreferredCurrencyId = currencyId;
+
+            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
 
             return distributionSettings;
         }
 
-        public async Task<DistributionSettings> UpdateDistributionSettingsAsync(Guid accountId, DistributionSettings distributionSettings)
+        public async Task<IEnumerable<CurrencyRate>> GetCurrencyRatesAsync(DistributionSettings distributionSettings)
         {
-            var oldDistributionSettings = await _distributionSettingsRepository.GetActiveDistributionSettingsAsync(accountId);
-            if (oldDistributionSettings != null)
+            if (distributionSettings.PreferredCurrencyId == null)
             {
-                if (distributionSettings.PreferredCurrencyId == default)
-                {
-                    distributionSettings.PreferredCurrencyId = oldDistributionSettings.PreferredCurrencyId;
-                }
+                throw new InvalidOperationException(); // TODO: not sure we need this a per history record
             }
 
-            distributionSettings.AccountId = accountId;
-            await _distributionSettingsRepository.CreateDistributionSettingsAsync(distributionSettings);
+            var preferredCurrencyId = distributionSettings.PreferredCurrencyId.Value;
+            var defaultCurrencyRates = await _distributionSettingsRepository.GetDefaultCurrencyRatesAsync(preferredCurrencyId);
+            var customCurrencyRates = distributionSettings.CurrencyRates.Where(e => e.TargetCurrencyId == preferredCurrencyId);
+
+            var currencyRates = customCurrencyRates
+                .Concat(defaultCurrencyRates)
+                .DistinctBy(e => e.SourceCurrencyId);
+            return currencyRates;
+        }
+
+        public async Task<DistributionSettings> SetCurrencyRateAsync(Guid accountId, Guid sourceCurrencyId, double rate)
+        {
+            var distributionSettings = (await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId))!;
+            if (distributionSettings.PreferredCurrencyId == null)
+            {
+                throw new InvalidOperationException(); // TODO: not sure we need this a per history record
+            }
+
+            var targetCurrencyId = distributionSettings.PreferredCurrencyId.Value;
+            var currencyRates = distributionSettings.CurrencyRates;
+
+            var currencyRate = currencyRates.FirstOrDefault(e => e.TargetCurrencyId == targetCurrencyId && e.SourceCurrencyId == sourceCurrencyId);
+            if (currencyRate == null)
+            {
+                var defaultCurrencyRates = await _distributionSettingsRepository.GetDefaultCurrencyRatesAsync(targetCurrencyId);
+                if (!defaultCurrencyRates.Any(e => e.SourceCurrencyId == sourceCurrencyId))
+                {
+                    throw new InvalidOperationException();
+                }
+
+                currencyRate = new CurrencyRate
+                {
+                    TargetCurrencyId = targetCurrencyId,
+                    SourceCurrencyId = sourceCurrencyId,
+                };
+
+                currencyRates.Add(currencyRate);
+            }
+
+            currencyRate.Rate = rate;
+
+            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
 
             return distributionSettings;
         }

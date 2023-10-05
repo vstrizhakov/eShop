@@ -17,7 +17,7 @@ namespace eShop.Distribution.Tests.Services
 
             var distributionSettingsRepository = new Mock<IDistributionSettingsRepository>();
             distributionSettingsRepository
-                .Setup(e => e.GetActiveDistributionSettingsAsync(accountId))
+                .Setup(e => e.GetDistributionSettingsAsync(accountId))
                 .ReturnsAsync(distributionSettings);
 
             var sut = new DistributionSettingsService(distributionSettingsRepository.Object);
@@ -42,7 +42,7 @@ namespace eShop.Distribution.Tests.Services
 
             var distributionSettingsRepository = new Mock<IDistributionSettingsRepository>();
             distributionSettingsRepository
-                .Setup(e => e.GetActiveDistributionSettingsAsync(accountId))
+                .Setup(e => e.GetDistributionSettingsAsync(accountId))
                 .ReturnsAsync(default(DistributionSettings));
 
             var sut = new DistributionSettingsService(distributionSettingsRepository.Object);

@@ -15,6 +15,6 @@ namespace eShop.Distribution.Entities
         public DistributionGroup Group { get; set; }
         public TelegramChat? TelegramChat { get; set; }
         public ViberChat? ViberChat { get; set; }
-        public DistributionSettings DistributionSettings { get; set; }
+        public DistributionSettingsHistoryRecord DistributionSettings { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace eShop.Telegram.Inner
             _serviceProvider = serviceProvider;
         }
 
-        public async Task ProcessAsync(Update update)
+        public async Task ProcessAsync(Update update, string? activeContext = null)
         {
             if (update.Type == UpdateType.Message)
             {
@@ -30,14 +30,23 @@ namespace eShop.Telegram.Inner
                     {
                         var text = message.Text!;
 
-                        var command = text;
+                        var command = default(string);
                         var data = default(string);
 
-                        var seperatorIndex = text.IndexOf(' ');
-                        if (seperatorIndex != -1)
+                        if (text.StartsWith('/'))
                         {
-                            command = text.Substring(0, seperatorIndex);
-                            data = text.Substring(seperatorIndex + 1, text.Length - seperatorIndex - 1);
+                            command = text;
+
+                            var seperatorIndex = text.IndexOf(' ');
+                            if (seperatorIndex != -1)
+                            {
+                                command = text.Substring(0, seperatorIndex);
+                                data = text.Substring(seperatorIndex + 1, text.Length - seperatorIndex - 1);
+                            }
+                        }
+                        else if (activeContext != null)
+                        {
+                            data = activeContext;
                         }
 
                         await ProcessAsync(update, TelegramContext.TextMessage, command, data);

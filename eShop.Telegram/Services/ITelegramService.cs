@@ -8,5 +8,8 @@ namespace eShop.Telegram.Services
         IEnumerable<TelegramChatMember> GetManagableChats(TelegramUser user);
         Task UpdateUser(TelegramUser user);
         Task<TelegramUser?> GetUserByAccountIdAsync(Guid accountId);
+        Task<TelegramUser?> GetUserByTelegramUserIdAsync(Guid telegramUserId);
+        Task SetAccountIdAsync(TelegramUser user, Guid accountId);
+        Task SetActiveContextAsync(TelegramUser user, string? context);
     }
 }

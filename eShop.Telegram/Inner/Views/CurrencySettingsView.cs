@@ -22,7 +22,7 @@ namespace eShop.Telegram.Inner.Views
         {
             var text = "Мої валюти";
 
-            var buttons = new List<InlineKeyboardButton>();
+            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
 
             {
                 var buttonText = "Основна валюта";
@@ -35,7 +35,26 @@ namespace eShop.Telegram.Inner.Views
                 {
                     CallbackData = botContextConverter.Serialize(TelegramAction.PreferredCurrencySettings),
                 };
-                buttons.Add(button);
+                buttons.Add(new[] { button });
+            }
+
+            if (_preferredCurrency != null)
+            {
+                var buttonText = "Курси валют";
+                var button = new InlineKeyboardButton(buttonText)
+                {
+                    CallbackData = botContextConverter.Serialize(TelegramAction.CurrencyRatesSettings),
+                };
+                buttons.Add(new[] { button });
+            }
+
+            {
+                var buttonText = "Назад";
+                var button = new InlineKeyboardButton(buttonText)
+                {
+                    CallbackData = botContextConverter.Serialize(TelegramAction.Settings),
+                };
+                buttons.Add(new[] { button });
             }
 
             var replyMarkup = new InlineKeyboardMarkup(buttons);

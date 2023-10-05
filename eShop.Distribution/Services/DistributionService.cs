@@ -8,11 +8,13 @@ namespace eShop.Distribution.Services
     {
         private readonly IDistributionRepository _distributionRepository;
         private readonly IAccountRepository _accountRepository;
+        private readonly IDistributionSettingsService _distributionSettingsService;
 
-        public DistributionService(IDistributionRepository distributionRepository, IAccountRepository accountRepository)
+        public DistributionService(IDistributionRepository distributionRepository, IAccountRepository accountRepository, IDistributionSettingsService distributionSettingsService)
         {
             _distributionRepository = distributionRepository;
             _accountRepository = accountRepository;
+            _distributionSettingsService = distributionSettingsService;
         }
 
         public async Task<DistributionGroup> CreateDistributionFromProviderIdAsync(Guid providerId)
@@ -24,30 +26,38 @@ namespace eShop.Distribution.Services
 
             var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId, true, true);
 
-            var telegramChatIds = accounts
+            var telegramChatGroups = accounts
                 .SelectMany(e => e.TelegramChats)
-                .Where(e => e.IsEnabled);
-            foreach (var telegramChat in telegramChatIds)
+                .Where(e => e.IsEnabled)
+                .GroupBy(e => e.Account);
+            foreach (var telegramChats in telegramChatGroups)
             {
-                var distributionGroupItem = new DistributionGroupItem
-                {
-                    TelegramChatId = telegramChat.Id,
-                    DistributionSettings = telegramChat.Account.ActiveDistributionSettings,
-                };
+                var historyRecord = await CreateHistoryRecord(telegramChats.Key.DistributionSettings);
 
-                distributionGroup.Items.Add(distributionGroupItem);
+                foreach (var telegramChat in telegramChats)
+                {
+                    var distributionGroupItem = new DistributionGroupItem
+                    {
+                        TelegramChatId = telegramChat.Id,
+                        DistributionSettings = historyRecord,
+                    };
+
+                    distributionGroup.Items.Add(distributionGroupItem);
+                }
             }
 
-            var viberChatIds = accounts
+            var viberChats = accounts
                 .Where(e => e.ViberChat != null)
                 .Select(e => e.ViberChat)
                 .Where(e => e.IsEnabled);
-            foreach (var viberChat in viberChatIds)
+            foreach (var viberChat in viberChats)
             {
+                var historyRecord = await CreateHistoryRecord(viberChat.Account.DistributionSettings);
+
                 var distributionGroupItem = new DistributionGroupItem
                 {
                     ViberChatId = viberChat.Id,
-                    DistributionSettings = viberChat.Account.ActiveDistributionSettings,
+                    DistributionSettings = historyRecord,
                 };
 
                 distributionGroup.Items.Add(distributionGroupItem);
@@ -74,6 +84,24 @@ namespace eShop.Distribution.Services
             request.Status = deliveryFailed ? DistributionGroupItemStatus.Failed : DistributionGroupItemStatus.Delivered;
 
             await _distributionRepository.UpdateDistributionGroupItemAsync(request);
+        }
+
+        private async Task<DistributionSettingsHistoryRecord> CreateHistoryRecord(DistributionSettings distributionSettings)
+        {
+            // TODO: Check preferre currency on null
+            var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
+
+            var historyRecord = new DistributionSettingsHistoryRecord
+            {
+                PreferredCurrency = distributionSettings.PreferredCurrency,
+                CurrencyRates = currencyRates.Select(e => new CurrencyRateHistoryRecord
+                {
+                    CurrencyId = e.SourceCurrencyId,
+                    Rate = e.Rate,
+                }).ToList(),
+            };
+
+            return historyRecord;
         }
     }
 }

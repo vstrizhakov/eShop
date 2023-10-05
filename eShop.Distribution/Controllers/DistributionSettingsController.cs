@@ -29,15 +29,5 @@ namespace eShop.Distribution.Controllers
             var response = _mapper.Map<DistributionSettings>(distributionSettings);
             return Ok(response);
         }
-
-        [HttpPatch]
-        public async Task<ActionResult<DistributionSettings>> UpdateDistributionSettings([FromBody] UpdateDistributionSettingsRequest request)
-        {
-            var accountId = User.GetAccountId().Value;
-            var distributionSettings = _mapper.Map<Entities.DistributionSettings>(request);
-            distributionSettings = await _distributionSettingsService.UpdateDistributionSettingsAsync(accountId, distributionSettings);
-            var response = _mapper.Map<DistributionSettings>(distributionSettings);
-            return Ok(response);
-        }
     }
 }

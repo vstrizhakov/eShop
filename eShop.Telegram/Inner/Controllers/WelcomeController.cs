@@ -1,8 +1,6 @@
 ﻿using eShop.Telegram.Inner.Contexts;
 using eShop.Telegram.Inner.Views;
-using eShop.Telegram.Repositories;
 using eShop.Telegram.Services;
-using Telegram.Bot.Types.Enums;
 
 namespace eShop.Telegram.Inner.Controllers
 {

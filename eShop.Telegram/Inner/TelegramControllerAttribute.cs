@@ -1,7 +1,7 @@
 ﻿namespace eShop.Telegram.Inner
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class TelegramControllerAttribute : Attribute
+    public sealed class TelegramControllerAttribute : Attribute
     {
         public TelegramContext Context { get; set; }
         public string? Command { get; set; }

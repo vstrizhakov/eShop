@@ -7,7 +7,7 @@ using eShop.Telegram.Inner.Contexts;
 
 namespace eShop.Telegram.Inner.Controllers
 {
-    [TelegramController(TelegramAction.SetUpGroup, Context = TelegramContext.TextMessage, Command = "/start")]
+    [TelegramController(TelegramAction.RegisterClient, Context = TelegramContext.TextMessage, Command = "/start")]
     public class StartRegisterController : TelegramControllerBase
     {
         private readonly ITelegramUserRepository _telegramUserRepository;

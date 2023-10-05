@@ -41,8 +41,6 @@ namespace eShop.Telegram.Inner.Controllers
                     ProviderId = providerId.Value,
                 };
                 _producer.Publish(internalMessage);
-
-                return new WelcomeView(context.ChatId);
             }
 
             return null;

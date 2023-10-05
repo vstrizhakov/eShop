@@ -49,9 +49,9 @@ namespace eShop.Distribution.Services
                 FirstName = firstName,
                 LastName = lastName,
                 ProviderId = providerId,
-                DistributionSettings =
+                DistributionSettings = new DistributionSettings
                 {
-                    new DistributionSettings()
+                    AccountId = accountId,
                 },
             };
 

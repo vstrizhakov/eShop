@@ -23,15 +23,12 @@ namespace eShop.Distribution.MessageHandlers
         {
             var accountId = message.AccountId;
 
-            var distributionSettings = new Entities.DistributionSettings
-            {
-                PreferredCurrencyId = message.CurrencyId,
-            };
+            var distributionSettings = default(Entities.DistributionSettings);
 
             var succeeded = true;
             try
             {
-                distributionSettings = await _distributionSettingsService.UpdateDistributionSettingsAsync(accountId, distributionSettings);
+                distributionSettings = await _distributionSettingsService.SetPreferredCurrencyAsync(accountId, message.CurrencyId);
 
             }
             catch
@@ -39,7 +36,7 @@ namespace eShop.Distribution.MessageHandlers
                 succeeded = false;
             }
 
-            var preferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
+            var preferredCurrency = _mapper.Map<Currency>(distributionSettings?.PreferredCurrency);
             var response = new SetPreferredCurrencyResponse(accountId, succeeded, preferredCurrency);
             _producer.Publish(response);
         }

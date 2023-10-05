@@ -1,83 +1,48 @@
 ﻿using eShop.Bots.Common;
 using eShop.Messaging;
 using eShop.Messaging.Models;
-using eShop.Telegram.Models;
+using eShop.Telegram.Inner.Views;
+using eShop.Telegram.Services;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
-using eShop.Telegram.Repositories;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.MessageHandlers
 {
     public class TelegramUserCreateAccountResponseMessageHandler : IMessageHandler<TelegramUserCreateAccountResponseMessage>
     {
+        private readonly ITelegramService _telegramService;
         private readonly ITelegramBotClient _botClient;
-        private readonly ITelegramUserRepository _repository;
         private readonly IBotContextConverter _botContextConverter;
 
         public TelegramUserCreateAccountResponseMessageHandler(
+            ITelegramService telegramService,
             ITelegramBotClient botClient,
-            ITelegramUserRepository repository,
             IBotContextConverter botContextConverter)
         {
+            _telegramService = telegramService;
             _botClient = botClient;
-            _repository = repository;
             _botContextConverter = botContextConverter;
         }
 
         public async Task HandleMessageAsync(TelegramUserCreateAccountResponseMessage message)
         {
-            var telegramUser = await _repository.GetTelegramUserByIdAsync(message.TelegramUserId);
-            if (telegramUser != null)
+            var user = await _telegramService.GetUserByTelegramUserIdAsync(message.TelegramUserId);
+            if (user != null)
             {
-                await _repository.UpdateAccountIdAsync(telegramUser, message.AccountId);
+                await _telegramService.SetAccountIdAsync(user, message.AccountId);
 
-                var chatId = telegramUser.Chats.Select(e => e.Chat).FirstOrDefault(e => e.Type == ChatType.Private)?.ExternalId;
-                if (chatId != null)
+                var chatId = user.ExternalId;
+
                 {
-                    {
-                        var replyMarkup = new ReplyKeyboardRemove();
-                        var replyText = $"Вас успішно зареєстровано\n\n{message.ProviderEmail} встановлений як Ваш постачальник анонсів.";
+                    var replyMarkup = new ReplyKeyboardRemove();
+                    var replyText = $"Вас успішно зареєстровано\n\n{message.ProviderEmail} встановлений як Ваш постачальник анонсів.";
 
-                        await _botClient.SendTextMessageAsync(new ChatId(chatId.Value), replyText, replyMarkup: replyMarkup);
-                    }
-
-                    var telegramUserChats = telegramUser.Chats
-                        .Where(e => e.Chat.Type == ChatType.Group || e.Chat.Type == ChatType.Channel || e.Chat.Type == ChatType.Supergroup)
-                        .Where(e => e.Chat.SupergroupId == null)
-                        .Where(e => e.Status == ChatMemberStatus.Creator || e.Status == ChatMemberStatus.Administrator);
-                    if (telegramUserChats.Any())
-                    {
-                        var replyText = "Оберіть групу чи канал, до якої хотіли б налаштувати відправку анонсів:";
-                        var replyMarkup = new InlineKeyboardMarkup(telegramUserChats.Select(e =>
-                        {
-                            var chat = e.Chat;
-                            var callbackData = _botContextConverter.Serialize(TelegramAction.SetUpGroup, e.ChatId.ToString());
-                            return new List<InlineKeyboardButton>()
-                            {
-                                InlineKeyboardButton.WithCallbackData(chat.Title!, callbackData),
-                            };
-                        }));
-                        await _botClient.SendTextMessageAsync(new ChatId(chatId.Value), replyText, replyMarkup: replyMarkup);
-                    }
-                    else
-                    {
-                        var replyText = "Додайте бота до групи чи каналу, у який хочете налаштувати відправку анонсів, і натисніть кнопку Оновити нижче.";
-                        var replyMarkup = new InlineKeyboardMarkup(new List<InlineKeyboardButton>()
-                        {
-                            new InlineKeyboardButton("Оновити")
-                            {
-                                CallbackData = _botContextConverter.Serialize(TelegramAction.Refresh),
-                            },
-                        });
-                        await _botClient.SendTextMessageAsync(new ChatId(chatId.Value), replyText, replyMarkup: replyMarkup);
-                    }
+                    await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
                 }
-            }
-            else
-            {
 
+                var telegramView = new WelcomeView(chatId);
+                await telegramView.ProcessAsync(_botClient, _botContextConverter);
             }
         }
     }

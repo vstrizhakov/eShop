@@ -12,5 +12,7 @@
         public const string CurrencySettings = "cs";
         public const string PreferredCurrencySettings = "pcs";
         public const string SetPreferredCurrency = "spc";
+        public const string CurrencyRatesSettings = "crs";
+        public const string SetCurrencyRate = "scr";
     }
 }

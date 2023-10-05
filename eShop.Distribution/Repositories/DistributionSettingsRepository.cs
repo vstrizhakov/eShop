@@ -13,22 +13,34 @@ namespace eShop.Distribution.Repositories
             _context = context;
         }
 
-        public async Task CreateDistributionSettingsAsync(DistributionSettings distributionSettings)
+        public async Task UpdateDistributionSettingsAsync(DistributionSettings distributionSettings)
         {
-            _context.DistributionSettings.Add(distributionSettings);
+            distributionSettings.ModifiedAt = DateTimeOffset.UtcNow;
 
             await _context.SaveChangesAsync();
 
+            // TODO: Check
             await _context.DistributionSettings.Entry(distributionSettings).Reference(e => e.PreferredCurrency).LoadAsync();
         }
 
-        public async Task<DistributionSettings?> GetActiveDistributionSettingsAsync(Guid accountId)
+        public async Task<DistributionSettings?> GetDistributionSettingsAsync(Guid accountId)
         {
             var distributionSettings = await _context.DistributionSettings
                 .Include(e => e.PreferredCurrency)
-                .OrderByDescending(e => e.CreatedAt)
+                .Include(e => e.CurrencyRates)
+                    .ThenInclude(e => e.SourceCurrency)
                 .FirstOrDefaultAsync(e => e.AccountId == accountId);
             return distributionSettings;
+        }
+
+        public async Task<IEnumerable<CurrencyRate>> GetDefaultCurrencyRatesAsync(Guid targetCurrencyId)
+        {
+            var currencyRates = await _context.CurrencyRates
+                .Include(e => e.SourceCurrency)
+                .Where(e => e.DistributionSettingsId == null)
+                .Where(e => e.TargetCurrencyId == targetCurrencyId)
+                .ToListAsync();
+            return currencyRates;
         }
     }
 }

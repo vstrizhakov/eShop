@@ -1,8 +1,8 @@
 ﻿using eShop.Bots.Common;
 using eShop.Messaging;
 using eShop.Messaging.Models;
-using eShop.Telegram.Inner.Views;
 using eShop.Telegram.Services;
+using eShop.Telegram.TelegramFramework.Views;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;

@@ -1,7 +1,6 @@
-﻿using eShop.Bots.Common;
-using eShop.Telegram.Entities;
-using eShop.Telegram.Inner;
+﻿using eShop.Telegram.Entities;
 using eShop.Telegram.Repositories;
+using eShop.TelegramFramework;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -30,7 +29,6 @@ namespace eShop.Telegram.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(
             [FromBody] Update update,
-            [FromServices] IBotContextConverter botContextConverter,
             [FromServices] ITelegramMiddleware telegramMiddleware)
         {
             Message? message = null;

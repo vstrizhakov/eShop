@@ -5,13 +5,12 @@ using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
 using eShop.Telegram.DbContexts;
-using eShop.Telegram.Inner;
 using eShop.Telegram.MessageHandlers;
 using eShop.Telegram.Repositories;
 using eShop.Telegram.Services;
+using eShop.TelegramFramework.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Newtonsoft.Json;
@@ -89,9 +88,10 @@ namespace eShop.Telegram
                 });
 
             builder.Services.AddScoped<ITelegramInvitationLinkGenerator, TelegramInvitationLinkGenerator>();
-            builder.Services.AddScoped<ITelegramMiddleware, TelegramMiddleware>();
 
             builder.Services.AddScoped<ITelegramService, TelegramService>();
+
+            builder.Services.AddTelegramFramework();
 
             var app = builder.Build();
 

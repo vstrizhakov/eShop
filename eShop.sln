@@ -56,6 +56,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.Configuration", "eShop.Configuration\eShop.Configuration.csproj", "{900F1D3A-BDFC-4A44-8E9D-262655AA55F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.TelegramFramework", "eShop.TelegramFramework\eShop.TelegramFramework.csproj", "{82475C1D-75F9-4F70-8B4C-92E59B74EAD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,10 @@ Global
 		{900F1D3A-BDFC-4A44-8E9D-262655AA55F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{900F1D3A-BDFC-4A44-8E9D-262655AA55F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{900F1D3A-BDFC-4A44-8E9D-262655AA55F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82475C1D-75F9-4F70-8B4C-92E59B74EAD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82475C1D-75F9-4F70-8B4C-92E59B74EAD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82475C1D-75F9-4F70-8B4C-92E59B74EAD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82475C1D-75F9-4F70-8B4C-92E59B74EAD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

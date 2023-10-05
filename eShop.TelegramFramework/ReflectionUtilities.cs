@@ -7,7 +7,7 @@ namespace eShop.TelegramFramework
     {
         public static MethodInfo? FindControllerMethod<TAttribute>(Func<TAttribute, bool> filter) where TAttribute : Attribute
         {
-            var method = Assembly.GetExecutingAssembly()
+            var method = Assembly.GetEntryAssembly()
                 .GetTypes()
                 .Where(e => e.IsSubclassOf(typeof(TelegramControllerBase)))
                 .Where(e => e.GetCustomAttribute<TelegramControllerAttribute>() != null)
@@ -53,6 +53,17 @@ namespace eShop.TelegramFramework
                     if (Guid.TryParse(parameterValue, out var guid))
                     {
                         methodParams[i] = guid;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }
+                else if (parameterType == typeof(bool))
+                {
+                    if (bool.TryParse(parameterValue, out var @bool))
+                    {
+                        methodParams[i] = @bool;
                     }
                     else
                     {

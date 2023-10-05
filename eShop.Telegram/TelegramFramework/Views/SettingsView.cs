@@ -30,6 +30,13 @@ namespace eShop.Telegram.TelegramFramework.Views
                 },
                 new[]
                 {
+                    new InlineKeyboardButton("Моя комісія")
+                    {
+                        CallbackData = botContextConverter.Serialize(TelegramAction.ComissionSettings),
+                    },
+                },
+                new[]
+                {
                     new InlineKeyboardButton("Назад")
                     {
                         CallbackData = botContextConverter.Serialize(TelegramAction.Home),

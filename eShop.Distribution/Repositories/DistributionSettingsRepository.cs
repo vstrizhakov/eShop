@@ -29,6 +29,7 @@ namespace eShop.Distribution.Repositories
                 .Include(e => e.PreferredCurrency)
                 .Include(e => e.CurrencyRates)
                     .ThenInclude(e => e.SourceCurrency)
+                .Include(e => e.ComissionSettings)
                 .FirstOrDefaultAsync(e => e.AccountId == accountId);
             return distributionSettings;
         }

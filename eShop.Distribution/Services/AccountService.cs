@@ -52,6 +52,8 @@ namespace eShop.Distribution.Services
                 DistributionSettings = new DistributionSettings
                 {
                     AccountId = accountId,
+                    ComissionSettings = new ComissionSettings(),
+                    ShopSettings = new ShopSettings(),
                 },
             };
 

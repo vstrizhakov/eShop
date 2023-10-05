@@ -69,6 +69,10 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<GetCurrencyRatesRequest, GetCurrencyRatesRequestHandler>();
             builder.Services.AddMessageHandler<SetCurrencyRateRequest, SetCurrencyRateRequestHandler>();
             builder.Services.AddMessageHandler<GetCurrencyRateRequest, GetCurrencyRateRequestHandler>();
+            builder.Services.AddMessageHandler<GetComissionSettingsRequest, GetComissionSettingsRequestHandler>();
+            builder.Services.AddMessageHandler<SetComissionShowRequest, SetComissionShowRequestHandler>();
+            builder.Services.AddMessageHandler<SetComissionAmountRequest, SetComissionAmountRequestHandler>();
+            builder.Services.AddMessageHandler<GetComissionAmountRequest, GetComissionAmountRequestHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

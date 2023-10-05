@@ -78,6 +78,10 @@ namespace eShop.Telegram
             builder.Services.AddMessageHandler<GetCurrencyRatesResponse, GetCurrencyRatesResponseHandler>();
             builder.Services.AddMessageHandler<GetCurrencyRateResponse, GetCurrencyRateResponseHandler>();
             builder.Services.AddMessageHandler<SetCurrencyRateResponse, SetCurrencyRateResponseHandler>();
+            builder.Services.AddMessageHandler<GetComissionSettingsResponse, GetComissionSettingsResponseHandler>();
+            builder.Services.AddMessageHandler<SetComissionShowResponse, SetComissionShowResponseHandler>();
+            builder.Services.AddMessageHandler<GetComissionAmountResponse, GetComissionAmountResponseHandler>();
+            builder.Services.AddMessageHandler<SetComissionAmountResponse, SetComissionAmountResponseHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

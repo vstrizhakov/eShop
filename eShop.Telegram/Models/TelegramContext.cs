@@ -15,5 +15,8 @@
         public const string CurrencyRatesSettings = "crs";
         public const string SetCurrencyRate = "scr";
         public const string Home = "h";
+        public const string ComissionSettings = "comset";
+        public const string SetComissionShow = "setcoms";
+        public const string SetComissionAmount = "setcoma";
     }
 }

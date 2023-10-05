@@ -12,15 +12,19 @@ namespace eShop.Distribution.Services
             _distributionSettingsRepository = distributionSettingsRepository;
         }
 
-        public async Task<DistributionSettings> GetDistributionSettingsAsync(Guid accountId)
+        public async Task<DistributionSettings?> GetDistributionSettingsAsync(Guid accountId)
         {
-            var distributionSettings = (await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId))!;
+            var distributionSettings = await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId);
             return distributionSettings;
         }
 
         public async Task<DistributionSettings> SetPreferredCurrencyAsync(Guid accountId, Guid currencyId)
         {
-            var distributionSettings = (await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId))!;
+            var distributionSettings = await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId);
+            if (distributionSettings == null)
+            {
+                throw new InvalidOperationException(); // TODO:
+            }
 
             distributionSettings.PreferredCurrencyId = currencyId;
 
@@ -76,6 +80,36 @@ namespace eShop.Distribution.Services
             }
 
             currencyRate.Rate = rate;
+
+            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
+
+            return distributionSettings;
+        }
+
+        public async Task<DistributionSettings> SetComissionShowAsync(Guid accountId, bool show)
+        {
+            var distributionSettings = await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId);
+            if (distributionSettings == null)
+            {
+                throw new InvalidOperationException(); // TODO:
+            }
+
+            distributionSettings.ComissionSettings.Show = show;
+
+            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
+
+            return distributionSettings;
+        }
+
+        public async Task<DistributionSettings> SetComissionAmountAsync(Guid accountId, decimal amount)
+        {
+            var distributionSettings = await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId);
+            if (distributionSettings == null)
+            {
+                throw new InvalidOperationException(); // TODO:
+            }
+
+            distributionSettings.ComissionSettings.Amount = amount;
 
             await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
 

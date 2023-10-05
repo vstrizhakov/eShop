@@ -23,28 +23,46 @@ namespace eShop.Telegram.Inner.Views
             if (_telegramUserChats.Any())
             {
                 var replyText = "Оберіть групу чи канал, до якої хотіли б налаштувати відправку анонсів:";
-                var replyMarkup = new InlineKeyboardMarkup(_telegramUserChats.Select(e =>
+
+                var buttons = new List<IEnumerable<InlineKeyboardButton>>();
+                foreach (var chatMember in _telegramUserChats)
                 {
-                    var chat = e.Chat;
-                    return new List<InlineKeyboardButton>()
+                    var chat = chatMember.Chat;
+                    var button = new InlineKeyboardButton(chat.Title!)
                     {
-                        new InlineKeyboardButton(chat.Title!)
-                        {
-                            CallbackData = botContextConverter.Serialize(TelegramAction.SetUpGroup, e.ChatId.ToString()),
-                        }
+                        CallbackData = botContextConverter.Serialize(TelegramAction.SetUpGroup, chat.Id.ToString()),
                     };
-                }));
+                    buttons.Add(new[] { button });
+                }
+
+                var backButton = new InlineKeyboardButton("Назад")
+                {
+                    CallbackData = botContextConverter.Serialize(TelegramAction.Home),
+                };
+                buttons.Add(new[] { backButton });
+
+                var replyMarkup = new InlineKeyboardMarkup(buttons);
 
                 await botClient.SendTextMessageAsync(new ChatId(_chatId), replyText, replyMarkup: replyMarkup);
             }
             else
             {
                 var replyText = "Додайте бота до групи чи каналу, у який хочете налаштувати відправку анонсів, і натисніть кнопку Оновити нижче.";
-                var replyMarkup = new InlineKeyboardMarkup(new List<InlineKeyboardButton>()
+                var replyMarkup = new InlineKeyboardMarkup(new[]
                 {
-                    new InlineKeyboardButton("Оновити")
+                    new[]
                     {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.Refresh),
+                        new InlineKeyboardButton("Оновити")
+                        {
+                            CallbackData = botContextConverter.Serialize(TelegramAction.Refresh),
+                        },
+                    },
+                    new[]
+                    {
+                        new InlineKeyboardButton("Назад")
+                        {
+                            CallbackData = botContextConverter.Serialize(TelegramAction.Home),
+                        },
                     },
                 });
 

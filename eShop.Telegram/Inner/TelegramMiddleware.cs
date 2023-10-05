@@ -70,10 +70,9 @@ namespace eShop.Telegram.Inner
         {
             var strategy = CreateStrategy(context, command, data);
 
-            var controller = strategy.PickController();
-            if (controller != null)
+            var method = strategy.PickControllerMethod();
+            if (method != null)
             {
-                var method = controller.GetMethod("ProcessAsync");
                 if (method == null)
                 {
                     throw new InvalidOperationException();
@@ -86,6 +85,7 @@ namespace eShop.Telegram.Inner
 
                 var methodParams = strategy.GetParameters(method, update);
 
+                var controller = method.DeclaringType;
                 var obj = ActivatorUtilities.CreateInstance(_serviceProvider, controller);
                 var task = (method.Invoke(obj, methodParams) as Task<ITelegramView?>)!;
                 var view = await task;

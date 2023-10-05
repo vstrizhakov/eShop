@@ -22,7 +22,7 @@ namespace eShop.Telegram.Inner.Views
         public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
         {
             var replyText = $"Налаштування {(_telegramChat.Type == ChatType.Channel ? "каналу" : "групи")} {_telegramChat.Title}";
-            var lines = new List<List<InlineKeyboardButton>>();
+            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
 
             var telegramChatSettings = _telegramChat.Settings;
 
@@ -42,9 +42,15 @@ namespace eShop.Telegram.Inner.Views
                 });
             }
 
-            lines.Add(firstLine);
+            buttons.Add(firstLine);
 
-            var replyMarkup = new InlineKeyboardMarkup(lines);
+            var backButton = new InlineKeyboardButton("Назад")
+            {
+                CallbackData = botContextConverter.Serialize(TelegramAction.MyGroups),
+            };
+            buttons.Add(new[] { backButton });
+
+            var replyMarkup = new InlineKeyboardMarkup(buttons);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), replyText, replyMarkup: replyMarkup);
         }
     }

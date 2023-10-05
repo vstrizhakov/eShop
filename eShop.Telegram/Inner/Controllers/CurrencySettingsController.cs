@@ -1,5 +1,6 @@
 ﻿using eShop.Messaging;
 using eShop.Messaging.Models.Distribution;
+using eShop.Telegram.Inner.Attributes;
 using eShop.Telegram.Inner.Contexts;
 using eShop.Telegram.Inner.Views;
 using eShop.Telegram.Models;
@@ -7,7 +8,7 @@ using eShop.Telegram.Services;
 
 namespace eShop.Telegram.Inner.Controllers
 {
-    [TelegramController(TelegramAction.CurrencySettings, Context = TelegramContext.CallbackQuery)]
+    [TelegramController]
     public class CurrencySettingsController : TelegramControllerBase
     {
         private readonly ITelegramService _telegramService;
@@ -19,6 +20,7 @@ namespace eShop.Telegram.Inner.Controllers
             _producer = producer;
         }
 
+        [CallbackQuery(TelegramAction.CurrencySettings)]
         public async Task<ITelegramView?> ProcessAsync(CallbackQueryContext context)
         {
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);

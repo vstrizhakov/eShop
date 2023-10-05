@@ -1,4 +1,5 @@
-﻿using eShop.Telegram.Inner.Contexts;
+﻿using eShop.Telegram.Inner.Attributes;
+using eShop.Telegram.Inner.Contexts;
 using System.Reflection;
 using Telegram.Bot.Types;
 
@@ -13,10 +14,9 @@ namespace eShop.Telegram.Inner.Strategies
             return parameters;
         }
 
-        public Type? PickController()
+        public MethodInfo? PickControllerMethod()
         {
-            var controller = ReflectionUtilities.FindController(attribute =>
-                attribute.Context == TelegramContext.ContactMessage);
+            var controller = ReflectionUtilities.FindControllerMethod<ContactMessageAttribute>(attribute => true);
             return controller;
         }
     }

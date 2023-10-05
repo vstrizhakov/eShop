@@ -1,11 +1,12 @@
-﻿using eShop.Telegram.Inner.Contexts;
+﻿using eShop.Telegram.Inner.Attributes;
+using eShop.Telegram.Inner.Contexts;
 using eShop.Telegram.Inner.Views;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
 
 namespace eShop.Telegram.Inner.Controllers
 {
-    [TelegramController(TelegramAction.Settings, Context = TelegramContext.CallbackQuery)]
+    [TelegramController]
     public class SettingsController : TelegramControllerBase
     {
         private readonly ITelegramService _telegramService;
@@ -15,6 +16,7 @@ namespace eShop.Telegram.Inner.Controllers
             _telegramService = telegramService;
         }
 
+        [CallbackQuery(TelegramAction.Settings)]
         public async Task<ITelegramView?> ProcessAsync(CallbackQueryContext context)
         {
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);

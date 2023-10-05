@@ -6,7 +6,7 @@ namespace eShop.Telegram.Services
     {
         Task<TelegramUser?> GetUserByExternalIdAsync(long externalId);
         IEnumerable<TelegramChatMember> GetManagableChats(TelegramUser user);
-        Task UpdateUser(TelegramUser user);
+        Task UpdateUserAsync(TelegramUser user);
         Task<TelegramUser?> GetUserByAccountIdAsync(Guid accountId);
         Task<TelegramUser?> GetUserByTelegramUserIdAsync(Guid telegramUserId);
         Task SetAccountIdAsync(TelegramUser user, Guid accountId);

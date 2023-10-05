@@ -52,7 +52,7 @@ namespace eShop.Telegram.Services
             await _telegramUserRepository.UpdateTelegramUserAsync(user);
         }
 
-        public async Task UpdateUser(TelegramUser user)
+        public async Task UpdateUserAsync(TelegramUser user)
         {
             await _telegramUserRepository.UpdateTelegramUserAsync(user);
         }

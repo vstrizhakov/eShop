@@ -14,5 +14,6 @@
         public const string SetPreferredCurrency = "spc";
         public const string CurrencyRatesSettings = "crs";
         public const string SetCurrencyRate = "scr";
+        public const string Home = "h";
     }
 }

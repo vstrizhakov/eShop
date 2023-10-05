@@ -1,18 +1,21 @@
-﻿using eShop.Telegram.Inner.Controllers;
+﻿using eShop.Telegram.Inner.Attributes;
+using eShop.Telegram.Inner.Controllers;
 using System.Reflection;
 
 namespace eShop.Telegram.Inner
 {
     public static class ReflectionUtilities
     {
-        public static Type? FindController(Func<TelegramControllerAttribute, bool> filter)
+        public static MethodInfo? FindControllerMethod<TAttribute>(Func<TAttribute, bool> filter) where TAttribute : Attribute
         {
-            var controller = Assembly.GetExecutingAssembly()
+            var method = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(e => e.IsSubclassOf(typeof(TelegramControllerBase)))
+                .Where(e => e.GetCustomAttribute<TelegramControllerAttribute>() != null)
+                .SelectMany(e => e.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                 .FirstOrDefault(e =>
                 {
-                    var attribute = e.GetCustomAttribute<TelegramControllerAttribute>();
+                    var attribute = e.GetCustomAttribute<TAttribute>();
                     if (attribute == null)
                     {
                         return false;
@@ -20,7 +23,7 @@ namespace eShop.Telegram.Inner
 
                     return filter(attribute);
                 });
-            return controller;
+            return method;
         }
 
         public static object[] MatchParameters(MethodInfo method, object context, params string[] inputParameters)

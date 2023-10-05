@@ -31,8 +31,8 @@ namespace eShop.Telegram.Inner.Views
                 {
                     new InlineKeyboardButton("Назад")
                     {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.)
-                    }
+                        CallbackData = botContextConverter.Serialize(TelegramAction.Home),
+                    },
                 },
             });
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);

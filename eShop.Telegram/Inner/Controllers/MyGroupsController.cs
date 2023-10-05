@@ -1,11 +1,13 @@
-﻿using eShop.Telegram.Inner.Contexts;
+﻿using eShop.Telegram.Entities;
+using eShop.Telegram.Inner.Attributes;
+using eShop.Telegram.Inner.Contexts;
 using eShop.Telegram.Inner.Views;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
 
 namespace eShop.Telegram.Inner.Controllers
 {
-    [TelegramController(TelegramAction.MyGroups, Context = TelegramContext.CallbackQuery)]
+    [TelegramController]
     public class MyGroupsController : TelegramControllerBase
     {
         private readonly ITelegramService _telegramService;
@@ -15,7 +17,8 @@ namespace eShop.Telegram.Inner.Controllers
             _telegramService = telegramService;
         }
 
-        public async Task<ITelegramView?> ProcessAsync(CallbackQueryContext context)
+        [CallbackQuery(TelegramAction.MyGroups)]
+        public async Task<ITelegramView?> GetGroups(CallbackQueryContext context)
         {
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
@@ -23,6 +26,59 @@ namespace eShop.Telegram.Inner.Controllers
                 var chats = _telegramService.GetManagableChats(user);
 
                 return new MyGroupsView(context.ChatId, chats);
+            }
+
+            return null;
+        }
+
+        [CallbackQuery(TelegramAction.Refresh)]
+        public async Task<ITelegramView?> RefreshGroups(CallbackQueryContext context)
+        {
+            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
+            if (user!.AccountId != null)
+            {
+                var chats = _telegramService.GetManagableChats(user);
+
+                return new MyGroupsView(context.ChatId, chats);
+            }
+            else
+            {
+                // TODO: handle
+            }
+
+            return null;
+        }
+
+        [CallbackQuery(TelegramAction.SetUpGroup)]
+        public async Task<ITelegramView?> SetUpGroup(CallbackQueryContext context, Guid telegramChatId)
+        {
+            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
+            if (user!.AccountId != null)
+            {
+                var chats = _telegramService.GetManagableChats(user);
+                var telegramChat = chats.FirstOrDefault(e => e.ChatId == telegramChatId)?.Chat;
+                if (telegramChat != null)
+                {
+                    if (telegramChat.Settings == null)
+                    {
+                        telegramChat.Settings = new TelegramChatSettings
+                        {
+                            Owner = user,
+                        };
+
+                        await _telegramService.UpdateUserAsync(user);
+                    }
+
+                    return new GroupSettingsView(context.ChatId, telegramChat);
+                }
+                else
+                {
+                    // TODO:
+                }
+            }
+            else
+            {
+                // TODO:
             }
 
             return null;

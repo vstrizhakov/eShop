@@ -1,4 +1,5 @@
 ﻿using eShop.Bots.Common;
+using eShop.TelegramFramework.Builders;
 using eShop.TelegramFramework.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -11,11 +12,13 @@ namespace eShop.TelegramFramework
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IBotContextConverter _botContextConverter;
+        private readonly ITelegramViewRunner _telegramViewRunner;
 
-        public TelegramMiddleware(IServiceProvider serviceProvider, IBotContextConverter botContextConverter)
+        public TelegramMiddleware(IServiceProvider serviceProvider, IBotContextConverter botContextConverter, ITelegramViewRunner telegramViewRunner)
         {
             _serviceProvider = serviceProvider;
             _botContextConverter = botContextConverter;
+            _telegramViewRunner = telegramViewRunner;
         }
 
         public async Task ProcessAsync(Update update, string? activeContext = null)
@@ -92,9 +95,7 @@ namespace eShop.TelegramFramework
 
                 if (view != null)
                 {
-                    await view.ProcessAsync(
-                        _serviceProvider.GetRequiredService<ITelegramBotClient>(),
-                        _serviceProvider.GetRequiredService<IBotContextConverter>());
+                    await _telegramViewRunner.RunAsync(view);
                 }
             }
         }

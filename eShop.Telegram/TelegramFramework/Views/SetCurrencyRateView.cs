@@ -2,6 +2,7 @@
 using eShop.Messaging.Models;
 using eShop.Messaging.Models.Distribution;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -20,7 +21,7 @@ namespace eShop.Telegram.TelegramFramework.Views
             _currencyRate = currencyRate;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var sourceCurrency = _currencyRate.Currency;
             var text = $"{sourceCurrency.Name} -> {_preferredCurrency.Name}\n\nПоточний курс: {_currencyRate.Rate}\n\nБудь ласка, надішліть новий курс для цієї пари.";

@@ -3,6 +3,7 @@ using eShop.Messaging;
 using eShop.Messaging.Models.Distribution;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
+using eShop.TelegramFramework;
 using Telegram.Bot;
 
 namespace eShop.Telegram.MessageHandlers
@@ -10,14 +11,12 @@ namespace eShop.Telegram.MessageHandlers
     public class GetComissionSettingsResponseHandler : IMessageHandler<GetComissionSettingsResponse>
     {
         private readonly ITelegramService _telegramService;
-        private readonly ITelegramBotClient _botClient;
-        private readonly IBotContextConverter _botContextConverter;
+        private readonly ITelegramViewRunner _telegramViewRunner;
 
-        public GetComissionSettingsResponseHandler(ITelegramService telegramService, ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public GetComissionSettingsResponseHandler(ITelegramService telegramService, ITelegramViewRunner telegramViewRunner)
         {
             _telegramService = telegramService;
-            _botClient = botClient;
-            _botContextConverter = botContextConverter;
+            _telegramViewRunner = telegramViewRunner;
         }
 
         public async Task HandleMessageAsync(GetComissionSettingsResponse message)
@@ -26,7 +25,7 @@ namespace eShop.Telegram.MessageHandlers
             if (user != null)
             {
                 var telegramView = new ComissionSettingsView(user.ExternalId, message.Show, message.Amount);
-                await telegramView.ProcessAsync(_botClient, _botContextConverter);
+                await _telegramViewRunner.RunAsync(telegramView);
             }
         }
     }

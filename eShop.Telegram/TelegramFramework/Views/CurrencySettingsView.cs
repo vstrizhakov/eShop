@@ -1,10 +1,10 @@
-﻿using eShop.Bots.Common;
-using eShop.Messaging.Models;
+﻿using eShop.Messaging.Models;
 using eShop.Telegram.Models;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -19,47 +19,36 @@ namespace eShop.Telegram.TelegramFramework.Views
             _preferredCurrency = preferredCurrency;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var text = "Мої валюти";
 
-            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
+            var elements = new List<IInlineKeyboardElement>();
 
             {
-                var buttonText = "Основна валюта";
+                var caption = "Основна валюта";
                 if (_preferredCurrency != null)
                 {
-                    buttonText += $" ({_preferredCurrency.Name})";
+                    caption += $" ({_preferredCurrency.Name})";
                 }
 
-                var button = new InlineKeyboardButton(buttonText)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.PreferredCurrencySettings),
-                };
-                buttons.Add(new[] { button });
+                var element = new InlineKeyboardAction(caption, TelegramAction.PreferredCurrencySettings);
+                elements.Add(element);
             }
 
             if (_preferredCurrency != null)
             {
-                var buttonText = "Курси валют";
-                var button = new InlineKeyboardButton(buttonText)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.CurrencyRatesSettings),
-                };
-                buttons.Add(new[] { button });
+                var caption = "Курси валют";
+                var element = new InlineKeyboardAction(caption, TelegramAction.CurrencyRatesSettings);
+                elements.Add(element);
             }
 
+            var control = new InlineKeyboardList(elements)
             {
-                var buttonText = "Назад";
-                var button = new InlineKeyboardButton(buttonText)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.Settings),
-                };
-                buttons.Add(new[] { button });
-            }
+                Navigation = new InlineKeyboardAction("Назад", TelegramAction.Settings),
+            };
 
-            var replyMarkup = new InlineKeyboardMarkup(buttons);
-
+            var replyMarkup = markupBuilder.Build(control);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

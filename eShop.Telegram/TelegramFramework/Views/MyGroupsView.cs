@@ -5,6 +5,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
 using eShop.Telegram.Entities;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -19,55 +21,43 @@ namespace eShop.Telegram.TelegramFramework.Views
             _telegramUserChats = telegramUserChats;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             if (_telegramUserChats.Any())
             {
-                var replyText = "Оберіть групу чи канал, до якої хотіли б налаштувати відправку анонсів:";
+                var text = "Оберіть групу чи канал, до якої хотіли б налаштувати відправку анонсів:";
 
-                var buttons = new List<IEnumerable<InlineKeyboardButton>>();
+                var elements = new List<IInlineKeyboardElement>();
                 foreach (var chatMember in _telegramUserChats)
                 {
                     var chat = chatMember.Chat;
-                    var button = new InlineKeyboardButton(chat.Title!)
-                    {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.SetUpGroup, chat.Id.ToString()),
-                    };
-                    buttons.Add(new[] { button });
+                    var element = new InlineKeyboardAction(chat.Title!, TelegramAction.SetUpGroup, chat.Id.ToString());
+                    elements.Add(element);
                 }
 
-                var backButton = new InlineKeyboardButton("Назад")
+                var control = new InlineKeyboardList(elements)
                 {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.Home),
+                    Navigation = new InlineKeyboardAction("Назад", TelegramAction.Home),
                 };
-                buttons.Add(new[] { backButton });
 
-                var replyMarkup = new InlineKeyboardMarkup(buttons);
-
-                await botClient.SendTextMessageAsync(new ChatId(_chatId), replyText, replyMarkup: replyMarkup);
+                var replyMarkup = markupBuilder.Build(control);
+                await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
             }
             else
             {
-                var replyText = "Додайте бота до групи чи каналу, у який хочете налаштувати відправку анонсів, і натисніть кнопку Оновити нижче.";
-                var replyMarkup = new InlineKeyboardMarkup(new[]
-                {
-                    new[]
-                    {
-                        new InlineKeyboardButton("Оновити")
-                        {
-                            CallbackData = botContextConverter.Serialize(TelegramAction.Refresh),
-                        },
-                    },
-                    new[]
-                    {
-                        new InlineKeyboardButton("Назад")
-                        {
-                            CallbackData = botContextConverter.Serialize(TelegramAction.Home),
-                        },
-                    },
-                });
+                var text = "Додайте бота до групи чи каналу, у який хочете налаштувати відправку анонсів, і натисніть кнопку Оновити нижче.";
 
-                await botClient.SendTextMessageAsync(new ChatId(_chatId), replyText, replyMarkup: replyMarkup);
+                var elements = new IInlineKeyboardElement[]
+                {
+                    new InlineKeyboardAction("Оновити", TelegramAction.Refresh)
+                };
+                var control = new InlineKeyboardList(elements)
+                {
+                    Navigation = new InlineKeyboardAction("Назад", TelegramAction.Home),
+                };
+
+                var replyMarkup = markupBuilder.Build(control);
+                await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
             }
         }
     }

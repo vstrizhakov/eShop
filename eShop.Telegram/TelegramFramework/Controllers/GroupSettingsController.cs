@@ -22,8 +22,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             _producer = producer;
         }
 
-        [CallbackQuery(TelegramAction.SettingsDisable)]
-        public async Task<ITelegramView?> DisableChat(CallbackQueryContext context, Guid telegramChatId)
+        [CallbackQuery(TelegramAction.SetGroupEnabled)]
+        public async Task<ITelegramView?> DisableChat(CallbackQueryContext context, Guid telegramChatId, bool isEnabled)
         {
             var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(context.FromId);
             if (telegramUser!.AccountId != null)
@@ -32,40 +32,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 if (telegramChat != null)
                 {
                     var telegramChatSettings = telegramChat.Settings;
-                    telegramChatSettings.IsEnabled = false;
-
-                    await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
-
-                    var internalEvent = new Messaging.Models.TelegramChatUpdatedEvent
-                    {
-                        AccountId = telegramUser.AccountId.Value,
-                        TelegramChatId = telegramChatId,
-                        IsEnabled = telegramChatSettings.IsEnabled,
-                    };
-                    _producer.Publish(internalEvent);
-
-                    return new GroupSettingsView(context.ChatId, telegramChat);
-                }
-                else
-                {
-                    // TODO:
-                }
-            }
-
-            return null;
-        }
-
-        [CallbackQuery(TelegramAction.SettingsEnable)]
-        public async Task<ITelegramView?> EnableGroup(CallbackQueryContext context, Guid telegramChatId)
-        {
-            var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(context.FromId);
-            if (telegramUser!.AccountId != null)
-            {
-                var telegramChat = await _telegramChatRepository.GetTelegramChatByIdAsync(telegramChatId);
-                if (telegramChat != null)
-                {
-                    var telegramChatSettings = telegramChat.Settings;
-                    telegramChatSettings.IsEnabled = true;
+                    telegramChatSettings.IsEnabled = isEnabled;
 
                     await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
 

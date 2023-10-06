@@ -1,9 +1,9 @@
-﻿using eShop.Bots.Common;
-using eShop.Telegram.Models;
+﻿using eShop.Telegram.Models;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -16,33 +16,21 @@ namespace eShop.Telegram.TelegramFramework.Views
             _chatId = chatId;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var text = "Налаштування";
-            var replyMarkup = new InlineKeyboardMarkup(new[]
+
+            var elements = new IInlineKeyboardElement[]
             {
-                new[]
-                {
-                    new InlineKeyboardButton("Мої валюти")
-                    {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.CurrencySettings),
-                    },
-                },
-                new[]
-                {
-                    new InlineKeyboardButton("Моя комісія")
-                    {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.ComissionSettings),
-                    },
-                },
-                new[]
-                {
-                    new InlineKeyboardButton("Назад")
-                    {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.Home),
-                    },
-                },
-            });
+                new InlineKeyboardAction("Мої валюти", TelegramAction.CurrencySettings),
+                new InlineKeyboardAction("Моя комісія", TelegramAction.ComissionSettings),
+            };
+            var control = new InlineKeyboardList(elements)
+            {
+                Navigation = new InlineKeyboardAction("Назад", TelegramAction.Home),
+            };
+
+            var replyMarkup = markupBuilder.Build(control);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

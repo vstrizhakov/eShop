@@ -1,5 +1,5 @@
-﻿using eShop.Bots.Common;
-using eShop.TelegramFramework;
+﻿using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -14,7 +14,7 @@ namespace eShop.Telegram.TelegramFramework.Views
             _chatId = chatId;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             await botClient.SendTextMessageAsync(new ChatId(_chatId), "Ви вже зареєстровані та маєтє встановленного постачальника анонсів");
         }

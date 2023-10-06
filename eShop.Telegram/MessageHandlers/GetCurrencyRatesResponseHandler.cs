@@ -1,23 +1,20 @@
-﻿using eShop.Bots.Common;
-using eShop.Messaging;
+﻿using eShop.Messaging;
 using eShop.Messaging.Models.Distribution;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
-using Telegram.Bot;
+using eShop.TelegramFramework;
 
 namespace eShop.Telegram.MessageHandlers
 {
     public class GetCurrencyRatesResponseHandler : IMessageHandler<GetCurrencyRatesResponse>
     {
         private readonly ITelegramService _telegramService;
-        private readonly ITelegramBotClient _botClient;
-        private readonly IBotContextConverter _botContextConverter;
+        private readonly ITelegramViewRunner _telegramViewRunner;
 
-        public GetCurrencyRatesResponseHandler(ITelegramService telegramService, ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public GetCurrencyRatesResponseHandler(ITelegramService telegramService, ITelegramViewRunner telegramViewRunner)
         {
             _telegramService = telegramService;
-            _botClient = botClient;
-            _botContextConverter = botContextConverter;
+            _telegramViewRunner = telegramViewRunner;
         }
 
         public async Task HandleMessageAsync(GetCurrencyRatesResponse response)
@@ -26,7 +23,7 @@ namespace eShop.Telegram.MessageHandlers
             if (user != null)
             {
                 var telegramView = new CurrencyRatesSettingsView(user.ExternalId, response.PreferredCurrency, response.CurrencyRates);
-                await telegramView.ProcessAsync(_botClient, _botContextConverter);
+                await _telegramViewRunner.RunAsync(telegramView);
             }
         }
     }

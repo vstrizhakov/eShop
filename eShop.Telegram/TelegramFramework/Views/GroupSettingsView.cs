@@ -1,11 +1,11 @@
-﻿using eShop.Bots.Common;
-using eShop.Telegram.Entities;
+﻿using eShop.Telegram.Entities;
 using eShop.Telegram.Models;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -20,39 +20,23 @@ namespace eShop.Telegram.TelegramFramework.Views
             _telegramChat = telegramChat;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
-            var replyText = $"Налаштування {(_telegramChat.Type == ChatType.Channel ? "каналу" : "групи")} {_telegramChat.Title}";
-            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
+            var text = $"Налаштування {(_telegramChat.Type == ChatType.Channel ? "каналу" : "групи")} {_telegramChat.Title}";
 
             var telegramChatSettings = _telegramChat.Settings;
 
-            var firstLine = new List<InlineKeyboardButton>();
-            if (telegramChatSettings.IsEnabled)
+            var elements = new IInlineKeyboardElement[]
             {
-                firstLine.Add(new InlineKeyboardButton("Ввимкнути")
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.SettingsDisable, _telegramChat.Id.ToString()),
-                });
-            }
-            else
-            {
-                firstLine.Add(new InlineKeyboardButton("Увімкнути")
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.SettingsEnable, _telegramChat.Id.ToString()),
-                });
-            }
-
-            buttons.Add(firstLine);
-
-            var backButton = new InlineKeyboardButton("Назад")
-            {
-                CallbackData = botContextConverter.Serialize(TelegramAction.MyGroups),
+                new InlineKeyboardToggle("Увімкнути", "Ввимкнути", telegramChatSettings.IsEnabled, TelegramAction.SetGroupEnabled, _telegramChat.Id.ToString()),
             };
-            buttons.Add(new[] { backButton });
+            var control = new InlineKeyboardList(elements)
+            {
+                Navigation = new InlineKeyboardAction("Назад", TelegramAction.MyGroups),
+            };
 
-            var replyMarkup = new InlineKeyboardMarkup(buttons);
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), replyText, replyMarkup: replyMarkup);
+            var replyMarkup = markupBuilder.Build(control);
+            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿using eShop.Bots.Common;
-using eShop.Messaging.Models;
+﻿using eShop.Messaging.Models;
 using eShop.Telegram.Models;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -19,29 +19,23 @@ namespace eShop.Telegram.TelegramFramework.Views
             _currencies = currencies;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var text = "Оберіть одну з наступних валют як основу. Вона буде відображатися в ваших анонсах.";
 
-            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
-            var maxButtons = 10;
-            var maxCurrencies = maxButtons - 1;
-            foreach (var currency in _currencies.Take(maxCurrencies))
+            var elements = new List<IInlineKeyboardElement>();
+            foreach (var currency in _currencies)
             {
-                var button = new InlineKeyboardButton(currency.Name)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.SetPreferredCurrency, currency.Id.ToString()),
-                };
-                buttons.Add(new[] { button });
+                var element = new InlineKeyboardAction(currency.Name, TelegramAction.SetPreferredCurrency, currency.Id.ToString());
+                elements.Add(element);
             }
 
-            var backButton = new InlineKeyboardButton("Повернутися назад")
+            var control = new InlineKeyboardList(elements)
             {
-                CallbackData = botContextConverter.Serialize(TelegramAction.CurrencySettings),
+                Navigation = new InlineKeyboardAction("Повернутися назад", TelegramAction.CurrencySettings),
             };
-            buttons.Add(new[] { backButton });
 
-            var replyMarkup = new InlineKeyboardMarkup(buttons);
+            var replyMarkup = markupBuilder.Build(control);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

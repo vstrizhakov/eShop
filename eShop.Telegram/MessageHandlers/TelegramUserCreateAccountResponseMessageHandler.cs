@@ -3,6 +3,7 @@ using eShop.Messaging;
 using eShop.Messaging.Models;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
+using eShop.TelegramFramework;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -13,16 +14,16 @@ namespace eShop.Telegram.MessageHandlers
     {
         private readonly ITelegramService _telegramService;
         private readonly ITelegramBotClient _botClient;
-        private readonly IBotContextConverter _botContextConverter;
+        private readonly ITelegramViewRunner _telegramViewRunner;
 
         public TelegramUserCreateAccountResponseMessageHandler(
             ITelegramService telegramService,
             ITelegramBotClient botClient,
-            IBotContextConverter botContextConverter)
+            ITelegramViewRunner telegramViewRunner)
         {
             _telegramService = telegramService;
             _botClient = botClient;
-            _botContextConverter = botContextConverter;
+            _telegramViewRunner = telegramViewRunner;
         }
 
         public async Task HandleMessageAsync(TelegramUserCreateAccountResponseMessage message)
@@ -42,7 +43,7 @@ namespace eShop.Telegram.MessageHandlers
                 }
 
                 var telegramView = new WelcomeView(chatId);
-                await telegramView.ProcessAsync(_botClient, _botContextConverter);
+                await _telegramViewRunner.RunAsync(telegramView);
             }
         }
     }

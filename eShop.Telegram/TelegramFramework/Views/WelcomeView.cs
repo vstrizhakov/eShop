@@ -1,9 +1,9 @@
-﻿using eShop.Bots.Common;
-using eShop.Telegram.Models;
+﻿using eShop.Telegram.Models;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -16,26 +16,18 @@ namespace eShop.Telegram.TelegramFramework.Views
             _chatId = chatId;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var text = "Доброго дня!";
-            var replyMarkup = new InlineKeyboardMarkup(new[]
+
+            var elements = new IInlineKeyboardElement[]
             {
-                new[]
-                {
-                    new InlineKeyboardButton("Мої групи")
-                    {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.MyGroups),
-                    },
-                },
-                new[]
-                {
-                    new InlineKeyboardButton("Налаштування")
-                    {
-                        CallbackData = botContextConverter.Serialize(TelegramAction.Settings),
-                    },
-                },
-            });
+                new InlineKeyboardAction("Мої групи", TelegramAction.MyGroups),
+                new InlineKeyboardAction("Налаштування", TelegramAction.Settings),
+            };
+            var control = new InlineKeyboardList(elements);
+
+            var replyMarkup = markupBuilder.Build(control);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

@@ -1,8 +1,8 @@
-﻿using eShop.Bots.Common;
+﻿using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
 using Telegram.Bot;
-using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
-using eShop.TelegramFramework;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -15,7 +15,7 @@ namespace eShop.Telegram.TelegramFramework.Views
             _chatId = chatId;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var replyText = "Для завершення реєстрації надішліть свій номер телефону, будь ласка";
             var replyMarkup = new ReplyKeyboardMarkup(new KeyboardButton("Відправити номер телефону")

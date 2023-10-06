@@ -1,11 +1,11 @@
-﻿using eShop.Bots.Common;
-using eShop.Messaging.Models;
+﻿using eShop.Messaging.Models;
 using eShop.Messaging.Models.Distribution;
 using eShop.Telegram.Models;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -22,31 +22,24 @@ namespace eShop.Telegram.TelegramFramework.Views
             _currencyRates = currencyRates;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var text = $"Поточний курс валют відносно {_preferredCurrency.Name}\n\nНатисніть на валюту зі списку нижче, щоб змінити її курс.";
-            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
-            foreach (var currencyRate in _currencyRates)
+
+            var elements = _currencyRates.Select<CurrencyRate, IInlineKeyboardElement>(currencyRate =>
             {
                 var currency = currencyRate.Currency;
 
                 var buttonText = $"{currency.Name}: {currencyRate.Rate}";
-                var button = new InlineKeyboardButton(buttonText)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.SetCurrencyRate, currency.Id.ToString()),
-                };
-
-                buttons.Add(new[] { button });
-            }
-
-            var backButton = new InlineKeyboardButton("Назад")
+                var element = new InlineKeyboardAction(buttonText, TelegramAction.SetCurrencyRate, currency.Id.ToString());
+                return element;
+            });
+            var control = new InlineKeyboardList(elements)
             {
-                CallbackData = botContextConverter.Serialize(TelegramAction.CurrencySettings),
+                Navigation = new InlineKeyboardAction("Назад", TelegramAction.CurrencySettings),
             };
 
-            buttons.Add(new[] { backButton });
-
-            var replyMarkup = new InlineKeyboardMarkup(buttons);
+            var replyMarkup = markupBuilder.Build(control);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

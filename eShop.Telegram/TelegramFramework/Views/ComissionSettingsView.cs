@@ -1,9 +1,9 @@
-﻿using eShop.Bots.Common;
-using eShop.Telegram.Models;
+﻿using eShop.Telegram.Models;
 using eShop.TelegramFramework;
+using eShop.TelegramFramework.Builders;
+using eShop.TelegramFramework.UI;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -20,43 +20,20 @@ namespace eShop.Telegram.TelegramFramework.Views
             _amount = amount;
         }
 
-        public async Task ProcessAsync(ITelegramBotClient botClient, IBotContextConverter botContextConverter)
+        public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
             var text = "Налаштування комісій";
 
-            var buttons = new List<IEnumerable<InlineKeyboardButton>>();
-
+            var control = new InlineKeyboardList(new IInlineKeyboardElement[]
             {
-                var buttonText = _show ? "Не показувати комісію" : "Показувати комісію";
-                var button = new InlineKeyboardButton(buttonText)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.SetComissionShow, (!_show).ToString()),
-                };
-
-                buttons.Add(new[] { button });
-            }
-
+                new InlineKeyboardToggle("Показувати комісію", "Не показувати комісію", _show, TelegramAction.SetComissionShow),
+                new InlineKeyboardAction($"Розмір комісії ({_amount}%)", TelegramAction.SetComissionAmount),
+            })
             {
-                var buttonText = $"Розмір комісії ({_amount}%)";
-                var button = new InlineKeyboardButton(buttonText)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.SetComissionAmount),
-                };
+                Navigation = new InlineKeyboardAction("Назад", TelegramAction.Settings),
+            };
 
-                buttons.Add(new[] { button });
-            }
-
-            {
-                var buttonText = "Назад";
-                var button = new InlineKeyboardButton(buttonText)
-                {
-                    CallbackData = botContextConverter.Serialize(TelegramAction.Settings),
-                };
-
-                buttons.Add(new[] { button });
-            }
-
-            var replyMarkup = new InlineKeyboardMarkup(buttons);
+            var replyMarkup = markupBuilder.Build(control);
 
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }

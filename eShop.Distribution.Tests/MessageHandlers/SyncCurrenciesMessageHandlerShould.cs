@@ -2,6 +2,7 @@
 using eShop.Distribution.MessageHandlers;
 using eShop.Distribution.Services;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Catalog;
 
 namespace eShop.Distribution.Tests.MessageHandlers
 {

@@ -1,4 +1,5 @@
-﻿using eShop.Distribution.Entities;
+﻿using eShop.Distribution.Aggregates;
+using eShop.Distribution.Entities;
 using eShop.Distribution.Repositories;
 
 namespace eShop.Distribution.Services
@@ -6,10 +7,12 @@ namespace eShop.Distribution.Services
     public class DistributionSettingsService : IDistributionSettingsService
     {
         private readonly IDistributionSettingsRepository _distributionSettingsRepository;
+        private readonly IShopRepository _shopRepository;
 
-        public DistributionSettingsService(IDistributionSettingsRepository distributionSettingsRepository)
+        public DistributionSettingsService(IDistributionSettingsRepository distributionSettingsRepository, IShopRepository shopRepository)
         {
             _distributionSettingsRepository = distributionSettingsRepository;
+            _shopRepository = shopRepository;
         }
 
         public async Task<DistributionSettings?> GetDistributionSettingsAsync(Guid accountId)
@@ -18,14 +21,8 @@ namespace eShop.Distribution.Services
             return distributionSettings;
         }
 
-        public async Task<DistributionSettings> SetPreferredCurrencyAsync(Guid accountId, Guid currencyId)
+        public async Task<DistributionSettings> SetPreferredCurrencyAsync(DistributionSettings distributionSettings, Guid currencyId)
         {
-            var distributionSettings = await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId);
-            if (distributionSettings == null)
-            {
-                throw new InvalidOperationException(); // TODO:
-            }
-
             distributionSettings.PreferredCurrencyId = currencyId;
 
             await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
@@ -50,9 +47,8 @@ namespace eShop.Distribution.Services
             return currencyRates;
         }
 
-        public async Task<DistributionSettings> SetCurrencyRateAsync(Guid accountId, Guid sourceCurrencyId, double rate)
+        public async Task<DistributionSettings> SetCurrencyRateAsync(DistributionSettings distributionSettings, Guid sourceCurrencyId, double rate)
         {
-            var distributionSettings = (await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId))!;
             if (distributionSettings.PreferredCurrencyId == null)
             {
                 throw new InvalidOperationException(); // TODO: not sure we need this a per history record
@@ -86,14 +82,8 @@ namespace eShop.Distribution.Services
             return distributionSettings;
         }
 
-        public async Task<DistributionSettings> SetComissionShowAsync(Guid accountId, bool show)
+        public async Task<DistributionSettings> SetComissionShowAsync(DistributionSettings distributionSettings, bool show)
         {
-            var distributionSettings = await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId);
-            if (distributionSettings == null)
-            {
-                throw new InvalidOperationException(); // TODO:
-            }
-
             distributionSettings.ComissionSettings.Show = show;
 
             await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
@@ -101,15 +91,59 @@ namespace eShop.Distribution.Services
             return distributionSettings;
         }
 
-        public async Task<DistributionSettings> SetComissionAmountAsync(Guid accountId, decimal amount)
+        public async Task<DistributionSettings> SetComissionAmountAsync(DistributionSettings distributionSettings, decimal amount)
         {
-            var distributionSettings = await _distributionSettingsRepository.GetDistributionSettingsAsync(accountId);
-            if (distributionSettings == null)
+            distributionSettings.ComissionSettings.Amount = amount;
+
+            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
+
+            return distributionSettings;
+        }
+
+        public async Task<DistributionSettings> SetFilterShopsAsync(DistributionSettings distributionSettings, bool filter)
+        {
+            distributionSettings.ShopSettings.Filter = filter;
+
+            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
+
+            return distributionSettings;
+        }
+
+        public async Task<IEnumerable<ShopFilter>> GetShopsAsync(DistributionSettings distributionSettings)
+        {
+            if (!distributionSettings.ShopSettings.Filter)
             {
-                throw new InvalidOperationException(); // TODO:
+                throw new InvalidOperationException();
             }
 
-            distributionSettings.ComissionSettings.Amount = amount;
+            var shops = await _shopRepository.GetShopsAsync();
+
+            var filterShops = distributionSettings.ShopSettings.PreferredShops.Select(shop => new ShopFilter(shop, true));
+            filterShops = filterShops.Concat(shops.Select(shop => new ShopFilter(shop, false)));
+            filterShops = filterShops.DistinctBy(e => e.Shop.Id);
+
+            return filterShops;
+        }
+
+        public async Task<DistributionSettings> SetShopIsEnabledAsync(DistributionSettings distributionSettings, Guid shopId, bool isEnabled)
+        {
+            var shops = distributionSettings.ShopSettings.PreferredShops;
+            var shop = shops.FirstOrDefault(e => e.Id == shopId);
+            if (isEnabled)
+            {
+                if (shop == null)
+                {
+                    shop = await _shopRepository.GetShopAsync(shopId);
+                    shops.Add(shop!);
+                }
+            }
+            else
+            {
+                if (shop != null)
+                {
+                    shops.Remove(shop);
+                }
+            }
 
             await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
 

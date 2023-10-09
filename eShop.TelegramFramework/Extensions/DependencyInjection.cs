@@ -13,7 +13,6 @@ namespace eShop.TelegramFramework.Extensions
             services.AddScoped<ITelegramViewRunner , TelegramViewRunner>();
 
             services.AddScoped<IInlineKeyboardMarkupBuilder, InlineKeyboardMarkupBuilder>();
-            services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardSelect>, InlineKeyboardSelectBuilder>();
             services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardList>, InlineKeyboardListBuilder>();
 
             services.AddScoped<IInlineKeyboardButtonBuilder, InlineKeyboardButtonBuilder>();

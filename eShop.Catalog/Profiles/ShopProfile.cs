@@ -7,6 +7,7 @@ namespace eShop.Catalog.Profiles
         public ShopProfile()
         {
             CreateMap<Entities.Shop, Models.Shops.Shop>();
+            CreateMap<Entities.Shop, Messaging.Models.Catalog.Shop>();
         }
     }
 }

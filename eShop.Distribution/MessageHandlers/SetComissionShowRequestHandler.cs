@@ -15,12 +15,13 @@ namespace eShop.Distribution.MessageHandlers
             _producer = producer;
         }
 
-        public async Task HandleMessageAsync(SetComissionShowRequest message)
+        public async Task HandleMessageAsync(SetComissionShowRequest request)
         {
-            var accountId = message.AccountId;
-            var distributionSettings = await _distributionSettingsService.SetComissionShowAsync(accountId, message.Show);
+            var accountId = request.AccountId;
+            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
             if (distributionSettings != null)
             {
+                distributionSettings = await _distributionSettingsService.SetComissionShowAsync(distributionSettings, request.Show);
                 var comissionSettings = distributionSettings.ComissionSettings;
 
                 var response = new SetComissionShowResponse(accountId, comissionSettings.Show, comissionSettings.Amount);

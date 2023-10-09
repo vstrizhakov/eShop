@@ -18,9 +18,6 @@ namespace eShop.Distribution.Repositories
             distributionSettings.ModifiedAt = DateTimeOffset.UtcNow;
 
             await _context.SaveChangesAsync();
-
-            // TODO: Check
-            await _context.DistributionSettings.Entry(distributionSettings).Reference(e => e.PreferredCurrency).LoadAsync();
         }
 
         public async Task<DistributionSettings?> GetDistributionSettingsAsync(Guid accountId)
@@ -30,6 +27,8 @@ namespace eShop.Distribution.Repositories
                 .Include(e => e.CurrencyRates)
                     .ThenInclude(e => e.SourceCurrency)
                 .Include(e => e.ComissionSettings)
+                .Include(e => e.ShopSettings)
+                    .ThenInclude(e => e.PreferredShops)
                 .FirstOrDefaultAsync(e => e.AccountId == accountId);
             return distributionSettings;
         }

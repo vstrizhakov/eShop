@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using eShop.Distribution.Services;
 using eShop.Messaging;
+using eShop.Messaging.Models;
 using eShop.Messaging.Models.Distribution;
 
 namespace eShop.Distribution.MessageHandlers
@@ -23,7 +24,7 @@ namespace eShop.Distribution.MessageHandlers
             var accountId = message.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
 
-            var preferredCurrency = _mapper.Map<Messaging.Models.Currency>(distributionSettings.PreferredCurrency);
+            var preferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
             var response = new GetPreferredCurrencyResponse(accountId, preferredCurrency);
             _producer.Publish(response);
         }

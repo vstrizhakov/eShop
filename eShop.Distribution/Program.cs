@@ -4,7 +4,9 @@ using eShop.Distribution.Repositories;
 using eShop.Distribution.Services;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Models.Distribution.ShopSettings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -48,12 +50,14 @@ namespace eShop.Distribution
             builder.Services.AddScoped<IDistributionRepository, DistributionRepository>();
             builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
             builder.Services.AddScoped<IDistributionSettingsRepository, DistributionSettingsRepository>();
+            builder.Services.AddScoped<IShopRepository, ShopRepository>();
 
             builder.Services.AddScoped<IDistributionService, DistributionService>();
             builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ICurrencyService, CurrencyService>();
             builder.Services.AddScoped<IDistributionSettingsService, DistributionSettingsService>();
+            builder.Services.AddScoped<IShopService, ShopService>();
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
@@ -73,6 +77,11 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<SetComissionShowRequest, SetComissionShowRequestHandler>();
             builder.Services.AddMessageHandler<SetComissionAmountRequest, SetComissionAmountRequestHandler>();
             builder.Services.AddMessageHandler<GetComissionAmountRequest, GetComissionAmountRequestHandler>();
+            builder.Services.AddMessageHandler<SyncShopsMessage, SyncShopsMessageHandler>();
+            builder.Services.AddMessageHandler<GetShopSettingsRequest, GetShopSettingsRequestHandler>();
+            builder.Services.AddMessageHandler<SetShopSettingsFilterRequest, SetShopSettingsFilterRequestHandler>();
+            builder.Services.AddMessageHandler<GetShopSettingsShopsRequest, GetShopSettingsShopsRequestHandler>();
+            builder.Services.AddMessageHandler<SetShopSettingsShopStateRequest, SetShopSettingsShopStateRequestHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

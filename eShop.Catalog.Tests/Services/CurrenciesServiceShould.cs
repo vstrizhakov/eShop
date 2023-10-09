@@ -3,6 +3,7 @@ using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Messaging;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Catalog;
 
 namespace eShop.Catalog.Tests.Services
 {
@@ -27,11 +28,11 @@ namespace eShop.Catalog.Tests.Services
                 .Setup(e => e.GetCurrenciesAsync())
                 .ReturnsAsync(currencies);
 
-            var expectedResult = Array.Empty<Messaging.Models.Currency>();
+            var expectedResult = Array.Empty<Currency>();
 
             var mapper = new Mock<IMapper>();
             mapper
-                .Setup(e => e.Map<IEnumerable<Messaging.Models.Currency>>(currencies))
+                .Setup(e => e.Map<IEnumerable<Currency>>(currencies))
                 .Returns(expectedResult);
 
             var message = default(SyncCurrenciesMessage);
@@ -41,11 +42,11 @@ namespace eShop.Catalog.Tests.Services
                 .Setup(e => e.Publish(It.IsAny<SyncCurrenciesMessage>()))
                 .Callback<SyncCurrenciesMessage>(result => message = result);
 
-            var sut = new CurrencyService(currencyRepository.Object, mapper.Object, producer.Object);
+            var sut = new SyncService(currencyRepository.Object, mapper.Object, producer.Object);
 
             // Act
 
-            await sut.SyncCurrenciesAsync();
+            await sut.SyncAsync();
 
             // Assert
 

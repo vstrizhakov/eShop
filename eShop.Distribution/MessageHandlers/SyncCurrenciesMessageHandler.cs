@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using eShop.Distribution.Services;
 using eShop.Messaging;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Catalog;
 
 namespace eShop.Distribution.MessageHandlers
 {

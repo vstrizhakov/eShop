@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eShop.Messaging.Models;
 
 namespace eShop.Distribution.Profiles
 {
@@ -6,8 +7,8 @@ namespace eShop.Distribution.Profiles
     {
         public CurrencyProfile()
         {
-            CreateMap<Messaging.Models.Currency, Entities.Currency>();
-            CreateMap<Entities.Currency, Messaging.Models.Currency>();
+            CreateMap<Currency, Entities.Currency>();
+            CreateMap<Entities.Currency, Currency>();
         }
     }
 }

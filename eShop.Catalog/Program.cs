@@ -60,7 +60,7 @@ namespace eShop.Catalog
             builder.Services.AddScoped<IFileManager, FileManager>();
             builder.Services.AddScoped<ICompositionService, CompositionService>();
             builder.Services.AddScoped<IShopService, ShopService>();
-            builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+            builder.Services.AddScoped<ISyncService, SyncService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -78,7 +78,7 @@ namespace eShop.Catalog
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 
-            builder.Services.AddHostedService<CurrenciesSyncService>();
+            builder.Services.AddHostedService<SyncBackgroundService>();
 
             var app = builder.Build();
 

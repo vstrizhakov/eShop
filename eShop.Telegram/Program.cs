@@ -4,6 +4,7 @@ using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.Telegram.DbContexts;
 using eShop.Telegram.MessageHandlers;
 using eShop.Telegram.Repositories;
@@ -82,6 +83,10 @@ namespace eShop.Telegram
             builder.Services.AddMessageHandler<SetComissionShowResponse, SetComissionShowResponseHandler>();
             builder.Services.AddMessageHandler<GetComissionAmountResponse, GetComissionAmountResponseHandler>();
             builder.Services.AddMessageHandler<SetComissionAmountResponse, SetComissionAmountResponseHandler>();
+            builder.Services.AddMessageHandler<GetShopSettingsResponse, GetShopSettingsResponseHandler>();
+            builder.Services.AddMessageHandler<SetShopSettingsFilterResponse, SetShopSettingsFilterResponseHandler>();
+            builder.Services.AddMessageHandler<GetShopSettingsShopsResponse, GetShopSettingsShopsResponseHandler>();
+            builder.Services.AddMessageHandler<SetShopSettingsShopStateResponse, SetShopSettingsShopStateResponseHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

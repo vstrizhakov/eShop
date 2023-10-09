@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eShop.Messaging.Models;
 
 namespace eShop.Catalog.Profiles
 {
@@ -10,7 +11,7 @@ namespace eShop.Catalog.Profiles
             CreateMap<Models.Currencies.CreateCurrencyRequest, Entities.Currency>()
                 .ForMember(dest => dest.Id, options => options.Ignore())
                 .ForMember(dest => dest.CreatedAt, options => options.Ignore());
-            CreateMap<Entities.Currency, Messaging.Models.Currency>();
+            CreateMap<Entities.Currency, Currency>();
         }
     }
 }

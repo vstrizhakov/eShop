@@ -22,6 +22,7 @@ namespace eShop.Telegram.TelegramFramework.Views
 
             var elements = new IInlineKeyboardElement[]
             {
+                new InlineKeyboardAction("Мої магазини", TelegramAction.ShopSettings),
                 new InlineKeyboardAction("Мої валюти", TelegramAction.CurrencySettings),
                 new InlineKeyboardAction("Моя комісія", TelegramAction.ComissionSettings),
             };

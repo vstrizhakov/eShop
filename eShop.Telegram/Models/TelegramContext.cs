@@ -17,5 +17,9 @@
         public const string ComissionSettings = "comset";
         public const string SetComissionShow = "setcoms";
         public const string SetComissionAmount = "setcoma";
+        public const string ShopSettings = "shset";
+        public const string SetShopSettingsFilter = "setshsetfilter";
+        public const string ShopSettingsShops = "shsetshops";
+        public const string SetShopSettingsShopState = "sssss";
     }
 }

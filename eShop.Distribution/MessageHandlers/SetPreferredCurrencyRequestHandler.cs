@@ -19,26 +19,23 @@ namespace eShop.Distribution.MessageHandlers
             _producer = producer;
         }
 
-        public async Task HandleMessageAsync(SetPreferredCurrencyRequest message)
+        public async Task HandleMessageAsync(SetPreferredCurrencyRequest request)
         {
-            var accountId = message.AccountId;
-
-            var distributionSettings = default(Entities.DistributionSettings);
-
-            var succeeded = true;
-            try
+            var accountId = request.AccountId;
+            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
+            if (distributionSettings != null)
             {
-                distributionSettings = await _distributionSettingsService.SetPreferredCurrencyAsync(accountId, message.CurrencyId);
+                distributionSettings = await _distributionSettingsService.SetPreferredCurrencyAsync(distributionSettings, request.CurrencyId);
 
+                var preferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
+                var response = new SetPreferredCurrencyResponse(accountId, true, preferredCurrency);
+                _producer.Publish(response);
             }
-            catch
+            else
             {
-                succeeded = false;
+                var response = new SetPreferredCurrencyResponse(accountId, false, null);
+                _producer.Publish(response);
             }
-
-            var preferredCurrency = _mapper.Map<Currency>(distributionSettings?.PreferredCurrency);
-            var response = new SetPreferredCurrencyResponse(accountId, succeeded, preferredCurrency);
-            _producer.Publish(response);
         }
     }
 }

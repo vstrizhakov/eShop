@@ -1,4 +1,4 @@
-﻿namespace eShop.Messaging.Models
+﻿namespace eShop.Messaging.Models.Catalog
 {
     public class SyncCurrenciesMessage
     {

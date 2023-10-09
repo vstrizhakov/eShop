@@ -6,27 +6,26 @@ using eShop.Messaging.Models.Distribution;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class GetPreferredCurrencyRequestHandler : IMessageHandler<GetPreferredCurrencyRequest>
+    public class GetPreferredCurrencyRequestHandler : IRequestHandler<GetPreferredCurrencyRequest, GetPreferredCurrencyResponse>
     {
         private readonly IDistributionSettingsService _distributionSettingsService;
         private readonly IMapper _mapper;
-        private readonly IProducer _producer;
 
-        public GetPreferredCurrencyRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper, IProducer producer)
+        public GetPreferredCurrencyRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
         {
             _distributionSettingsService = distributionSettingsService;
             _mapper = mapper;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(GetPreferredCurrencyRequest message)
+        public async Task<GetPreferredCurrencyResponse> HandleRequestAsync(GetPreferredCurrencyRequest request)
         {
-            var accountId = message.AccountId;
+            var accountId = request.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-
             var preferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
+
             var response = new GetPreferredCurrencyResponse(accountId, preferredCurrency);
-            _producer.Publish(response);
+            return response;
         }
     }
+
 }

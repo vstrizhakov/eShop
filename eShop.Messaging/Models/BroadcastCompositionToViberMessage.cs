@@ -1,6 +1,6 @@
 ﻿namespace eShop.Messaging.Models
 {
-    public class BroadcastCompositionToViberMessage
+    public class BroadcastCompositionToViberMessage : Messaging.Message
     {
         public Guid RequestId { get; set; }
         public Guid TargetId { get; set; }

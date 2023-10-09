@@ -1,4 +1,13 @@
 ﻿namespace eShop.Messaging.Models.Distribution
 {
-    public record GetPreferredCurrencyRequest(Guid AccountId);
+    public class GetPreferredCurrencyRequest : Messaging.Message, IRequest<GetPreferredCurrencyResponse>
+    {
+        public Guid AccountId { get; }
+
+        public GetPreferredCurrencyRequest(Guid accountId)
+        {
+            AccountId = accountId;
+        }
+    }
+
 }

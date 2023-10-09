@@ -1,4 +1,13 @@
 ﻿namespace eShop.Messaging.Models.Distribution.ShopSettings
 {
-    public record GetShopSettingsRequest(Guid AccountId);
+    public class GetShopSettingsRequest : Messaging.Message, IRequest<GetShopSettingsResponse>
+    {
+        public Guid AccountId { get; }
+
+        public GetShopSettingsRequest(Guid accountId)
+        {
+            AccountId = accountId;
+        }
+    }
+
 }

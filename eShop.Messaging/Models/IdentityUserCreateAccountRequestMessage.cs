@@ -1,6 +1,6 @@
 ﻿namespace eShop.Messaging.Models
 {
-    public class IdentityUserCreateAccountRequestMessage
+    public class IdentityUserCreateAccountRequestMessage : Messaging.Message
     {
         public string IdentityUserId { get; set; }
         public string FirstName { get; set; }

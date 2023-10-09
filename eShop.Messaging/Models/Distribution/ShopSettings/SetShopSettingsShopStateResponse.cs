@@ -2,5 +2,16 @@
 
 namespace eShop.Messaging.Models.Distribution.ShopSettings
 {
-    public record SetShopSettingsShopStateResponse(Guid AccountId, IEnumerable<Shop> Shops);
+    public class SetShopSettingsShopStateResponse : Messaging.Message, IResponse
+    {
+        public Guid AccountId { get; }
+        public IEnumerable<Shop> Shops { get; }
+
+        public SetShopSettingsShopStateResponse(Guid accountId, IEnumerable<Shop> shops)
+        {
+            AccountId = accountId;
+            Shops = shops;
+        }
+    }
+
 }

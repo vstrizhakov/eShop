@@ -1,5 +1,4 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging;
 using eShop.Viber.Entities;
 using eShop.Viber.Models;
 using eShop.Viber.Repositories;
@@ -26,7 +25,7 @@ namespace eShop.Viber.Controllers
         public async Task<IActionResult> Post(
             [FromBody] Callback callback,
             [FromServices] IBotContextConverter botContextConverter,
-            [FromServices] IProducer producer,
+            [FromServices] Messaging.IProducer producer,
             CancellationToken cancellationToken)
         {
             object? response = null;

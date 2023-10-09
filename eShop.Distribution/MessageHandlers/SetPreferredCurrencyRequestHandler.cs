@@ -6,36 +6,35 @@ using eShop.Messaging.Models.Distribution;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class SetPreferredCurrencyRequestHandler : IMessageHandler<SetPreferredCurrencyRequest>
+    public class SetPreferredCurrencyRequestHandler : IRequestHandler<SetPreferredCurrencyRequest, SetPreferredCurrencyResponse>
     {
         private readonly IDistributionSettingsService _distributionSettingsService;
         private readonly IMapper _mapper;
-        private readonly IProducer _producer;
 
-        public SetPreferredCurrencyRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper, IProducer producer)
+        public SetPreferredCurrencyRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
         {
             _distributionSettingsService = distributionSettingsService;
             _mapper = mapper;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(SetPreferredCurrencyRequest request)
+        public async Task<SetPreferredCurrencyResponse> HandleRequestAsync(SetPreferredCurrencyRequest request)
         {
             var accountId = request.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
+
             if (distributionSettings != null)
             {
                 distributionSettings = await _distributionSettingsService.SetPreferredCurrencyAsync(distributionSettings, request.CurrencyId);
-
                 var preferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
                 var response = new SetPreferredCurrencyResponse(accountId, true, preferredCurrency);
-                _producer.Publish(response);
+                return response;
             }
             else
             {
                 var response = new SetPreferredCurrencyResponse(accountId, false, null);
-                _producer.Publish(response);
+                return response;
             }
         }
     }
+
 }

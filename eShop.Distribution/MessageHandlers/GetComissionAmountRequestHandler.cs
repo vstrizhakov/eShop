@@ -4,18 +4,16 @@ using eShop.Messaging.Models.Distribution;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class GetComissionAmountRequestHandler : IMessageHandler<GetComissionAmountRequest>
+    public class GetComissionAmountRequestHandler : IRequestHandler<GetComissionAmountRequest, GetComissionAmountResponse>
     {
         private readonly IDistributionSettingsService _distributionSettingsService;
-        private readonly IProducer _producer;
 
-        public GetComissionAmountRequestHandler(IDistributionSettingsService distributionSettingsService, IProducer producer)
+        public GetComissionAmountRequestHandler(IDistributionSettingsService distributionSettingsService)
         {
             _distributionSettingsService = distributionSettingsService;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(GetComissionAmountRequest message)
+        public async Task<GetComissionAmountResponse> HandleRequestAsync(GetComissionAmountRequest message)
         {
             var accountId = message.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
@@ -24,8 +22,10 @@ namespace eShop.Distribution.MessageHandlers
                 var comissionSettings = distributionSettings.ComissionSettings;
 
                 var response = new GetComissionAmountResponse(accountId, comissionSettings.Amount);
-                _producer.Publish(response);
+                return response;
             }
+
+            return null;
         }
     }
 }

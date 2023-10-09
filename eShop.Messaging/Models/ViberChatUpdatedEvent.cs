@@ -1,6 +1,6 @@
 ﻿namespace eShop.Messaging.Models
 {
-    public class ViberChatUpdatedEvent
+    public class ViberChatUpdatedEvent : Messaging.Message
     {
         public Guid AccountId { get; set; }
         public Guid ViberUserId { get; set; }

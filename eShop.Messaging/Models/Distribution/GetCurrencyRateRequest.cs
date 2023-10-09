@@ -1,4 +1,15 @@
 ﻿namespace eShop.Messaging.Models.Distribution
 {
-    public record GetCurrencyRateRequest(Guid AccountId, Guid CurrencyId);
+    public class GetCurrencyRateRequest : Messaging.Message, IRequest<GetCurrencyRateResponse>
+    {
+        public Guid AccountId { get; }
+        public Guid CurrencyId { get; }
+
+        public GetCurrencyRateRequest(Guid accountId, Guid currencyId)
+        {
+            AccountId = accountId;
+            CurrencyId = currencyId;
+        }
+    }
+
 }

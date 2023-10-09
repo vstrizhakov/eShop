@@ -6,26 +6,25 @@ using eShop.Messaging.Models.Catalog;
 
 namespace eShop.Catalog.MessageHandlers
 {
-    public class GetCurrenciesRequestHandler : IMessageHandler<GetCurrenciesRequest>
+    public class GetCurrenciesRequestHandler : IRequestHandler<GetCurrenciesRequest, GetCurrenciesResponse>
     {
         private readonly ICurrencyRepository _currencyRepository;
         private readonly IMapper _mapper;
-        private readonly IProducer _producer;
 
-        public GetCurrenciesRequestHandler(ICurrencyRepository currencyRepository, IMapper mapper, IProducer producer)
+        public GetCurrenciesRequestHandler(ICurrencyRepository currencyRepository, IMapper mapper)
         {
             _currencyRepository = currencyRepository;
             _mapper = mapper;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(GetCurrenciesRequest message)
+        public async Task<GetCurrenciesResponse> HandleRequestAsync(GetCurrenciesRequest request)
         {
             var currencies = await _currencyRepository.GetCurrenciesAsync();
-
             var mappedCurrencies = _mapper.Map<IEnumerable<Currency>>(currencies);
-            var response = new GetCurrenciesResponse(message.AccountId, mappedCurrencies);
-            _producer.Publish(response);
+
+            var response = new GetCurrenciesResponse(request.AccountId, mappedCurrencies);
+            return response;
         }
     }
+
 }

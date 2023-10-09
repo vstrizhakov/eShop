@@ -8,6 +8,7 @@ using System.Text;
 namespace eShop.Messaging
 {
     internal class RabbitMqConsumer<T> : IConsumer, IDisposable
+        where T : notnull, IMessage
     {
         private const string Exchange = "eShop";
 

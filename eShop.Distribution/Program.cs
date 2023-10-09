@@ -68,20 +68,21 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<BroadcastCompositionMessage, BroadcastCompositionMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastMessageUpdateEvent, BroadcastMessageUpdateEventHandler>();
             builder.Services.AddMessageHandler<SyncCurrenciesMessage, SyncCurrenciesMessageHandler>();
-            builder.Services.AddMessageHandler<GetPreferredCurrencyRequest, GetPreferredCurrencyRequestHandler>();
-            builder.Services.AddMessageHandler<SetPreferredCurrencyRequest, SetPreferredCurrencyRequestHandler>();
-            builder.Services.AddMessageHandler<GetCurrencyRatesRequest, GetCurrencyRatesRequestHandler>();
-            builder.Services.AddMessageHandler<SetCurrencyRateRequest, SetCurrencyRateRequestHandler>();
-            builder.Services.AddMessageHandler<GetCurrencyRateRequest, GetCurrencyRateRequestHandler>();
-            builder.Services.AddMessageHandler<GetComissionSettingsRequest, GetComissionSettingsRequestHandler>();
-            builder.Services.AddMessageHandler<SetComissionShowRequest, SetComissionShowRequestHandler>();
-            builder.Services.AddMessageHandler<SetComissionAmountRequest, SetComissionAmountRequestHandler>();
-            builder.Services.AddMessageHandler<GetComissionAmountRequest, GetComissionAmountRequestHandler>();
+            builder.Services.AddRequestHandler<GetPreferredCurrencyRequest, GetPreferredCurrencyResponse, GetPreferredCurrencyRequestHandler>();
+            builder.Services.AddRequestHandler<SetPreferredCurrencyRequest, SetPreferredCurrencyResponse, SetPreferredCurrencyRequestHandler>();
+            builder.Services.AddRequestHandler<GetCurrencyRatesRequest, GetCurrencyRatesResponse, GetCurrencyRatesRequestHandler>();
+            builder.Services.AddRequestHandler<SetCurrencyRateRequest, SetCurrencyRateResponse, SetCurrencyRateRequestHandler>();
+            builder.Services.AddRequestHandler<GetCurrencyRateRequest, GetCurrencyRateResponse, GetCurrencyRateRequestHandler>();
+            builder.Services.AddRequestHandler<GetComissionSettingsRequest, GetComissionSettingsResponse, GetComissionSettingsRequestHandler>();
+            builder.Services.AddRequestHandler<SetComissionShowRequest, SetComissionShowResponse, SetComissionShowRequestHandler>();
+            builder.Services.AddRequestHandler<SetComissionAmountRequest, SetComissionAmountResponse, SetComissionAmountRequestHandler>();
+            builder.Services.AddRequestHandler<GetComissionAmountRequest, GetComissionAmountResponse, GetComissionAmountRequestHandler>();
+            builder.Services.AddRequestHandler<GetShopSettingsRequest, GetShopSettingsResponse, GetShopSettingsRequestHandler>();
+            builder.Services.AddRequestHandler<SetShopSettingsFilterRequest, SetShopSettingsFilterResponse, SetShopSettingsFilterRequestHandler>();
+            builder.Services.AddRequestHandler<GetShopSettingsShopsRequest, GetShopSettingsShopsResponse, GetShopSettingsShopsRequestHandler>();
+            builder.Services.AddRequestHandler<SetShopSettingsShopStateRequest, SetShopSettingsShopStateResponse, SetShopSettingsShopStateRequestHandler>();
+
             builder.Services.AddMessageHandler<SyncShopsMessage, SyncShopsMessageHandler>();
-            builder.Services.AddMessageHandler<GetShopSettingsRequest, GetShopSettingsRequestHandler>();
-            builder.Services.AddMessageHandler<SetShopSettingsFilterRequest, SetShopSettingsFilterRequestHandler>();
-            builder.Services.AddMessageHandler<GetShopSettingsShopsRequest, GetShopSettingsShopsRequestHandler>();
-            builder.Services.AddMessageHandler<SetShopSettingsShopStateRequest, SetShopSettingsShopStateRequestHandler>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

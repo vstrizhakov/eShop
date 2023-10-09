@@ -5,28 +5,30 @@ using eShop.Messaging.Models.Distribution;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class GetComissionSettingsRequestHandler : IMessageHandler<GetComissionSettingsRequest>
+    public class GetComissionSettingsRequestHandler : IRequestHandler<GetComissionSettingsRequest, GetComissionSettingsResponse>
     {
         private readonly IDistributionSettingsService _distributionSettingsService;
-        private readonly IProducer _producer;
 
-        public GetComissionSettingsRequestHandler(IDistributionSettingsService distributionSettingsService, IProducer producer)
+        public GetComissionSettingsRequestHandler(IDistributionSettingsService distributionSettingsService)
         {
             _distributionSettingsService = distributionSettingsService;
-            _producer = producer;
         }
-        
-        public async Task HandleMessageAsync(GetComissionSettingsRequest message)
+
+        public async Task<GetComissionSettingsResponse> HandleRequestAsync(GetComissionSettingsRequest request)
         {
-            var accountId = message.AccountId;
+            var accountId = request.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
+
+            GetComissionSettingsResponse response = null;
+
             if (distributionSettings != null)
             {
                 var comissionSettings = distributionSettings.ComissionSettings;
-
-                var response = new GetComissionSettingsResponse(accountId, comissionSettings.Show, comissionSettings.Amount);
-                _producer.Publish(response);
+                response = new GetComissionSettingsResponse(accountId, comissionSettings.Show, comissionSettings.Amount);
             }
+
+            return response;
         }
     }
+
 }

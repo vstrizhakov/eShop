@@ -5,31 +5,33 @@ using eShop.Messaging.Models.Distribution.ShopSettings;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class SetShopSettingsFilterRequestHandler : IMessageHandler<SetShopSettingsFilterRequest>
+    public class SetShopSettingsFilterRequestHandler : IRequestHandler<SetShopSettingsFilterRequest, SetShopSettingsFilterResponse>
     {
         private readonly IDistributionSettingsService _distributionSettingsService;
         private readonly IMapper _mapper;
-        private readonly IProducer _producer;
 
-        public SetShopSettingsFilterRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper, IProducer producer)
+        public SetShopSettingsFilterRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
         {
             _distributionSettingsService = distributionSettingsService;
             _mapper = mapper;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(SetShopSettingsFilterRequest request)
+        public async Task<SetShopSettingsFilterResponse> HandleRequestAsync(SetShopSettingsFilterRequest request)
         {
             var accountId = request.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
+
             if (distributionSettings != null)
             {
                 distributionSettings = await _distributionSettingsService.SetFilterShopsAsync(distributionSettings, request.Filter);
                 var shopSettings = _mapper.Map<ShopSettings>(distributionSettings.ShopSettings);
 
                 var response = new SetShopSettingsFilterResponse(accountId, shopSettings);
-                _producer.Publish(response);
+                return response;
             }
+
+            return null;
         }
     }
+
 }

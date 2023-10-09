@@ -74,7 +74,8 @@ namespace eShop.Catalog
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<BroadcastCompositionUpdateEvent, BroadcastCompositionUpdateEventHandler>();
-            builder.Services.AddMessageHandler<GetCurrenciesRequest, GetCurrenciesRequestHandler>();
+            builder.Services.AddRequestHandler<GetCurrenciesRequest, GetCurrenciesResponse, GetCurrenciesRequestHandler>();
+
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

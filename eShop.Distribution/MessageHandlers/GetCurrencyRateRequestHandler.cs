@@ -6,30 +6,29 @@ using eShop.Messaging.Models.Distribution;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class GetCurrencyRateRequestHandler : IMessageHandler<GetCurrencyRateRequest>
+    public class GetCurrencyRateRequestHandler : IRequestHandler<GetCurrencyRateRequest, GetCurrencyRateResponse>
     {
         private readonly IDistributionSettingsService _distributionSettingsService;
         private readonly IMapper _mapper;
-        private readonly IProducer _producer;
 
-        public GetCurrencyRateRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper, IProducer producer)
+        public GetCurrencyRateRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
         {
             _distributionSettingsService = distributionSettingsService;
             _mapper = mapper;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(GetCurrencyRateRequest request)
+        public async Task<GetCurrencyRateResponse> HandleRequestAsync(GetCurrencyRateRequest request)
         {
             var accountId = request.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
             var preferredCurrency = distributionSettings.PreferredCurrency;
+
             if (preferredCurrency != null)
             {
                 var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
                 var currencyRate = currencyRates.FirstOrDefault(e => e.SourceCurrencyId == request.CurrencyId);
-
                 GetCurrencyRateResponse response;
+
                 if (currencyRate == null)
                 {
                     response = new GetCurrencyRateResponse(accountId, false, null, null);
@@ -41,8 +40,11 @@ namespace eShop.Distribution.MessageHandlers
                     response = new GetCurrencyRateResponse(accountId, true, mappedPreferredCurrency, mappedCurrencyRate);
                 }
 
-                _producer.Publish(response);
+                return response;
             }
+
+            return null;
         }
     }
+
 }

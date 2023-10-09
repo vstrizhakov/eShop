@@ -6,33 +6,35 @@ using eShop.Messaging.Models.Distribution;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class SetCurrencyRateRequestHandler : IMessageHandler<SetCurrencyRateRequest>
+    public class SetCurrencyRateRequestHandler : IRequestHandler<SetCurrencyRateRequest, SetCurrencyRateResponse>
     {
         private readonly IDistributionSettingsService _distributionSettingsService;
         private readonly IMapper _mapper;
-        private readonly IProducer _producer;
 
-        public SetCurrencyRateRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper, IProducer producer)
+        public SetCurrencyRateRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
         {
             _distributionSettingsService = distributionSettingsService;
             _mapper = mapper;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(SetCurrencyRateRequest message)
+        public async Task<SetCurrencyRateResponse> HandleRequestAsync(SetCurrencyRateRequest request)
         {
-            var accountId = message.AccountId;
+            var accountId = request.AccountId;
             var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
+
             if (distributionSettings != null)
             {
-                distributionSettings = await _distributionSettingsService.SetCurrencyRateAsync(distributionSettings, message.CurrencyId, message.Rate);
+                distributionSettings = await _distributionSettingsService.SetCurrencyRateAsync(distributionSettings, request.CurrencyId, request.Rate);
                 var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
 
                 var mappedPreferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
                 var mappedCurrencyRates = _mapper.Map<IEnumerable<CurrencyRate>>(currencyRates);
                 var response = new SetCurrencyRateResponse(accountId, mappedPreferredCurrency, mappedCurrencyRates);
-                _producer.Publish(response);
+                return response;
             }
+
+            return null;
         }
     }
+
 }

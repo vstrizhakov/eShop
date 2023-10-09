@@ -1,4 +1,12 @@
 ﻿namespace eShop.Messaging.Models.Catalog
 {
-    public record GetCurrenciesRequest(Guid AccountId);
+    public class GetCurrenciesRequest : Messaging.Message, IRequest<GetCurrenciesResponse>
+    {
+        public Guid AccountId { get; }
+
+        public GetCurrenciesRequest(Guid accountId)
+        {
+            AccountId = accountId;
+        }
+    }
 }

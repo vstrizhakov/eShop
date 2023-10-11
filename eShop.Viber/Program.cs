@@ -89,6 +89,8 @@ namespace eShop.Viber
                 app.UseSwaggerUI();
             }
 
+            app.UseRouting();
+
             app.UseAuthorization();
 
             app.MapControllers();

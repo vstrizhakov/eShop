@@ -1,8 +1,6 @@
 ﻿using eShop.Bots.Common;
-using eShop.TelegramFramework.Builders;
 using eShop.TelegramFramework.Strategies;
 using Microsoft.Extensions.DependencyInjection;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -11,17 +9,23 @@ namespace eShop.TelegramFramework
     internal class TelegramMiddleware : ITelegramMiddleware
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IContextStore _contextStore;
         private readonly IBotContextConverter _botContextConverter;
         private readonly ITelegramViewRunner _telegramViewRunner;
 
-        public TelegramMiddleware(IServiceProvider serviceProvider, IBotContextConverter botContextConverter, ITelegramViewRunner telegramViewRunner)
+        public TelegramMiddleware(
+            IServiceProvider serviceProvider,
+            IContextStore contextStore,
+            IBotContextConverter botContextConverter,
+            ITelegramViewRunner telegramViewRunner)
         {
             _serviceProvider = serviceProvider;
+            _contextStore = contextStore;
             _botContextConverter = botContextConverter;
             _telegramViewRunner = telegramViewRunner;
         }
 
-        public async Task ProcessAsync(Update update, string? activeContext = null)
+        public async Task HandleUpdateAsync(Update update)
         {
             if (update.Type == UpdateType.Message)
             {
@@ -47,9 +51,13 @@ namespace eShop.TelegramFramework
                                 data = text.Substring(seperatorIndex + 1, text.Length - seperatorIndex - 1);
                             }
                         }
-                        else if (activeContext != null)
+                        else
                         {
-                            data = activeContext;
+                            var activeContext = await _contextStore.GetActiveContextAsync(update);
+                            if (activeContext != null)
+                            {
+                                data = activeContext;
+                            }
                         }
 
                         await ProcessAsync(update, TelegramContext.TextMessage, command, data);

@@ -102,6 +102,8 @@ namespace eShop.Distribution
                 app.UseSwaggerUI();
             }
 
+            app.UseRouting();
+
             app.UseAuthorization();
 
             app.MapControllers();

@@ -2,7 +2,7 @@
 
 namespace eShop.TelegramFramework
 {
-    public interface ITelegramMiddleware
+    internal interface IUpdatePipeline
     {
         Task HandleUpdateAsync(Update update);
     }

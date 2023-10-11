@@ -103,6 +103,8 @@ namespace eShop.Catalog
                 RequestPath = "/catalog",
             });
 
+            app.UseRouting();
+
             app.UseAuthorization();
 
             app.MapControllers();

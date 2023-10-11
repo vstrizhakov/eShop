@@ -70,6 +70,8 @@ namespace eShop.Accounts
                 app.UseSwaggerUI();
             }
 
+            app.UseRouting();
+
             app.UseAuthorization();
 
             app.MapControllers();

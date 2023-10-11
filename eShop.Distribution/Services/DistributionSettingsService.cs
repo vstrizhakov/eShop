@@ -112,6 +112,7 @@ namespace eShop.Distribution.Services
             var filterShops = distributionSettings.ShopSettings.PreferredShops.Select(shop => new ShopFilter(shop, true));
             filterShops = filterShops.Concat(shops.Select(shop => new ShopFilter(shop, false)));
             filterShops = filterShops.DistinctBy(e => e.Shop.Id);
+            filterShops = filterShops.OrderBy(e => e.Shop.Name);
 
             return filterShops;
         }

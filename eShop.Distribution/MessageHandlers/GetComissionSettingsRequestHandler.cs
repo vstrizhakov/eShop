@@ -24,7 +24,7 @@ namespace eShop.Distribution.MessageHandlers
             if (distributionSettings != null)
             {
                 var comissionSettings = distributionSettings.ComissionSettings;
-                response = new GetComissionSettingsResponse(accountId, comissionSettings.Show, comissionSettings.Amount);
+                response = new GetComissionSettingsResponse(accountId, comissionSettings.Amount);
             }
 
             return response;

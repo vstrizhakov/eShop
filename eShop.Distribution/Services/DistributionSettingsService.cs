@@ -82,15 +82,6 @@ namespace eShop.Distribution.Services
             return distributionSettings;
         }
 
-        public async Task<DistributionSettings> SetComissionShowAsync(DistributionSettings distributionSettings, bool show)
-        {
-            distributionSettings.ComissionSettings.Show = show;
-
-            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
-
-            return distributionSettings;
-        }
-
         public async Task<DistributionSettings> SetComissionAmountAsync(DistributionSettings distributionSettings, decimal amount)
         {
             distributionSettings.ComissionSettings.Amount = amount;

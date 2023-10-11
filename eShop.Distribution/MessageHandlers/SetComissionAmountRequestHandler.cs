@@ -23,7 +23,7 @@ namespace eShop.Distribution.MessageHandlers
                 distributionSettings = await _distributionSettingsService.SetComissionAmountAsync(distributionSettings, request.Amount);
                 var comissionSettings = distributionSettings.ComissionSettings;
 
-                var response = new SetComissionAmountResponse(accountId, comissionSettings.Show, comissionSettings.Amount);
+                var response = new SetComissionAmountResponse(accountId, comissionSettings.Amount);
                 return response;
             }
 

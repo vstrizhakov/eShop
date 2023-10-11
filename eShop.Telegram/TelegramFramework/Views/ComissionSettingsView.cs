@@ -10,13 +10,11 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class ComissionSettingsView : ITelegramView
     {
         private readonly long _chatId;
-        private readonly bool _show;
         private readonly decimal _amount;
 
-        public ComissionSettingsView(long chatId, bool show, decimal amount)
+        public ComissionSettingsView(long chatId, decimal amount)
         {
             _chatId = chatId;
-            _show = show;
             _amount = amount;
         }
 
@@ -26,7 +24,6 @@ namespace eShop.Telegram.TelegramFramework.Views
 
             var control = new InlineKeyboardList(new IInlineKeyboardElement[]
             {
-                new InlineKeyboardToggle("Показувати комісію", "Не показувати комісію", _show, TelegramAction.SetComissionShow),
                 new InlineKeyboardAction($"Розмір комісії ({_amount}%)", TelegramAction.SetComissionAmount),
             })
             {

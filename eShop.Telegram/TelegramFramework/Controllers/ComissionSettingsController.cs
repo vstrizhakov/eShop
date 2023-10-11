@@ -33,23 +33,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetComissionSettingsRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new ComissionSettingsView(user.ExternalId, response.Show, response.Amount);
-                return view;
-            }
-
-            return null;
-        }
-
-        [CallbackQuery(TelegramAction.SetComissionShow)]
-        public async Task<ITelegramView?> SetComissionShow(CallbackQueryContext context, bool show)
-        {
-            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
-            if (user!.AccountId != null)
-            {
-                var request = new SetComissionShowRequest(user.AccountId.Value, show);
-                var response = await _requestClient.SendAsync(request);
-
-                var view = new ComissionSettingsView(user.ExternalId, response.Show, response.Amount);
+                var view = new ComissionSettingsView(user.ExternalId, response.Amount);
                 return view;
             }
 
@@ -88,7 +72,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
 
                     await _telegramService.SetActiveContextAsync(user, null);
 
-                    var view = new ComissionSettingsView(user.ExternalId, response.Show, response.Amount);
+                    var view = new ComissionSettingsView(user.ExternalId, response.Amount);
                     return view;
                 }
                 else

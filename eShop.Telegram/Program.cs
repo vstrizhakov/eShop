@@ -83,7 +83,6 @@ namespace eShop.Telegram
             builder.Services.AddMessageListener<GetCurrencyRateResponse>();
             builder.Services.AddMessageListener<SetCurrencyRateResponse>();
             builder.Services.AddMessageListener<GetComissionSettingsResponse>();
-            builder.Services.AddMessageListener<SetComissionShowResponse>();
             builder.Services.AddMessageListener<GetComissionAmountResponse>();
             builder.Services.AddMessageListener<SetComissionAmountResponse>();
             builder.Services.AddMessageListener<GetShopSettingsResponse>();

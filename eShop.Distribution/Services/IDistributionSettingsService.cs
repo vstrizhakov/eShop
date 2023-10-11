@@ -10,7 +10,6 @@ namespace eShop.Distribution.Services
         Task<IEnumerable<ShopFilter>> GetShopsAsync(DistributionSettings distributionSettings);
         Task<DistributionSettings> SetPreferredCurrencyAsync(DistributionSettings distributionSettings, Guid currencyId);
         Task<DistributionSettings> SetCurrencyRateAsync(DistributionSettings distributionSettings, Guid sourceCurrencyId, double rate);
-        Task<DistributionSettings> SetComissionShowAsync(DistributionSettings distributionSettings, bool show);
         Task<DistributionSettings> SetComissionAmountAsync(DistributionSettings distributionSettings, decimal amount);
         Task<DistributionSettings> SetFilterShopsAsync(DistributionSettings distributionSettings, bool filter);
         Task<DistributionSettings> SetShopIsEnabledAsync(DistributionSettings distributionSettings, Guid shopId, bool isEnabled);

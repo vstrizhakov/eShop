@@ -74,7 +74,6 @@ namespace eShop.Distribution
             builder.Services.AddRequestHandler<SetCurrencyRateRequest, SetCurrencyRateResponse, SetCurrencyRateRequestHandler>();
             builder.Services.AddRequestHandler<GetCurrencyRateRequest, GetCurrencyRateResponse, GetCurrencyRateRequestHandler>();
             builder.Services.AddRequestHandler<GetComissionSettingsRequest, GetComissionSettingsResponse, GetComissionSettingsRequestHandler>();
-            builder.Services.AddRequestHandler<SetComissionShowRequest, SetComissionShowResponse, SetComissionShowRequestHandler>();
             builder.Services.AddRequestHandler<SetComissionAmountRequest, SetComissionAmountResponse, SetComissionAmountRequestHandler>();
             builder.Services.AddRequestHandler<GetComissionAmountRequest, GetComissionAmountResponse, GetComissionAmountRequestHandler>();
             builder.Services.AddRequestHandler<GetShopSettingsRequest, GetShopSettingsResponse, GetShopSettingsRequestHandler>();

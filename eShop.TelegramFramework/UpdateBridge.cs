@@ -4,11 +4,11 @@ namespace eShop.TelegramFramework
 {
     internal class UpdateBridge : IUpdatePublisher, IUpdateObserver
     {
-        public event EventHandler<Update>? UpdateArrived;
+        public event EventHandler<Update>? UpdateReceived;
 
         public void Publish(Update update)
         {
-            UpdateArrived?.Invoke(this, update);
+            UpdateReceived?.Invoke(this, update);
         }
     }
 }

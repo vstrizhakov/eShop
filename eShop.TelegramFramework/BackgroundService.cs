@@ -20,13 +20,13 @@ namespace eShop.TelegramFramework
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _updateObserver.UpdateArrived += UpdateObserver_UpdateArrived;
+            _updateObserver.UpdateReceived += UpdateObserver_UpdateArrived;
             return Task.CompletedTask;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _updateObserver.UpdateArrived -= UpdateObserver_UpdateArrived;
+            _updateObserver.UpdateReceived -= UpdateObserver_UpdateArrived;
 
             await Task.WhenAll(_tasks);
         }

@@ -2,6 +2,7 @@
 using eShop.Messaging.Models.Distribution;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
+using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
@@ -12,12 +13,12 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     public class CurrencySettingsController : TelegramControllerBase
     {
         private readonly ITelegramService _telegramService;
-        private readonly IProducer _producer;
+        private readonly IRequestClient _requestClient;
 
-        public CurrencySettingsController(ITelegramService telegramService, IProducer producer)
+        public CurrencySettingsController(ITelegramService telegramService, IRequestClient requestClient)
         {
             _telegramService = telegramService;
-            _producer = producer;
+            _requestClient = requestClient;
         }
 
         [CallbackQuery(TelegramAction.CurrencySettings)]
@@ -27,7 +28,10 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetPreferredCurrencyRequest(user.AccountId.Value);
-                _producer.Publish(request);
+                var response = await _requestClient.SendAsync(request);
+
+                var view = new CurrencySettingsView(user.ExternalId, response.PreferredCurrency);
+                return view;
             }
 
             return null;

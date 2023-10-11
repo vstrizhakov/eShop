@@ -87,7 +87,7 @@ namespace eShop.Messaging
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var messageHandler = scope.ServiceProvider.GetRequiredService<IMessageHandler<T>>();
+                var messageHandler = scope.ServiceProvider.GetRequiredService<IMessagePipeline<T>>();
 
                 await messageHandler.HandleMessageAsync(message);
             }

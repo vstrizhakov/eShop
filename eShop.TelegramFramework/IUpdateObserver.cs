@@ -4,6 +4,6 @@ namespace eShop.TelegramFramework
 {
     internal interface IUpdateObserver
     {
-        event EventHandler<Update>? UpdateArrived;
+        event EventHandler<Update>? UpdateReceived;
     }
 }

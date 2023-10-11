@@ -2,6 +2,7 @@
 using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
+using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
@@ -12,12 +13,12 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     public class ShopSettingsController : TelegramControllerBase
     {
         private readonly ITelegramService _telegramService;
-        private readonly IProducer _producer;
+        private readonly IRequestClient _requestClient;
 
-        public ShopSettingsController(ITelegramService telegramService, IProducer producer)
+        public ShopSettingsController(ITelegramService telegramService, IRequestClient requestClient)
         {
             _telegramService = telegramService;
-            _producer = producer;
+            _requestClient = requestClient;
         }
 
         [CallbackQuery(TelegramAction.ShopSettings)]
@@ -27,7 +28,10 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetShopSettingsRequest(user.AccountId.Value);
-                _producer.Publish(request);
+                var response = await _requestClient.SendAsync(request);
+
+                var view = new ShopSettingsView(user.ExternalId, response.ShopSettings);
+                return view;
             }
 
             return null;
@@ -40,7 +44,10 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new SetShopSettingsFilterRequest(user.AccountId.Value, filter);
-                _producer.Publish(request);
+                var response = await _requestClient.SendAsync(request);
+
+                var view = new ShopSettingsView(user.ExternalId, response.ShopSettings);
+                return view;
             }
 
             return null;
@@ -53,7 +60,10 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetShopSettingsShopsRequest(user.AccountId.Value);
-                _producer.Publish(request);
+                var response = await _requestClient.SendAsync(request);
+
+                var view = new ShopSettingsShopsView(user.ExternalId, response.Shops);
+                return view;
             }
 
             return null;
@@ -66,7 +76,10 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new SetShopSettingsShopStateRequest(user.AccountId.Value, shopId, isEnabled);
-                _producer.Publish(request);
+                var response = await _requestClient.SendAsync(request);
+
+                var view = new ShopSettingsShopsView(user.ExternalId, response.Shops);
+                return view;
             }
 
             return null;

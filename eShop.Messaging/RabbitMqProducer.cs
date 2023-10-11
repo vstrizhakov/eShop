@@ -22,7 +22,7 @@ namespace eShop.Messaging
                 arguments: null);
         }
 
-        public void Publish<T>(T message)
+        public void Publish<T>(T message) where T : notnull
         {
             var data = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(data);
@@ -30,7 +30,7 @@ namespace eShop.Messaging
             var properties = _channel.CreateBasicProperties();
             properties.Persistent = true;
 
-            var routingKey = typeof(T).Name;
+            var routingKey = message.GetType().Name;
             _channel.BasicPublish(
                 exchange: Exchange,
                 routingKey: routingKey,

@@ -1,7 +1,9 @@
-﻿using eShop.Messaging;
+﻿using eShop.Bots.Common;
+using eShop.Messaging;
 using eShop.Messaging.Models.Distribution;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
+using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
@@ -12,12 +14,14 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     public class CurrencyRateSettings : TelegramControllerBase
     {
         private readonly ITelegramService _telegramService;
-        private readonly IProducer _producer;
+        private readonly IRequestClient _requestClient;
+        private readonly IBotContextConverter _botContextConverter;
 
-        public CurrencyRateSettings(ITelegramService telegramService, IProducer producer)
+        public CurrencyRateSettings(ITelegramService telegramService, IRequestClient request, IBotContextConverter botContextConverter)
         {
             _telegramService = telegramService;
-            _producer = producer;
+            _requestClient = request;
+            _botContextConverter = botContextConverter;
         }
 
         [CallbackQuery(TelegramAction.CurrencyRatesSettings)]
@@ -27,8 +31,10 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetCurrencyRatesRequest(user.AccountId.Value);
-                _producer.Publish(request);
+                var response = await _requestClient.SendAsync(request);
 
+                var view = new CurrencyRatesSettingsView(user.ExternalId, response.PreferredCurrency, response.CurrencyRates);
+                return view;
             }
 
             return null;
@@ -41,7 +47,18 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetCurrencyRateRequest(user.AccountId.Value, currencyId);
-                _producer.Publish(request);
+                var response = await _requestClient.SendAsync(request);
+
+                if (response.IsSucceeded)
+                {
+                    var currencyRate = response.CurrencyRate!;
+
+                    var activeContext = _botContextConverter.Serialize(TelegramAction.SetCurrencyRate, currencyRate.Currency.Id.ToString());
+                    await _telegramService.SetActiveContextAsync(user, activeContext);
+
+                    var view = new SetCurrencyRateView(user.ExternalId, response.PreferredCurrency!, currencyRate);
+                    return view;
+                }
             }
 
             return null;
@@ -58,7 +75,10 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     await _telegramService.SetActiveContextAsync(user, null);
 
                     var request = new SetCurrencyRateRequest(user.AccountId.Value, currencyId, rate);
-                    _producer.Publish(request);
+                    var response = await _requestClient.SendAsync(request);
+
+                    var view = new CurrencyRatesSettingsView(user.ExternalId, response.PreferredCurrency, response.CurrencyRates);
+                    return view;
                 }
                 else
                 {

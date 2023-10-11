@@ -6,11 +6,24 @@ namespace eShop.Messaging.Extensions
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddMessageHandler<TMessage, THandler>(this IServiceCollection services)
-            where THandler : class, IMessageHandler<TMessage>
-            where TMessage : notnull, IMessage
+        private static IServiceCollection AddBasicMessaging(this IServiceCollection services)
         {
             services.AddHostedService<MessagingManager>();
+            services.AddScoped(typeof(IMessagePipeline<>), typeof(MessagePipeline<>));
+            services.AddScoped<IRequestClient, RequestClient>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddMessageListener<TMessage>(this IServiceCollection services)
+            where TMessage : notnull, IMessage
+        {
+            services.AddBasicMessaging();
+
+            services.AddSingleton<MessageBridge<TMessage>>();
+            services.AddSingleton<IMessagePublisher<TMessage>>(serviceProvider => serviceProvider.GetRequiredService<MessageBridge<TMessage>>());
+            services.AddSingleton<IMessageObserver<TMessage>>(serviceProvider => serviceProvider.GetRequiredService<MessageBridge<TMessage>>());
+
             services.AddSingleton<IConsumer, RabbitMqConsumer<TMessage>>();
             services.Configure<RabbitMqConsumerOptions<TMessage>>(options =>
             {
@@ -18,6 +31,15 @@ namespace eShop.Messaging.Extensions
                 options.QueueName = name;
                 options.RoutingKey = name;
             });
+            
+            return services;
+        }
+
+        public static IServiceCollection AddMessageHandler<TMessage, THandler>(this IServiceCollection services)
+            where THandler : class, IMessageHandler<TMessage>
+            where TMessage : notnull, IMessage
+        {
+            services.AddMessageListener<TMessage>();
             services.AddScoped<IMessageHandler<TMessage>, THandler>();
 
             return services;
@@ -28,16 +50,8 @@ namespace eShop.Messaging.Extensions
             where TResponse : notnull, IResponse
             where THandler : class, IRequestHandler<TRequest, TResponse>
         {
-            services.AddHostedService<MessagingManager>();
-            services.AddSingleton<IConsumer, RabbitMqConsumer<TRequest>>();
-            services.Configure<RabbitMqConsumerOptions<TRequest>>(options =>
-            {
-                var name = typeof(TRequest).Name;
-                options.QueueName = name;
-                options.RoutingKey = name;
-            });
             services.AddScoped<IRequestHandler<TRequest, TResponse>, THandler>();
-            services.AddScoped<IMessageHandler<TRequest>, RequestHandler<TRequest, TResponse>>();
+            services.AddMessageHandler<TRequest, RequestHandler<TRequest, TResponse>>();
 
             return services;
         }

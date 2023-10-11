@@ -76,20 +76,20 @@ namespace eShop.Telegram
             builder.Services.AddRabbitMqProducer();
             builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
-            builder.Services.AddMessageHandler<GetPreferredCurrencyResponse, GetPreferredCurrencyResponseHandler>();
-            builder.Services.AddMessageHandler<GetCurrenciesResponse, GetCurrenciesResponseHandler>();
-            builder.Services.AddMessageHandler<SetPreferredCurrencyResponse, SetPreferredCurrencyResponseHandler>();
-            builder.Services.AddMessageHandler<GetCurrencyRatesResponse, GetCurrencyRatesResponseHandler>();
-            builder.Services.AddMessageHandler<GetCurrencyRateResponse, GetCurrencyRateResponseHandler>();
-            builder.Services.AddMessageHandler<SetCurrencyRateResponse, SetCurrencyRateResponseHandler>();
-            builder.Services.AddMessageHandler<GetComissionSettingsResponse, GetComissionSettingsResponseHandler>();
-            builder.Services.AddMessageHandler<SetComissionShowResponse, SetComissionShowResponseHandler>();
-            builder.Services.AddMessageHandler<GetComissionAmountResponse, GetComissionAmountResponseHandler>();
-            builder.Services.AddMessageHandler<SetComissionAmountResponse, SetComissionAmountResponseHandler>();
-            builder.Services.AddMessageHandler<GetShopSettingsResponse, GetShopSettingsResponseHandler>();
-            builder.Services.AddMessageHandler<SetShopSettingsFilterResponse, SetShopSettingsFilterResponseHandler>();
-            builder.Services.AddMessageHandler<GetShopSettingsShopsResponse, GetShopSettingsShopsResponseHandler>();
-            builder.Services.AddMessageHandler<SetShopSettingsShopStateResponse, SetShopSettingsShopStateResponseHandler>();
+            builder.Services.AddMessageListener<GetPreferredCurrencyResponse>();
+            builder.Services.AddMessageListener<GetCurrenciesResponse>();
+            builder.Services.AddMessageListener<SetPreferredCurrencyResponse>();
+            builder.Services.AddMessageListener<GetCurrencyRatesResponse>();
+            builder.Services.AddMessageListener<GetCurrencyRateResponse>();
+            builder.Services.AddMessageListener<SetCurrencyRateResponse>();
+            builder.Services.AddMessageListener<GetComissionSettingsResponse>();
+            builder.Services.AddMessageListener<SetComissionShowResponse>();
+            builder.Services.AddMessageListener<GetComissionAmountResponse>();
+            builder.Services.AddMessageListener<SetComissionAmountResponse>();
+            builder.Services.AddMessageListener<GetShopSettingsResponse>();
+            builder.Services.AddMessageListener<SetShopSettingsFilterResponse>();
+            builder.Services.AddMessageListener<GetShopSettingsShopsResponse>();
+            builder.Services.AddMessageListener<SetShopSettingsShopStateResponse>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

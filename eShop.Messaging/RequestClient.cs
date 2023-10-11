@@ -22,7 +22,10 @@ namespace eShop.Messaging
 
             void OnMessageReceived(object? sender, TResponse response)
             {
-                taskCompletionSource.TrySetResult(response);
+                if (response.RequestId == request.RequestId)
+                {
+                    taskCompletionSource.TrySetResult(response);
+                }
             }
 
             observer.MessageReceived += OnMessageReceived;

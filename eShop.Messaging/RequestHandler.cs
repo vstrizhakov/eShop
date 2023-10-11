@@ -16,6 +16,9 @@
         public async Task HandleMessageAsync(TRequest request)
         {
             var response = await _requestHandler.HandleRequestAsync(request);
+
+            response.RequestId = request.RequestId; // TODO: seems hukky-hackky
+
             _producer.Publish(response);
         }
     }

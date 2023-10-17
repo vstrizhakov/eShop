@@ -30,12 +30,13 @@ namespace eShop.Telegram.TelegramFramework.Views
                 elements.Add(element);
             }
 
-            var control = new InlineKeyboardList(elements)
+            var grid = new InlineKeyboardGrid(elements);
+            var page = new InlineKeyboardPage(grid, TelegramAction.PreferredCurrencySettings)
             {
-                Navigation = new InlineKeyboardAction("Повернутися назад", TelegramAction.CurrencySettings),
+                Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Повернутися назад", TelegramAction.CurrencySettings)),
             };
 
-            var replyMarkup = markupBuilder.Build(control);
+            var replyMarkup = markupBuilder.Build(page);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

@@ -25,7 +25,7 @@ namespace eShop.Telegram.TelegramFramework.Views
                 new InlineKeyboardAction("Мої групи", TelegramAction.MyGroups),
                 new InlineKeyboardAction("Налаштування", TelegramAction.Settings),
             };
-            var control = new InlineKeyboardList(elements);
+            var control = new InlineKeyboardGrid(elements);
 
             var replyMarkup = markupBuilder.Build(control);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);

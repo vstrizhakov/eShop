@@ -32,11 +32,12 @@ namespace eShop.Telegram.TelegramFramework.Views
                 elements.Add(new InlineKeyboardAction("Магазини", TelegramAction.ShopSettingsShops));
             }
 
-            var control = new InlineKeyboardList(elements)
+            var grid = new InlineKeyboardGrid(elements);
+            var page = new InlineKeyboardPage(grid, TelegramAction.ShopSettings)
             {
-                Navigation = new InlineKeyboardAction("Назад", TelegramAction.Settings),
+                Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Назад", TelegramAction.Settings)),
             };
-            var replyMarkup = markupBuilder.Build(control);
+            var replyMarkup = markupBuilder.Build(page);
 
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }

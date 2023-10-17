@@ -16,8 +16,8 @@ namespace eShop.TelegramFramework.Builders
         public InlineKeyboardMarkup Build<T>(T control) where T : IInlineKeyboardContainer
         {
             var builder = _serviceProvider.GetRequiredService<IInlineKeyboardMarkupBuilder<T>>();
-            var markup = builder.Build(control);
-            return markup;
+            var buttons = builder.Build(control);
+            return new InlineKeyboardMarkup(buttons);
         }
     }
 }

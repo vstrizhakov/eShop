@@ -109,8 +109,6 @@ namespace eShop.Telegram
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                IdentityModelEventSource.ShowPII = true;
-
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }

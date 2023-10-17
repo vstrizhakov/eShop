@@ -30,12 +30,13 @@ namespace eShop.Telegram.TelegramFramework.Views
             {
                 new InlineKeyboardToggle("Увімкнути", "Ввимкнути", telegramChatSettings.IsEnabled, TelegramAction.SetGroupEnabled, _telegramChat.Id.ToString()),
             };
-            var control = new InlineKeyboardList(elements)
+            var grid = new InlineKeyboardGrid(elements);
+            var page = new InlineKeyboardPage(grid, TelegramAction.SetUpGroup, _telegramChat.Id.ToString())
             {
-                Navigation = new InlineKeyboardAction("Назад", TelegramAction.MyGroups),
+                Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Назад", TelegramAction.MyGroups)),
             };
 
-            var replyMarkup = markupBuilder.Build(control);
+            var replyMarkup = markupBuilder.Build(page);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

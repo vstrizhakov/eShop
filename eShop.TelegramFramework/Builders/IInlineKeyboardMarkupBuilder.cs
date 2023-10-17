@@ -10,6 +10,6 @@ namespace eShop.TelegramFramework.Builders
 
     public interface IInlineKeyboardMarkupBuilder<T> where T : IInlineKeyboardContainer
     {
-        InlineKeyboardMarkup Build(T control);
+        IEnumerable<IEnumerable<InlineKeyboardButton>> Build(T control);
     }
 }

@@ -22,7 +22,10 @@ namespace eShop.TelegramFramework.Extensions
             services.AddScoped<ITelegramMiddleware, TelegramMiddleware>();
 
             services.AddScoped<IInlineKeyboardMarkupBuilder, InlineKeyboardMarkupBuilder>();
-            services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardList>, InlineKeyboardListBuilder>();
+            services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardPage>, InlineKeyboardPageBuilder>();
+            services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardPagination>, InlineKeyboardPaginationBuilder>();
+            services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardGrid>, InlineKeyboardGridBuilder>();
+            services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardNavigation>, InlineKeyboardNavigationBuilder>();
 
             services.AddScoped<IInlineKeyboardButtonBuilder, InlineKeyboardButtonBuilder>();
             services.AddScoped<IInlineKeyboardButtonBuilder<InlineKeyboardToggle>, InlineKeyboardToggleBuilder>();

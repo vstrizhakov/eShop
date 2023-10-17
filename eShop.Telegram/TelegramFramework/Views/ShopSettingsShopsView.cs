@@ -12,11 +12,13 @@ namespace eShop.Telegram.TelegramFramework.Views
     {
         private readonly long _chatId;
         private readonly IEnumerable<Shop> _shops;
+        private readonly int _page;
 
-        public ShopSettingsShopsView(long chatId, IEnumerable<Shop> shops)
+        public ShopSettingsShopsView(long chatId, IEnumerable<Shop> shops, int page = 0)
         {
             _chatId = chatId;
             _shops = shops;
+            _page = page;
         }
 
         public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
@@ -31,11 +33,13 @@ namespace eShop.Telegram.TelegramFramework.Views
                 elements.Add(element);
             }
 
-            var control = new InlineKeyboardList(elements)
+            var grid = new InlineKeyboardGrid(elements);
+            var page = new InlineKeyboardPage(grid, TelegramAction.ShopSettingsShops)
             {
-                Navigation = new InlineKeyboardAction("Назад", TelegramAction.ShopSettings),
+                Index = _page,
+                Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Назад", TelegramAction.ShopSettings)),
             };
-            var replyMarkup = markupBuilder.Build(control);
+            var replyMarkup = markupBuilder.Build(page);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

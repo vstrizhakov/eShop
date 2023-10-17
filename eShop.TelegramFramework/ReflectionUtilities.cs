@@ -28,42 +28,33 @@ namespace eShop.TelegramFramework
         public static object[] MatchParameters(MethodInfo method, object context, params string[] inputParameters)
         {
             var parameters = method.GetParameters();
-            var parametersCount = parameters.Length;
 
-            if (parametersCount != (inputParameters?.Length ?? 0) + 1)
+            var requiredParametersCount = parameters.Count(e => !e.IsOptional);
+            if (requiredParametersCount > inputParameters.Length + 1)
             {
                 throw new InvalidOperationException();
             }
 
+            var parametersCount = parameters.Length;
             var methodParams = new object[parametersCount];
             methodParams[0] = context;
 
-            for (int i = 1; i < parametersCount; i++)
+            var inputParametersCount = inputParameters.Length;
+            for (int i = 0, j = 1; i < inputParametersCount; i++, j++)
             {
-                var parameterValue = inputParameters[i - 1];
+                var sourceParameterValue = inputParameters[i];
 
-                var parameter = parameters[i];
-                var parameterType = parameter.ParameterType;
-                if (parameterType == typeof(string))
+                var targetParameterInfo = parameters[j];
+                var targetParameterType = targetParameterInfo.ParameterType;
+                if (targetParameterType == typeof(string))
                 {
-                    methodParams[i] = parameterValue;
+                    methodParams[j] = sourceParameterValue;
                 }
-                else if (parameterType == typeof(Guid))
+                else if (targetParameterType == typeof(Guid))
                 {
-                    if (Guid.TryParse(parameterValue, out var guid))
+                    if (Guid.TryParse(sourceParameterValue, out var guid))
                     {
-                        methodParams[i] = guid;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
-                else if (parameterType == typeof(bool))
-                {
-                    if (bool.TryParse(parameterValue, out var @bool))
-                    {
-                        methodParams[i] = @bool;
+                        methodParams[j] = guid;
                     }
                     else
                     {
@@ -72,7 +63,15 @@ namespace eShop.TelegramFramework
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    try
+                    {
+                        var targetParameterValue = Convert.ChangeType(sourceParameterValue, targetParameterType);
+                        methodParams[j] = targetParameterValue;
+                    }
+                    catch (InvalidCastException)
+                    {
+                        throw; // TODO: throw another exception maybe?
+                    }
                 }
             }
 

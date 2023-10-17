@@ -54,7 +54,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
         }
 
         [CallbackQuery(TelegramAction.ShopSettingsShops)]
-        public async Task<ITelegramView?> GetShopSettingsShops(CallbackQueryContext context)
+        public async Task<ITelegramView?> GetShopSettingsShops(CallbackQueryContext context, int page = 0)
         {
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
@@ -62,7 +62,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetShopSettingsShopsRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new ShopSettingsShopsView(user.ExternalId, response.Shops);
+                var view = new ShopSettingsShopsView(user.ExternalId, response.Shops, page);
                 return view;
             }
 

@@ -26,12 +26,13 @@ namespace eShop.Telegram.TelegramFramework.Views
                 new InlineKeyboardAction("Мої валюти", TelegramAction.CurrencySettings),
                 new InlineKeyboardAction("Моя комісія", TelegramAction.ComissionSettings),
             };
-            var control = new InlineKeyboardList(elements)
+            var grid = new InlineKeyboardGrid(elements);
+            var page = new InlineKeyboardPage(grid, TelegramAction.Settings)
             {
-                Navigation = new InlineKeyboardAction("Назад", TelegramAction.Home),
+                Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Назад", TelegramAction.Home)),
             };
 
-            var replyMarkup = markupBuilder.Build(control);
+            var replyMarkup = markupBuilder.Build(page);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

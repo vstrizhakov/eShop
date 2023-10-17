@@ -34,12 +34,14 @@ namespace eShop.Telegram.TelegramFramework.Views
                 var element = new InlineKeyboardAction(buttonText, TelegramAction.SetCurrencyRate, currency.Id.ToString());
                 return element;
             });
-            var control = new InlineKeyboardList(elements)
+
+            var grid = new InlineKeyboardGrid(elements);
+            var page = new InlineKeyboardPage(grid, TelegramAction.CurrencyRatesSettings)
             {
-                Navigation = new InlineKeyboardAction("Назад", TelegramAction.CurrencySettings),
+                Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Назад", TelegramAction.CurrencySettings)),
             };
 
-            var replyMarkup = markupBuilder.Build(control);
+            var replyMarkup = markupBuilder.Build(page);
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }

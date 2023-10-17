@@ -22,15 +22,15 @@ namespace eShop.Telegram.TelegramFramework.Views
         {
             var text = "Налаштування комісій";
 
-            var control = new InlineKeyboardList(new IInlineKeyboardElement[]
+            var grid = new InlineKeyboardGrid(new IInlineKeyboardElement[]
             {
                 new InlineKeyboardAction($"Розмір комісії ({_amount}%)", TelegramAction.SetComissionAmount),
-            })
+            });
+            var page = new InlineKeyboardPage(grid, TelegramAction.ComissionSettings) 
             {
-                Navigation = new InlineKeyboardAction("Назад", TelegramAction.Settings),
+                Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Назад", TelegramAction.Settings)),
             };
-
-            var replyMarkup = markupBuilder.Build(control);
+            var replyMarkup = markupBuilder.Build(page);
 
             await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }

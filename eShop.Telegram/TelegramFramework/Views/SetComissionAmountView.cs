@@ -1,5 +1,4 @@
-﻿using eShop.Bots.Common;
-using eShop.TelegramFramework;
+﻿using eShop.TelegramFramework;
 using eShop.TelegramFramework.Builders;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -9,8 +8,8 @@ namespace eShop.Telegram.TelegramFramework.Views
 {
     public class SetComissionAmountView : ITelegramView
     {
-        private long _chatId;
-        private decimal _amount;
+        private readonly long _chatId;
+        private readonly decimal _amount;
 
         public SetComissionAmountView(long chatId, decimal amount)
         {

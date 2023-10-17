@@ -10,10 +10,12 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class WelcomeView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int? _messageId;
 
-        public WelcomeView(long chatId)
+        public WelcomeView(long chatId, int? messageId)
         {
             _chatId = chatId;
+            _messageId = messageId;
         }
 
         public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
@@ -28,7 +30,14 @@ namespace eShop.Telegram.TelegramFramework.Views
             var control = new InlineKeyboardGrid(elements);
 
             var replyMarkup = markupBuilder.Build(control);
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            if (!_messageId.HasValue)
+            {
+                await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            }
+            else
+            {
+                await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId.Value, text, replyMarkup: replyMarkup);
+            }
         }
     }
 }

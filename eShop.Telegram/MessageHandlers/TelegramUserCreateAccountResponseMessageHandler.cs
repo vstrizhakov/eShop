@@ -1,5 +1,4 @@
-﻿using eShop.Bots.Common;
-using eShop.Messaging;
+﻿using eShop.Messaging;
 using eShop.Messaging.Models;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
@@ -42,7 +41,7 @@ namespace eShop.Telegram.MessageHandlers
                     await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
                 }
 
-                var telegramView = new WelcomeView(chatId);
+                var telegramView = new WelcomeView(chatId, null);
                 await _telegramViewRunner.RunAsync(telegramView);
             }
         }

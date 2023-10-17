@@ -44,7 +44,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     };
                     _producer.Publish(internalEvent);
 
-                    return new GroupSettingsView(context.ChatId, telegramChat);
+                    return new GroupSettingsView(context.ChatId, context.MessageId, telegramChat);
                 }
                 else
                 {

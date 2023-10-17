@@ -23,7 +23,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
             {
-                return new SettingsView(context.ChatId);
+                return new SettingsView(context.ChatId, context.MessageId);
             }
 
             return null;

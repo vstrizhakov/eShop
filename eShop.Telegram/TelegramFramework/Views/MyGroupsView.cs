@@ -1,23 +1,26 @@
-﻿using eShop.Bots.Common;
+﻿using eShop.Telegram.Entities;
 using eShop.Telegram.Models;
-using Telegram.Bot;
-using Telegram.Bot.Types.ReplyMarkups;
-using Telegram.Bot.Types;
-using eShop.Telegram.Entities;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Builders;
 using eShop.TelegramFramework.UI;
+using Telegram.Bot;
+using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
     public class MyGroupsView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int _messageId;
+        private readonly string _callbackQueryId;
         private readonly IEnumerable<TelegramChatMember> _telegramUserChats;
 
-        public MyGroupsView(long chatId, IEnumerable<TelegramChatMember> telegramUserChats)
+        public MyGroupsView(long chatId, int messageId, string callbackQueryId, IEnumerable<TelegramChatMember> telegramUserChats)
         {
             _chatId = chatId;
+            _messageId = messageId;
+            _callbackQueryId = callbackQueryId;
             _telegramUserChats = telegramUserChats;
         }
 
@@ -59,7 +62,16 @@ namespace eShop.Telegram.TelegramFramework.Views
                 };
 
                 var replyMarkup = markupBuilder.Build(page);
-                await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+                try
+                {
+                    await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId, text, replyMarkup: replyMarkup);
+                }
+                catch (ApiRequestException)
+                {
+                    await botClient.AnswerCallbackQueryAsync(_callbackQueryId);
+
+                    // TODO: ignore but on another level
+                }
             }
         }
     }

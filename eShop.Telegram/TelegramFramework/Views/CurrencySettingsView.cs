@@ -11,11 +11,13 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class CurrencySettingsView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int _messageId;
         private readonly Currency? _preferredCurrency;
 
-        public CurrencySettingsView(long chatId, Currency? preferredCurrency)
+        public CurrencySettingsView(long chatId, int messageId, Currency? preferredCurrency)
         {
             _chatId = chatId;
+            _messageId = messageId;
             _preferredCurrency = preferredCurrency;
         }
 
@@ -50,7 +52,7 @@ namespace eShop.Telegram.TelegramFramework.Views
             };
 
             var replyMarkup = markupBuilder.Build(page);
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId, text, replyMarkup: replyMarkup);
         }
     }
 }

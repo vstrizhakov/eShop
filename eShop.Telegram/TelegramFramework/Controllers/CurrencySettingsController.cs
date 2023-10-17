@@ -30,7 +30,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetPreferredCurrencyRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new CurrencySettingsView(user.ExternalId, response.PreferredCurrency);
+                var view = new CurrencySettingsView(user.ExternalId, context.MessageId, response.PreferredCurrency);
                 return view;
             }
 

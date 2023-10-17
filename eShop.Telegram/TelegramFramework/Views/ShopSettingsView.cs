@@ -11,10 +11,13 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class ShopSettingsView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int _messageId;
         private readonly ShopSettings _shopSettings;
-        public ShopSettingsView(long chatId, ShopSettings shopSettings)
+
+        public ShopSettingsView(long chatId, int messageId, ShopSettings shopSettings)
         {
             _chatId = chatId;
+            _messageId = messageId;
             _shopSettings = shopSettings;
         }
 
@@ -39,7 +42,7 @@ namespace eShop.Telegram.TelegramFramework.Views
             };
             var replyMarkup = markupBuilder.Build(page);
 
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId, text, replyMarkup: replyMarkup);
         }
     }
 }

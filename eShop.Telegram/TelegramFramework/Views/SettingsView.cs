@@ -10,10 +10,12 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class SettingsView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int _messageId;
 
-        public SettingsView(long chatId)
+        public SettingsView(long chatId, int messageId)
         {
             _chatId = chatId;
+            _messageId = messageId;
         }
 
         public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
@@ -33,7 +35,7 @@ namespace eShop.Telegram.TelegramFramework.Views
             };
 
             var replyMarkup = markupBuilder.Build(page);
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId, text, replyMarkup: replyMarkup);
         }
     }
 }

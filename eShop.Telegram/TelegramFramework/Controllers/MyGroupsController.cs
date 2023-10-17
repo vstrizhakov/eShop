@@ -26,7 +26,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             {
                 var chats = _telegramService.GetManagableChats(user);
 
-                return new MyGroupsView(context.ChatId, chats);
+                return new MyGroupsView(context.ChatId, context.MessageId, context.Id, chats);
             }
 
             return null;
@@ -40,7 +40,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             {
                 var chats = _telegramService.GetManagableChats(user);
 
-                return new MyGroupsView(context.ChatId, chats);
+                return new MyGroupsView(context.ChatId, context.MessageId, context.Id, chats);
             }
             else
             {
@@ -70,7 +70,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                         await _telegramService.UpdateUserAsync(user);
                     }
 
-                    return new GroupSettingsView(context.ChatId, telegramChat);
+                    return new GroupSettingsView(context.ChatId, context.MessageId, telegramChat);
                 }
                 else
                 {

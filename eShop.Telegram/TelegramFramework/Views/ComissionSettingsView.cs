@@ -10,11 +10,13 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class ComissionSettingsView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int? _messageId;
         private readonly decimal _amount;
 
-        public ComissionSettingsView(long chatId, decimal amount)
+        public ComissionSettingsView(long chatId, int? messageId, decimal amount)
         {
             _chatId = chatId;
+            _messageId = messageId;
             _amount = amount;
         }
 
@@ -32,7 +34,14 @@ namespace eShop.Telegram.TelegramFramework.Views
             };
             var replyMarkup = markupBuilder.Build(page);
 
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            if (!_messageId.HasValue)
+            {
+                await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            }
+            else
+            {
+                await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId.Value, text, replyMarkup: replyMarkup);
+            }
         }
     }
 }

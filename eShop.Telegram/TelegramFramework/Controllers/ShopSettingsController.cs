@@ -30,7 +30,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetShopSettingsRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new ShopSettingsView(user.ExternalId, response.ShopSettings);
+                var view = new ShopSettingsView(user.ExternalId, context.MessageId, response.ShopSettings);
                 return view;
             }
 
@@ -46,7 +46,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new SetShopSettingsFilterRequest(user.AccountId.Value, filter);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new ShopSettingsView(user.ExternalId, response.ShopSettings);
+                var view = new ShopSettingsView(user.ExternalId, context.MessageId, response.ShopSettings);
                 return view;
             }
 
@@ -62,7 +62,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetShopSettingsShopsRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new ShopSettingsShopsView(user.ExternalId, response.Shops, page);
+                var view = new ShopSettingsShopsView(user.ExternalId, context.MessageId, response.Shops, page);
                 return view;
             }
 
@@ -78,7 +78,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new SetShopSettingsShopStateRequest(user.AccountId.Value, shopId, isEnabled);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new ShopSettingsShopsView(user.ExternalId, response.Shops);
+                var view = new ShopSettingsShopsView(user.ExternalId, context.MessageId, response.Shops);
                 return view;
             }
 

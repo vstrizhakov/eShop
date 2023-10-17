@@ -31,7 +31,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetCurrenciesRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new PreferredCurrencySettingsView(user.ExternalId, response.Currencies);
+                var view = new PreferredCurrencySettingsView(user.ExternalId, context.MessageId, response.Currencies);
                 return view;
             }
 
@@ -47,7 +47,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new SetPreferredCurrencyRequest(user.AccountId.Value, currencyId);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new CurrencySettingsView(user.ExternalId, response.PreferredCurrency);
+                var view = new CurrencySettingsView(user.ExternalId, context.MessageId, response.PreferredCurrency);
                 return view;
             }
 

@@ -11,12 +11,14 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class ShopSettingsShopsView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int _messageId;
         private readonly IEnumerable<Shop> _shops;
         private readonly int _page;
 
-        public ShopSettingsShopsView(long chatId, IEnumerable<Shop> shops, int page = 0)
+        public ShopSettingsShopsView(long chatId, int messageId, IEnumerable<Shop> shops, int page = 0)
         {
             _chatId = chatId;
+            _messageId = messageId;
             _shops = shops;
             _page = page;
         }
@@ -40,7 +42,7 @@ namespace eShop.Telegram.TelegramFramework.Views
                 Navigation = new InlineKeyboardNavigation(new InlineKeyboardAction("Назад", TelegramAction.ShopSettings)),
             };
             var replyMarkup = markupBuilder.Build(page);
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId, text, replyMarkup: replyMarkup);
         }
     }
 }

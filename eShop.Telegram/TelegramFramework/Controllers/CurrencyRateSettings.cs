@@ -33,7 +33,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetCurrencyRatesRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new CurrencyRatesSettingsView(user.ExternalId, response.PreferredCurrency, response.CurrencyRates);
+                var view = new CurrencyRatesSettingsView(user.ExternalId, context.MessageId, response.PreferredCurrency, response.CurrencyRates);
                 return view;
             }
 
@@ -77,7 +77,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     var request = new SetCurrencyRateRequest(user.AccountId.Value, currencyId, rate);
                     var response = await _requestClient.SendAsync(request);
 
-                    var view = new CurrencyRatesSettingsView(user.ExternalId, response.PreferredCurrency, response.CurrencyRates);
+                    var view = new CurrencyRatesSettingsView(user.ExternalId, null, response.PreferredCurrency, response.CurrencyRates);
                     return view;
                 }
                 else

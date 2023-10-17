@@ -12,12 +12,14 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class CurrencyRatesSettingsView : ITelegramView
     {
         private readonly long _chatId;
+        private readonly int? _messageId;
         private readonly Currency _preferredCurrency;
         private readonly IEnumerable<CurrencyRate> _currencyRates;
 
-        public CurrencyRatesSettingsView(long chatId, Currency preferredCurrency, IEnumerable<CurrencyRate> currencyRates)
+        public CurrencyRatesSettingsView(long chatId, int? messageId, Currency preferredCurrency, IEnumerable<CurrencyRate> currencyRates)
         {
             _chatId = chatId;
+            _messageId = messageId;
             _preferredCurrency = preferredCurrency;
             _currencyRates = currencyRates;
         }
@@ -42,7 +44,14 @@ namespace eShop.Telegram.TelegramFramework.Views
             };
 
             var replyMarkup = markupBuilder.Build(page);
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            if (!_messageId.HasValue)
+            {
+                await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+            }
+            else
+            {
+                await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId.Value, text, replyMarkup: replyMarkup);
+            }
         }
     }
 }

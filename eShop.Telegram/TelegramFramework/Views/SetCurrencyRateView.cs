@@ -5,6 +5,7 @@ using eShop.TelegramFramework;
 using eShop.TelegramFramework.Builders;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {
@@ -26,7 +27,8 @@ namespace eShop.Telegram.TelegramFramework.Views
             var sourceCurrency = _currencyRate.Currency;
             var text = $"{sourceCurrency.Name} -> {_preferredCurrency.Name}\n\nПоточний курс: {_currencyRate.Rate}\n\nБудь ласка, надішліть новий курс для цієї пари.";
 
-            await botClient.SendTextMessageAsync(new ChatId(_chatId), text);
+            var replyMarkup = new ForceReplyMarkup();
+            await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var request = new GetComissionSettingsRequest(user.AccountId.Value);
                 var response = await _requestClient.SendAsync(request);
 
-                var view = new ComissionSettingsView(user.ExternalId, response.Amount);
+                var view = new ComissionSettingsView(user.ExternalId, context.MessageId, response.Amount);
                 return view;
             }
 
@@ -72,7 +72,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
 
                     await _telegramService.SetActiveContextAsync(user, null);
 
-                    var view = new ComissionSettingsView(user.ExternalId, response.Amount);
+                    var view = new ComissionSettingsView(user.ExternalId, null, response.Amount);
                     return view;
                 }
                 else

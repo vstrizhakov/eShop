@@ -53,20 +53,25 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
         const isAuthenticated = user !== null;
         if (isAuthenticated) {
             setToken(user.access_token);
-            console.log(user);
             setClaims(user.profile);
         }
         setIsAuthenticated(isAuthenticated);
     }, []);
 
     const getUser = useCallback(async () => {
-        const user = await manager.getUser();
+        let user: Oidc.User | null = null;
+
+        try {
+            user = await manager.signinSilent();
+        } catch (error: any) {
+        }
+
         processUser(user);
     }, [processUser]);
 
     const processSignInCallback = useCallback(async () => {
         try {
-            const user = await manager.signinRedirectCallback();
+            const user = await manager.signinCallback();
 
             processUser(user);
 

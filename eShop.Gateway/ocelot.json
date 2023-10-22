@@ -81,11 +81,8 @@
         }
       ],
       "UpstreamPathTemplate": "/.well-known/openid-configuration",
-      "UpstreamHttpMethod": [ "Get" ],
-      "UpstreamHeaderTransform": {
-        "X-Forwarded-Host": "{UpstreamHost}",
-        "X-Forwarded-Proto": "https"
-      }
+      "UpstreamHttpMethod": [ "Get" ]
+      
     },
     {
       "DownstreamPathTemplate": "/.well-known/openid-configuration/{everything}",
@@ -97,11 +94,7 @@
         }
       ],
       "UpstreamPathTemplate": "/.well-known/openid-configuration/{everything}",
-      "UpstreamHttpMethod": [ "Get" ],
-      "UpstreamHeaderTransform": {
-        "X-Forwarded-Host": "{UpstreamHost}",
-        "X-Forwarded-Proto": "https"
-      }
+      "UpstreamHttpMethod": [ "Get" ]
     },
     {
       "DownstreamPathTemplate": "/connect/{everything}",
@@ -113,11 +106,7 @@
         }
       ],
       "UpstreamPathTemplate": "/connect/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post" ],
-      "UpstreamHeaderTransform": {
-        "X-Forwarded-Host": "{UpstreamHost}",
-        "X-Forwarded-Proto": "https"
-      }
+      "UpstreamHttpMethod": [ "Get", "Post" ]
     },
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
@@ -129,11 +118,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post" ],
-      "UpstreamHeaderTransform": {
-        "X-Forwarded-Host": "{UpstreamHost}",
-        "X-Forwarded-Proto": "https"
-      }
+      "UpstreamHttpMethod": [ "Get", "Post" ]
     },
 
     {

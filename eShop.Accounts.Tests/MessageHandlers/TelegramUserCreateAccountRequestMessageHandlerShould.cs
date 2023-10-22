@@ -1,8 +1,7 @@
 using eShop.Accounts.Entities;
 using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Services;
-using eShop.Messaging;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Telegram;
 
 namespace eShop.Accounts.Tests.MessageHandlers
 {
@@ -13,7 +12,16 @@ namespace eShop.Accounts.Tests.MessageHandlers
         {
             // Arrange
 
-            TelegramUserCreateAccountResponseMessage? result = null;
+            RegisterTelegramUserResponse? result = null;
+
+            var request = new RegisterTelegramUserRequest
+            {
+                FirstName = "John",
+                LastName = "Smith",
+                PhoneNumber = "+380000000000",
+                TelegramUserId = Guid.NewGuid(),
+                ProviderId = Guid.NewGuid(),
+            };
 
             var accountRepository = new Mock<IAccountService>();
             accountRepository
@@ -26,34 +34,18 @@ namespace eShop.Accounts.Tests.MessageHandlers
                     TelegramUserId = account.TelegramUserId,
                 });
 
-            var producer = new Mock<IProducer>();
-            producer
-                .Setup(e => e.Publish(It.IsAny<TelegramUserCreateAccountResponseMessage>()))
-                .Callback<TelegramUserCreateAccountResponseMessage>(message => result = message)
-                .Verifiable();
+            var sut = new RegisterTelegramUserRequestHandler(accountRepository.Object);
 
             // Act
 
-            var messageHandler = new TelegramUserCreateAccountRequestMessageHandler(
-                accountRepository.Object,
-                producer.Object);
-
-            var message = new TelegramUserCreateAccountRequestMessage
-            {
-                FirstName = "John",
-                LastName = "Smith",
-                PhoneNumber = "+380000000000",
-                TelegramUserId = Guid.NewGuid(),
-                ProviderId = Guid.NewGuid(),
-            };
-            await messageHandler.HandleMessageAsync(message);
+            await sut.HandleRequestAsync(request);
 
             // Assert
 
-            producer.VerifyAll();
+            accountRepository.VerifyAll();
+
             Assert.NotNull(result);
-            Assert.Equal(message.ProviderId, result.ProviderId);
-            Assert.Equal(message.TelegramUserId, result.TelegramUserId);
+            Assert.Equal(request.TelegramUserId, result.TelegramUserId);
             Assert.NotEqual(default, result.AccountId);
         }
     }

@@ -12,7 +12,7 @@ namespace eShop.Catalog.Tests.Profiles
         {
             // Arrange
 
-            var configuration = new MapperConfiguration(config =>
+            var sut = new MapperConfiguration(config =>
             {
                 config.AddProfile<CompositionProfile>();
 
@@ -22,7 +22,7 @@ namespace eShop.Catalog.Tests.Profiles
 
             // Act & Assert
 
-            configuration.AssertConfigurationIsValid();
+            sut.AssertConfigurationIsValid();
         }
     }
 }

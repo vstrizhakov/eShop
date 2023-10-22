@@ -57,7 +57,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
 
                 await _telegramService.UpdateUserAsync(user);
 
-                var internalMessage = new Messaging.Models.TelegramUserCreateAccountRequestMessage
+                var internalMessage = new Messaging.Models.Telegram.RegisterTelegramUserRequest
                 {
                     TelegramUserId = user.Id,
                     FirstName = user.FirstName,

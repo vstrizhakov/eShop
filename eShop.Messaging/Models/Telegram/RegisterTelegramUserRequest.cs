@@ -1,11 +1,11 @@
-﻿namespace eShop.Messaging.Models
+﻿namespace eShop.Messaging.Models.Telegram
 {
-    public class TelegramUserCreateAccountRequestMessage : Messaging.Message
+    public class RegisterTelegramUserRequest : Messaging.Message, IRequest<RegisterTelegramUserResponse>
     {
         public Guid TelegramUserId { get; set; }
+        public Guid ProviderId { get; set; }
         public string FirstName { get; set; }
         public string? LastName { get; set; }
-        public Guid ProviderId { get; set; }
         public string PhoneNumber { get; set; }
     }
 }

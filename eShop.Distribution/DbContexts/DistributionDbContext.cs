@@ -56,7 +56,7 @@ namespace eShop.Distribution.DbContexts
 
             modelBuilder.Entity<CurrencyRateHistoryRecord>()
                 .HasOne(e => e.DistributionSettings)
-                .WithMany()
+                .WithMany(e => e.CurrencyRates)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ComissionSettings>()

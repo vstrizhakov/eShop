@@ -3,7 +3,9 @@ using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Repositories;
 using eShop.Accounts.Services;
 using eShop.Messaging.Extensions;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Identity;
+using eShop.Messaging.Models.Telegram;
+using eShop.Messaging.Models.Viber;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -35,9 +37,10 @@ namespace eShop.Accounts
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<TelegramUserCreateAccountRequestMessage, TelegramUserCreateAccountRequestMessageHandler>();
-            builder.Services.AddMessageHandler<ViberUserCreateAccountRequestMessage, ViberUserCreateAccountRequestMessageHandler>();
-            builder.Services.AddMessageHandler<IdentityUserCreateAccountRequestMessage, IdentityUserCreateAccountRequestMessageHandler>();
+
+            builder.Services.AddRequestHandler<RegisterTelegramUserRequest, RegisterTelegramUserResponse, RegisterTelegramUserRequestHandler>();
+            builder.Services.AddRequestHandler<RegisterViberUserRequest, RegisterViberUserResponse, RegisterViberUserRequestHandler>();
+            builder.Services.AddRequestHandler<RegisterIdentityUserRequest, RegisterIdentityUserResponse, RegisterIdentityUserRequestHandler>();
 
             if (builder.Environment.IsDevelopment())
             {
@@ -60,6 +63,8 @@ namespace eShop.Accounts
                 });
 
             builder.Services.AddScoped<IAccountService, AccountService>();
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             var app = builder.Build();
 

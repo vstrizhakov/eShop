@@ -4,7 +4,7 @@ using eShop.Identity.Entities;
 using eShop.Identity.MessageHandlers;
 using eShop.Identity.Services;
 using eShop.Messaging.Extensions;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +52,7 @@ namespace eShop.Identity
                 .AddDefaultTokenProviders();
 
             var identity = new Uri(builder.Configuration["PublicUri:Identity"]);
+            var host = new Uri(builder.Configuration["PublicUri:Host"]);
 
             builder.Services
                 .AddIdentityServer(options =>
@@ -64,7 +65,7 @@ namespace eShop.Identity
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryApiResources(Config.ApiResources)
-                .AddInMemoryClients(Config.Clients(identity.OriginalString))
+                .AddInMemoryClients(Config.Clients(host.OriginalString))
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
 
@@ -79,7 +80,7 @@ namespace eShop.Identity
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<IdentityUserCreateAccountResponseMessage, IdentityUserCreateAccountResponseMessageHandler>();
+            builder.Services.AddMessageHandler<RegisterIdentityUserResponse, IdentityUserCreateAccountResponseMessageHandler>();
 
             var app = builder.Build();
 

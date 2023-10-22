@@ -5,6 +5,7 @@ using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
 using eShop.Messaging.Models.Distribution.ShopSettings;
+using eShop.Messaging.Models.Telegram;
 using eShop.Telegram.DbContexts;
 using eShop.Telegram.MessageHandlers;
 using eShop.Telegram.Repositories;
@@ -74,7 +75,7 @@ namespace eShop.Telegram
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<TelegramUserCreateAccountResponseMessage, TelegramUserCreateAccountResponseMessageHandler>();
+            builder.Services.AddMessageHandler<RegisterTelegramUserResponse, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
             builder.Services.AddMessageListener<GetPreferredCurrencyResponse>();
             builder.Services.AddMessageListener<GetCurrenciesResponse>();

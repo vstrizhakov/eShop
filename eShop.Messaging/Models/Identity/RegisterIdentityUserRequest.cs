@@ -1,6 +1,6 @@
-﻿namespace eShop.Messaging.Models
+﻿namespace eShop.Messaging.Models.Identity
 {
-    public class IdentityUserCreateAccountRequestMessage : Messaging.Message
+    public class RegisterIdentityUserRequest : Messaging.Message, IRequest<RegisterIdentityUserResponse>
     {
         public string IdentityUserId { get; set; }
         public string FirstName { get; set; }

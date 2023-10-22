@@ -5,20 +5,21 @@ using eShop.Messaging.Models;
 
 namespace eShop.Distribution.MessageHandlers
 {
-    public class TelegramUserCreateAccountResponseMessageHandler : IMessageHandler<TelegramUserCreateAccountResponseMessage>
+    public class AccountRegisteredEventHandler : IMessageHandler<AccountRegisteredEvent>
     {
         private readonly IAccountService _accountService;
 
-        public TelegramUserCreateAccountResponseMessageHandler(IAccountService accountService)
+        public AccountRegisteredEventHandler(IAccountService accountService)
         {
             _accountService = accountService;
         }
         
-        public async Task HandleMessageAsync(TelegramUserCreateAccountResponseMessage message)
+        public async Task HandleMessageAsync(AccountRegisteredEvent @event)
         {
             try
             {
-                await _accountService.CreateNewAccountAsync(message.AccountId, message.FirstName, message.LastName, message.ProviderId);
+                var account = @event.Account;
+                await _accountService.CreateAccountAsync(account.Id, account.FirstName, account.LastName, @event.ProviderId);
             }
             catch (AccountAlreadyExistsException)
             {

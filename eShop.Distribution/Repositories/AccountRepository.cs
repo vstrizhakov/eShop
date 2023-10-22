@@ -61,6 +61,11 @@ namespace eShop.Distribution.Repositories
             return accounts;
         }
 
+        public async Task UpdateAccountAsync(Account account)
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public async Task UpdateIsActivatedAsync(Account clientAccount, bool isActivated)
         {
             clientAccount.IsActivated = isActivated;

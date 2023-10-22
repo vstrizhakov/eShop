@@ -8,7 +8,7 @@ const MyInvitation: React.FC = () => {
     } = useAuth();
 
     const providerId = claims.account_id;
-    const announcerLink = `https://localhost:7000/announcer/${providerId}`;
+    const announcerLink = `${window.location.origin}/announcer/${providerId}`;
 
     const onCopyClicked = () => {
         navigator.clipboard.writeText(announcerLink);

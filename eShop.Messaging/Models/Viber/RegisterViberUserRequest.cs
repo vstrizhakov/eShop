@@ -1,6 +1,6 @@
-﻿namespace eShop.Messaging.Models
+﻿namespace eShop.Messaging.Models.Viber
 {
-    public class ViberUserCreateAccountRequestMessage : Messaging.Message
+    public class RegisterViberUserRequest : Messaging.Message, IRequest<RegisterViberUserResponse>
     {
         public Guid ViberUserId { get; set; }
         public Guid ProviderId { get; set; }

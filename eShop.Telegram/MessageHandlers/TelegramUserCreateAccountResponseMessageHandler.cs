@@ -1,5 +1,5 @@
 ﻿using eShop.Messaging;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Telegram;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
@@ -9,7 +9,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.MessageHandlers
 {
-    public class TelegramUserCreateAccountResponseMessageHandler : IMessageHandler<TelegramUserCreateAccountResponseMessage>
+    public class TelegramUserCreateAccountResponseMessageHandler : IMessageHandler<RegisterTelegramUserResponse>
     {
         private readonly ITelegramService _telegramService;
         private readonly ITelegramBotClient _botClient;
@@ -25,7 +25,7 @@ namespace eShop.Telegram.MessageHandlers
             _telegramViewRunner = telegramViewRunner;
         }
 
-        public async Task HandleMessageAsync(TelegramUserCreateAccountResponseMessage message)
+        public async Task HandleMessageAsync(RegisterTelegramUserResponse message)
         {
             var user = await _telegramService.GetUserByTelegramUserIdAsync(message.TelegramUserId);
             if (user != null)

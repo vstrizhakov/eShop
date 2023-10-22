@@ -1,16 +1,22 @@
-﻿using eShop.Accounts.Entities;
+﻿using AutoMapper;
+using eShop.Accounts.Entities;
 using eShop.Accounts.Exceptions;
 using eShop.Accounts.Repositories;
+using eShop.Messaging;
 
 namespace eShop.Accounts.Services
 {
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IMapper _mapper;
+        private readonly IProducer _producer;
 
-        public AccountService(IAccountRepository accountRepository)
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IProducer producer)
         {
             _accountRepository = accountRepository;
+            _mapper = mapper;
+            _producer = producer;
         }
 
         public async Task<Account> RegisterAccountByTelegramUserIdAsync(Guid providerId, Account account)
@@ -25,7 +31,7 @@ namespace eShop.Accounts.Services
             var result = await _accountRepository.GetAccountByTelegramUserIdAsync(telegramUserId);
             if (result == null)
             {
-                result = await GetOrCreateAccountAsync(providerId, account);
+                result = await UpdateOrCreateAccountAsync(providerId, account);
             }
             else
             {
@@ -47,7 +53,7 @@ namespace eShop.Accounts.Services
             var result = await _accountRepository.GetAccountByViberUserIdAsync(viberUserId);
             if (result == null)
             {
-                result = await GetOrCreateAccountAsync(providerId, account);
+                result = await UpdateOrCreateAccountAsync(providerId, account);
             }
             else
             {
@@ -57,30 +63,55 @@ namespace eShop.Accounts.Services
             return result;
         }
 
-        // TODO: Rename to CreateOrUpdate
-        private async Task<Account> GetOrCreateAccountAsync(Guid providerId, Account account)
+        private async Task<Account> UpdateOrCreateAccountAsync(Guid providerId, Account account)
         {
             Account result;
 
             var provider = await _accountRepository.GetAccountByIdAsync(providerId);
             if (provider != null)
             {
-                result = await _accountRepository.GetAccountByPhoneNumberAsync(account.PhoneNumber);
-                if (result == null)
+                var existingAccount = await _accountRepository.GetAccountByPhoneNumberAsync(account.PhoneNumber);
+                if (existingAccount == null)
                 {
                     result = account;
-                 
+
                     await _accountRepository.CreateAccountAsync(result);
+
+                    var @event = new Messaging.Models.AccountRegisteredEvent
+                    {
+                        Account = _mapper.Map<Messaging.Models.Account>(result),
+                        ProviderId = providerId,
+                    };
+                    _producer.Publish(@event);
                 }
                 else
                 {
-                    if (result.Id != providerId)
+                    if (existingAccount.Id != providerId)
                     {
-                        result.TelegramUserId = account.TelegramUserId;
-                        result.ViberUserId = account.ViberUserId;
-                        result.IdentityUserId = account.IdentityUserId;
+                        if (account.TelegramUserId.HasValue)
+                        {
+                            existingAccount.TelegramUserId = account.TelegramUserId;
+                        }
 
-                        await _accountRepository.UpdateAccountAsync(result);
+                        if (account.ViberUserId.HasValue)
+                        {
+                            existingAccount.ViberUserId = account.ViberUserId;
+                        }
+
+                        if (account.IdentityUserId != null)
+                        {
+                            existingAccount.IdentityUserId = account.IdentityUserId;
+                        }
+
+                        await _accountRepository.UpdateAccountAsync(existingAccount);
+
+                        var @event = new Messaging.Models.AccountUpdatedEvent
+                        {
+                            Account = _mapper.Map<Messaging.Models.Account>(existingAccount),
+                        };
+                        _producer.Publish(@event);
+
+                        result = existingAccount;
                     }
                     else
                     {

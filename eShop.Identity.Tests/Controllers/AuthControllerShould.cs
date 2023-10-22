@@ -5,7 +5,7 @@ using eShop.Identity.Controllers;
 using eShop.Identity.Entities;
 using eShop.Identity.Models;
 using eShop.Messaging;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -116,7 +116,7 @@ namespace eShop.Identity.Tests.Controllers
         {
             // Arrange
 
-            IdentityUserCreateAccountRequestMessage? message = null;
+            RegisterIdentityUserRequest? message = null;
 
             var request = new SignUpRequest
             {
@@ -135,8 +135,8 @@ namespace eShop.Identity.Tests.Controllers
 
             var producer = new Mock<IProducer>();
             producer
-                .Setup(e => e.Publish(It.IsAny<IdentityUserCreateAccountRequestMessage>()))
-                .Callback<IdentityUserCreateAccountRequestMessage>(e => message = e);
+                .Setup(e => e.Publish(It.IsAny<RegisterIdentityUserRequest>()))
+                .Callback<RegisterIdentityUserRequest>(e => message = e);
 
             var mapper = new Mock<IMapper>();
             mapper

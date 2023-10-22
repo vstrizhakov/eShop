@@ -12,7 +12,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new TelegramUserCreateAccountResponseMessage
+            var message = new RegisterTelegramUserResponse
             {
                 AccountId = Guid.NewGuid(),
                 ProviderId = Guid.NewGuid(),
@@ -25,7 +25,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
                 .Setup(e => e.CreateNewAccountAsync(message.AccountId, message.FirstName, message.LastName, message.ProviderId))
                 .Returns(Task.CompletedTask);
 
-            var sut = new TelegramUserCreateAccountResponseMessageHandler(accountService.Object);
+            var sut = new AccountRegisteredEventHandler(accountService.Object);
 
             // Act
 
@@ -41,7 +41,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new TelegramUserCreateAccountResponseMessage
+            var message = new RegisterTelegramUserResponse
             {
                 AccountId = Guid.NewGuid(),
                 ProviderId = Guid.NewGuid(),
@@ -54,7 +54,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
                 .Setup(e => e.CreateNewAccountAsync(message.AccountId, message.FirstName, message.LastName, message.ProviderId))
                 .ThrowsAsync(new AccountAlreadyExistsException());
 
-            var sut = new TelegramUserCreateAccountResponseMessageHandler(accountService.Object);
+            var sut = new AccountRegisteredEventHandler(accountService.Object);
 
             // Act
 

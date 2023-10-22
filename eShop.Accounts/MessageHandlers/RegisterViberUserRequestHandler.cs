@@ -1,24 +1,21 @@
 ﻿using eShop.Accounts.Entities;
 using eShop.Accounts.Exceptions;
-using eShop.Accounts.Repositories;
 using eShop.Accounts.Services;
 using eShop.Messaging;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Viber;
 
 namespace eShop.Accounts.MessageHandlers
 {
-    public class ViberUserCreateAccountRequestMessageHandler : IMessageHandler<ViberUserCreateAccountRequestMessage>
+    public class RegisterViberUserRequestHandler : IRequestHandler<RegisterViberUserRequest, RegisterViberUserResponse>
     {
         private readonly IAccountService _accountService;
-        private readonly IProducer _producer;
 
-        public ViberUserCreateAccountRequestMessageHandler(IAccountService accountService, IProducer producer)
+        public RegisterViberUserRequestHandler(IAccountService accountService)
         {
             _accountService = accountService;
-            _producer = producer;
         }
 
-        public async Task HandleMessageAsync(ViberUserCreateAccountRequestMessage message)
+        public async Task<RegisterViberUserResponse> HandleRequestAsync(RegisterViberUserRequest message)
         {
             try
             {
@@ -32,17 +29,14 @@ namespace eShop.Accounts.MessageHandlers
 
                 var account = await _accountService.RegisterAccountByViberUserIdAsync(providerId, accountInfo);
 
-                var responseMessage = new ViberUserCreateAccountUpdateMessage
+                var response = new RegisterViberUserResponse
                 {
                     IsSuccess = true,
                     AccountId = account.Id,
-                    FirstName = account.FirstName,
-                    LastName = account.LastName,
-                    ProviderId = message.ProviderId,
                     ViberUserId = account.ViberUserId,
                 };
 
-                _producer.Publish(responseMessage);
+                return response;
             }
             catch (AccountAlreadyRegisteredException)
             {
@@ -56,6 +50,11 @@ namespace eShop.Accounts.MessageHandlers
             {
                 // Publish message with error
             }
+
+            return new RegisterViberUserResponse
+            {
+                IsSuccess = false, // TODO: add error description
+            };
         }
     }
 }

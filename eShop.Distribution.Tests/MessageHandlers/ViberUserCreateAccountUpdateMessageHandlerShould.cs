@@ -12,7 +12,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new ViberUserCreateAccountUpdateMessage
+            var message = new RegisterViberUserResponse
             {
                 IsSuccess = true,
                 AccountId = Guid.NewGuid(),
@@ -26,7 +26,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
                 .Setup(e => e.CreateNewAccountAsync(message.AccountId.Value, message.FirstName, message.LastName, message.ProviderId.Value))
                 .Returns(Task.CompletedTask);
 
-            var sut = new ViberUserCreateAccountUpdateMessageHandler(accountService.Object);
+            var sut = new AccountUpdatedEventHandler(accountService.Object);
 
             // Act
 
@@ -42,7 +42,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new ViberUserCreateAccountUpdateMessage
+            var message = new RegisterViberUserResponse
             {
                 IsSuccess = true,
                 AccountId = Guid.NewGuid(),
@@ -56,7 +56,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
                 .Setup(e => e.CreateNewAccountAsync(message.AccountId.Value, message.FirstName, message.LastName, message.ProviderId.Value))
                 .ThrowsAsync(new AccountAlreadyExistsException());
 
-            var sut = new ViberUserCreateAccountUpdateMessageHandler(accountService.Object);
+            var sut = new AccountUpdatedEventHandler(accountService.Object);
 
             // Act
 

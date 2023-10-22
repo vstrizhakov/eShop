@@ -35,7 +35,7 @@ namespace eShop.Distribution.Services
             await _accountRepository.UpdateViberChatAsync(account, viberChatId, isEnabled);
         }
 
-        public async Task CreateNewAccountAsync(Guid accountId, string firstName, string lastName, Guid providerId)
+        public async Task CreateAccountAsync(Guid accountId, string firstName, string lastName, Guid providerId)
         {
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             if (account != null)
@@ -58,6 +58,20 @@ namespace eShop.Distribution.Services
             };
 
             await _accountRepository.CreateAccountAsync(account);
+        }
+
+        public async Task UpdateAccountAsync(Guid accountId, string firstName, string lastName)
+        {
+            var account = await _accountRepository.GetAccountByIdAsync(accountId);
+            if (account == null)
+            {
+                throw new InvalidOperationException(); // TODO: custom error
+            }
+
+            account.FirstName = firstName;
+            account.LastName = lastName;
+
+            await _accountRepository.UpdateAccountAsync(account);
         }
     }
 }

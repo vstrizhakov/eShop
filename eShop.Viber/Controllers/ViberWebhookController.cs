@@ -274,7 +274,7 @@ namespace eShop.Viber.Controllers
 
                             await _repository.UpdateViberUserAsync(viberUser);
 
-                            var internalMessage = new Messaging.Models.ViberUserCreateAccountRequestMessage
+                            var internalMessage = new Messaging.Models.Viber.RegisterViberUserRequest
                             {
                                 ViberUserId = viberUser.Id,
                                 ProviderId = providerId.Value,

@@ -1,14 +1,14 @@
 ﻿using Azure;
 using eShop.Bots.Common;
 using eShop.Messaging;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Viber;
 using eShop.Viber.Models;
 using eShop.Viber.Repositories;
 using eShop.ViberBot;
 
 namespace eShop.Viber.MessageHandlers
 {
-    public class ViberUserCreateAccountUpdateMessageHandler : IMessageHandler<ViberUserCreateAccountUpdateMessage>
+    public class ViberUserCreateAccountUpdateMessageHandler : IMessageHandler<RegisterViberUserResponse>
     {
         private readonly IViberBotClient _botClient;
         private readonly IBotContextConverter _botContextConverter;
@@ -24,7 +24,7 @@ namespace eShop.Viber.MessageHandlers
             _repository = repository;
         }
 
-        public async Task HandleMessageAsync(ViberUserCreateAccountUpdateMessage message)
+        public async Task HandleMessageAsync(RegisterViberUserResponse message)
         {
             if (message.IsSuccess)
             {

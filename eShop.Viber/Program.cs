@@ -2,6 +2,7 @@ using eShop.Bots.Common.Extensions;
 using eShop.Common.Extensions;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Viber;
 using eShop.Viber.DbContexts;
 using eShop.Viber.MessageHandlers;
 using eShop.Viber.Repositories;
@@ -66,7 +67,7 @@ namespace eShop.Viber
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<ViberUserCreateAccountUpdateMessage, ViberUserCreateAccountUpdateMessageHandler>();
+            builder.Services.AddMessageHandler<RegisterViberUserResponse, ViberUserCreateAccountUpdateMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToViberMessage, BroadcastCompositionToViberMessageHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));

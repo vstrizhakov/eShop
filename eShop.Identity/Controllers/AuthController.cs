@@ -4,6 +4,7 @@ using eShop.Identity.Entities;
 using eShop.Identity.Models;
 using eShop.Messaging;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace eShop.Identity.Controllers
 
                 if (succeeded)
                 {
-                    var message = new IdentityUserCreateAccountRequestMessage
+                    var message = new RegisterIdentityUserRequest
                     {
                         IdentityUserId = user.Id,
                         FirstName = request.FirstName,

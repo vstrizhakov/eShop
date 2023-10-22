@@ -1,8 +1,7 @@
 ﻿using eShop.Accounts.Entities;
 using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Services;
-using eShop.Messaging;
-using eShop.Messaging.Models;
+using eShop.Messaging.Models.Viber;
 
 namespace eShop.Accounts.Tests.MessageHandlers
 {
@@ -13,7 +12,15 @@ namespace eShop.Accounts.Tests.MessageHandlers
         {
             // Arrange
 
-            ViberUserCreateAccountUpdateMessage? result = null;
+            RegisterViberUserResponse? result = null;
+
+            var request = new RegisterViberUserRequest
+            {
+                Name = "John",
+                PhoneNumber = "+380000000000",
+                ProviderId = Guid.NewGuid(),
+                ViberUserId = Guid.NewGuid(),
+            };
 
             var accountService = new Mock<IAccountService>();
             accountService
@@ -26,32 +33,18 @@ namespace eShop.Accounts.Tests.MessageHandlers
                     ViberUserId = account.ViberUserId,
                 });
 
-            var producer = new Mock<IProducer>();
-            producer
-                .Setup(e => e.Publish(It.IsAny<ViberUserCreateAccountUpdateMessage>()))
-                .Callback<ViberUserCreateAccountUpdateMessage>(message => result = message)
-                .Verifiable();
+            var sut = new RegisterViberUserRequestHandler(accountService.Object);
 
             // Act
 
-            var messageHandler = new ViberUserCreateAccountRequestMessageHandler(accountService.Object, producer.Object);
-
-            var message = new ViberUserCreateAccountRequestMessage
-            {
-                Name = "John",
-                PhoneNumber = "+380000000000",
-                ProviderId = Guid.NewGuid(),
-                ViberUserId = Guid.NewGuid(),
-            };
-            await messageHandler.HandleMessageAsync(message);
+            await sut.HandleRequestAsync(request);
 
             // Assert
 
-            producer.VerifyAll();
+            accountService.VerifyAll();
 
             Assert.NotNull(result);
-            Assert.Equal(message.ViberUserId, result.ViberUserId);
-            Assert.Equal(message.ProviderId, result.ProviderId);
+            Assert.Equal(request.ViberUserId, result.ViberUserId);
             Assert.NotEqual(default, result.AccountId);
         }
     }

@@ -145,7 +145,7 @@ namespace eShop.Distribution.Tests.Services
 
             // Act
 
-            await sut.CreateNewAccountAsync(accountId, firstName, lastName, providerId);
+            await sut.CreateAccountAsync(accountId, firstName, lastName, providerId);
 
             // Assert
 
@@ -179,7 +179,7 @@ namespace eShop.Distribution.Tests.Services
 
             await Assert.ThrowsAsync<AccountAlreadyExistsException>(async () =>
             {
-                await sut.CreateNewAccountAsync(accountId, firstName, lastName, providerId);
+                await sut.CreateAccountAsync(accountId, firstName, lastName, providerId);
             });
         }
     }

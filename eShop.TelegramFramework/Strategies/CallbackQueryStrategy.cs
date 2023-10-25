@@ -25,7 +25,8 @@ namespace eShop.TelegramFramework.Strategies
 
         public MethodInfo? PickControllerMethod()
         {
-            var method = ReflectionUtilities.FindControllerMethod<CallbackQueryAttribute>(attribute => attribute.Action == _action);
+            var method = ReflectionUtilities.FindControllerMethod<CallbackQueryAttribute>(attribute
+                => attribute.Action == _action);
             return method;
         }
     }

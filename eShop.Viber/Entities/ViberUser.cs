@@ -12,6 +12,7 @@ namespace eShop.Viber.Entities
         public bool IsSubcribed { get; set; }
         public Guid? AccountId { get; set; }
         public Guid? RegistrationProviderId { get; set; }
+        public string? ActiveContext { get; set; }
 
         public ViberChatSettings ChatSettings { get; set; }
     }

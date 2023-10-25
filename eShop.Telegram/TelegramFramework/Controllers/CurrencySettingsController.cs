@@ -10,7 +10,7 @@ using eShop.TelegramFramework.Contexts;
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
     [TelegramController]
-    public class CurrencySettingsController : TelegramControllerBase
+    public class CurrencySettingsController
     {
         private readonly ITelegramService _telegramService;
         private readonly IRequestClient _requestClient;

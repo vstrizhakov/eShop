@@ -16,8 +16,8 @@ namespace eShop.TelegramFramework.Strategies
 
         public MethodInfo? PickControllerMethod()
         {
-            var controller = ReflectionUtilities.FindControllerMethod<ContactMessageAttribute>(attribute => true);
-            return controller;
+            var method = ReflectionUtilities.FindControllerMethod<ContactMessageAttribute>(attribute => true);
+            return method;
         }
     }
 }

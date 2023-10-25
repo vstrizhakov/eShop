@@ -43,13 +43,13 @@ namespace eShop.Viber.MessageHandlers
                     {
                         Buttons = new[]
                         {
-                    new Button
-                    {
-                        Rows = 1,
-                        Text = "Налаштування анонсів",
-                        ActionBody = _botContextConverter.Serialize(ViberContext.Settings),
-                    },
-                },
+                            new Button
+                            {
+                                Rows = 1,
+                                Text = "Налаштування анонсів",
+                                ActionBody = _botContextConverter.Serialize(ViberContext.Settings),
+                            },
+                        },
                     };
                     await _botClient.SendPictureMessageAsync(viberUser.ExternalId, sender, messageToSend.Image.ToString(), messageToSend.Caption, keyboard: keyboard);
                 }

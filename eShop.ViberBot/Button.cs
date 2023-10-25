@@ -3,30 +3,25 @@ using Newtonsoft.Json.Serialization;
 
 namespace eShop.ViberBot
 {
-    [JsonObject(NamingStrategyType = typeof(DefaultNamingStrategy))]
+    [JsonObject(NamingStrategyType = typeof(DefaultNamingStrategy), ItemNullValueHandling = NullValueHandling.Ignore)]
     public class Button
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int? Columns { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int? Rows { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? ActionType { get; set; }
 
         public string ActionBody { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? Text { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public InternalBrowser? InternalBrowser { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? OpenURLType { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? OpenURLMediaType { get; set; }
+
+        public string? BgColor { get; set; } = "#FFFFFF";
     }
 }

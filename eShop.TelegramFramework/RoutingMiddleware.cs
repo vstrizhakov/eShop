@@ -6,14 +6,14 @@ using Telegram.Bot.Types.Enums;
 
 namespace eShop.TelegramFramework
 {
-    internal class TelegramMiddleware : ITelegramMiddleware
+    internal class RoutingMiddleware : ITelegramMiddleware
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IContextStore _contextStore;
         private readonly IBotContextConverter _botContextConverter;
         private readonly ITelegramViewRunner _telegramViewRunner;
 
-        public TelegramMiddleware(
+        public RoutingMiddleware(
             IServiceProvider serviceProvider,
             IContextStore contextStore,
             IBotContextConverter botContextConverter,
@@ -111,7 +111,7 @@ namespace eShop.TelegramFramework
         private IStrategy CreateStrategy(TelegramContext context, string? command, string? data)
         {
             var action = default(string);
-            var parameters = default(string[]);
+            var parameters = Array.Empty<string>();
 
             if (data != null)
             {

@@ -45,7 +45,7 @@ namespace eShop.Telegram.TelegramFramework.Views
                 };
 
                 var replyMarkup = markupBuilder.Build(page);
-                await botClient.SendTextMessageAsync(new ChatId(_chatId), text, replyMarkup: replyMarkup);
+                await botClient.EditMessageTextAsync(new ChatId(_chatId), _messageId, text, replyMarkup: replyMarkup);
             }
             else
             {

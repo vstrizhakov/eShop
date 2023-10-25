@@ -1,7 +1,7 @@
 ﻿namespace eShop.TelegramFramework.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class CallbackQueryAttribute : Attribute
+    public sealed class CallbackQueryAttribute : Attribute
     {
         public string Action { get; set; }
 

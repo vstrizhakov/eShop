@@ -9,7 +9,7 @@ using eShop.TelegramFramework.Contexts;
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
     [TelegramController]
-    public class MyGroupsController : TelegramControllerBase
+    public class MyGroupsController
     {
         private readonly ITelegramService _telegramService;
 

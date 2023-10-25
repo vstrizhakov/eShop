@@ -11,13 +11,13 @@ using eShop.TelegramFramework.Contexts;
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
     [TelegramController]
-    public class CurrencyRateSettings : TelegramControllerBase
+    public class CurrencyRateSettingsController
     {
         private readonly ITelegramService _telegramService;
         private readonly IRequestClient _requestClient;
         private readonly IBotContextConverter _botContextConverter;
 
-        public CurrencyRateSettings(ITelegramService telegramService, IRequestClient request, IBotContextConverter botContextConverter)
+        public CurrencyRateSettingsController(ITelegramService telegramService, IRequestClient request, IBotContextConverter botContextConverter)
         {
             _telegramService = telegramService;
             _requestClient = request;

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace eShop.TelegramFramework.Extensions
 {
-    public static class DependencyInjection
+    public static class DependencyInjectionExtensions
     {
         public static IServiceCollection AddTelegramFramework<TContextStore>(this IServiceCollection services)
             where TContextStore : class, IContextStore
@@ -19,7 +19,7 @@ namespace eShop.TelegramFramework.Extensions
 
             services.AddScoped<IContextStore, TContextStore>();
             services.AddScoped<ITelegramViewRunner , TelegramViewRunner>();
-            services.AddScoped<ITelegramMiddleware, TelegramMiddleware>();
+            services.AddScoped<ITelegramMiddleware, RoutingMiddleware>();
 
             services.AddScoped<IInlineKeyboardMarkupBuilder, InlineKeyboardMarkupBuilder>();
             services.AddScoped<IInlineKeyboardMarkupBuilder<InlineKeyboardPage>, InlineKeyboardPageBuilder>();

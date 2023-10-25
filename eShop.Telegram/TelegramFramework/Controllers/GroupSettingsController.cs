@@ -9,7 +9,7 @@ using eShop.TelegramFramework.Contexts;
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
     [TelegramController]
-    public class GroupSettingsController : TelegramControllerBase
+    public class GroupSettingsController
     {
         private readonly ITelegramUserRepository _telegramUserRepository;
         private readonly ITelegramChatRepository _telegramChatRepository;

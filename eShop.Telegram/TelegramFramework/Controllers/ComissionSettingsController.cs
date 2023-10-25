@@ -11,7 +11,7 @@ using eShop.TelegramFramework.Contexts;
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
     [TelegramController]
-    public class ComissionSettingsController : TelegramControllerBase
+    public class ComissionSettingsController
     {
         private readonly ITelegramService _telegramService;
         private readonly IRequestClient _requestClient;

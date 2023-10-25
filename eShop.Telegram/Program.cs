@@ -75,8 +75,8 @@ namespace eShop.Telegram
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<RegisterTelegramUserResponse, TelegramUserCreateAccountResponseMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
+            builder.Services.AddMessageListener<RegisterTelegramUserResponse>();
             builder.Services.AddMessageListener<GetPreferredCurrencyResponse>();
             builder.Services.AddMessageListener<GetCurrenciesResponse>();
             builder.Services.AddMessageListener<SetPreferredCurrencyResponse>();

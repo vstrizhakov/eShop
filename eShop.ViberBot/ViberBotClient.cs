@@ -55,18 +55,7 @@ namespace eShop.ViberBot
                 Keyboard = keyboard,
             };
 
-            var httpContent = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
-
-            var httpResponse = await _httpClient.PostAsync("/pa/send_message", httpContent, cancellationToken);
-            httpResponse.EnsureSuccessStatusCode();
-
-            var content = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-            var response = JsonConvert.DeserializeObject<SendMessageResponse>(content);
-
-            if (response.Status != 0)
-            {
-                throw new Exception(response.StatusMessage);
-            }
+            await SendMessageAsync(message);
         }
 
         public async Task SendTextMessageAsync(string receiver, User sender, string text, string? trackingData = null, int? minApiVersion = null, Keyboard? keyboard = null, CancellationToken cancellationToken = default)
@@ -82,6 +71,11 @@ namespace eShop.ViberBot
                 Keyboard = keyboard,
             };
 
+            await SendMessageAsync(message);
+        }
+
+        public async Task SendMessageAsync(Message message, CancellationToken cancellationToken = default)
+        {
             var httpContent = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
 
             var httpResponse = await _httpClient.PostAsync("/pa/send_message", httpContent, cancellationToken);

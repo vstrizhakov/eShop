@@ -17,7 +17,7 @@ namespace eShop.Viber.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -43,6 +43,9 @@ namespace eShop.Viber.Migrations
 
                     b.Property<Guid?>("AccountId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActiveContext")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ExternalId")
                         .IsRequired()

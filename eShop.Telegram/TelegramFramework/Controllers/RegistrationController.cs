@@ -6,21 +6,30 @@ using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
     [TelegramController]
-    public class RegistrationController : TelegramControllerBase
+    public class RegistrationController
     {
         private readonly ITelegramService _telegramService;
         private readonly ITelegramUserRepository _telegramUserRepository;
-        private readonly IProducer _producer;
+        private readonly IRequestClient _requestClient;
+        private readonly ITelegramBotClient _botClient;
 
-        public RegistrationController(ITelegramService telegramService, ITelegramUserRepository telegramUserRepository, IProducer producer)
+        public RegistrationController(
+            ITelegramService telegramService,
+            ITelegramUserRepository telegramUserRepository,
+            IRequestClient requestClient,
+            ITelegramBotClient botClient)
         {
             _telegramService = telegramService;
             _telegramUserRepository = telegramUserRepository;
-            _producer = producer;
+            _requestClient = requestClient;
+            _botClient = botClient;
         }
 
         [TextMessage(Action = TelegramAction.RegisterClient, Command = "/start")]
@@ -57,7 +66,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
 
                 await _telegramService.UpdateUserAsync(user);
 
-                var internalMessage = new Messaging.Models.Telegram.RegisterTelegramUserRequest
+                var request = new Messaging.Models.Telegram.RegisterTelegramUserRequest
                 {
                     TelegramUserId = user.Id,
                     FirstName = user.FirstName,
@@ -65,7 +74,22 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     PhoneNumber = phoneNumber,
                     ProviderId = providerId.Value,
                 };
-                _producer.Publish(internalMessage);
+
+                var response = await _requestClient.SendAsync(request);
+
+                await _telegramService.SetAccountIdAsync(user, response.AccountId);
+
+                var chatId = user.ExternalId;
+
+                {
+                    var replyMarkup = new ReplyKeyboardRemove();
+                    var replyText = $"Вас успішно зареєстровано\n\n{response.ProviderEmail} встановлений як Ваш постачальник анонсів.";
+
+                    await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
+                }
+
+                var view = new WelcomeView(chatId, null);
+                return view;
             }
 
             return null;

@@ -2,12 +2,19 @@ using eShop.Bots.Common.Extensions;
 using eShop.Common.Extensions;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
+using eShop.Messaging.Models.Catalog;
+using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.Messaging.Models.Viber;
 using eShop.Viber.DbContexts;
 using eShop.Viber.MessageHandlers;
 using eShop.Viber.Repositories;
 using eShop.Viber.Services;
+using eShop.Viber.ViberBotFramework;
+using eShop.Viber.ViberBotFramework.Middlewares;
 using eShop.ViberBot;
+using eShop.ViberBot.Framework;
+using eShop.ViberBot.Framework.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -67,8 +74,22 @@ namespace eShop.Viber
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<RegisterViberUserResponse, ViberUserCreateAccountUpdateMessageHandler>();
+
+            builder.Services.AddMessageListener<RegisterViberUserResponse>();
             builder.Services.AddMessageHandler<BroadcastCompositionToViberMessage, BroadcastCompositionToViberMessageHandler>();
+            builder.Services.AddMessageListener<GetComissionSettingsResponse>();
+            builder.Services.AddMessageListener<GetComissionAmountResponse>();
+            builder.Services.AddMessageListener<SetComissionAmountResponse>();
+            builder.Services.AddMessageListener<GetShopSettingsResponse>();
+            builder.Services.AddMessageListener<SetShopSettingsFilterResponse>();
+            builder.Services.AddMessageListener<GetShopSettingsShopsResponse>();
+            builder.Services.AddMessageListener<SetShopSettingsShopStateResponse>();
+            builder.Services.AddMessageListener<GetPreferredCurrencyResponse>();
+            builder.Services.AddMessageListener<SetPreferredCurrencyResponse>();
+            builder.Services.AddMessageListener<GetCurrencyRatesResponse>();
+            builder.Services.AddMessageListener<GetCurrencyRateResponse>();
+            builder.Services.AddMessageListener<SetCurrencyRateResponse>();
+            builder.Services.AddMessageListener<GetCurrenciesResponse>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 
@@ -80,6 +101,10 @@ namespace eShop.Viber
                 });
 
             builder.Services.AddScoped<IViberInvitationLinkGenerator, ViberInvitationLinkGenerator>();
+            builder.Services.AddScoped<IViberService, ViberService>();
+
+            builder.Services.AddViberFramework<ViberContextStore>();
+            builder.Services.AddScoped<IViberMiddleware, IdentityMiddleware>();
 
             var app = builder.Build();
 

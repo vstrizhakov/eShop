@@ -10,7 +10,7 @@ using eShop.TelegramFramework.Contexts;
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
     [TelegramController]
-    public class ShopSettingsController : TelegramControllerBase
+    public class ShopSettingsController
     {
         private readonly ITelegramService _telegramService;
         private readonly IRequestClient _requestClient;

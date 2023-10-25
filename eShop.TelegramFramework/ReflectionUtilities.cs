@@ -9,7 +9,6 @@ namespace eShop.TelegramFramework
         {
             var method = Assembly.GetEntryAssembly()
                 .GetTypes()
-                .Where(e => e.IsSubclassOf(typeof(TelegramControllerBase)))
                 .Where(e => e.GetCustomAttribute<TelegramControllerAttribute>() != null)
                 .SelectMany(e => e.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                 .FirstOrDefault(e =>

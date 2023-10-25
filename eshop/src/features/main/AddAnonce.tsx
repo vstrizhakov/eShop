@@ -27,7 +27,8 @@ const AddAnnounce: React.FC = () => {
             price: {
                 currencyId: values.currencyId,
                 price: values.price,
-            }
+            },
+            description: values.description,
         };
         setProducts(products => ([
             ...products,

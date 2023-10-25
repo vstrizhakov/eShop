@@ -41,6 +41,7 @@ export interface CreateProductRequest {
     name: string,
     url: string,
     price: ProductPrice,
+    description: string,
 };
 
 export interface CreateCompositionRequest {

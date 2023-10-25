@@ -9,5 +9,6 @@
         public IEnumerable<IFormFile>? Images { get; set; }
         public bool Sale { get; set; }
         public double? Discount { get; set; }
+        public string? Description { get; set; }
     }
 }

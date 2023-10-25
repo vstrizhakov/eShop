@@ -14,6 +14,7 @@ export interface AddProductForm {
     currencyId: string,
     sale: boolean,
     discount: number,
+    description: string,
 }
 
 const AddProduct: React.FC = () => {
@@ -113,6 +114,16 @@ const AddProduct: React.FC = () => {
                         <InputGroup.Text>%</InputGroup.Text>
                     </InputGroup>
                 )}
+
+                <BootstrapForm.FloatingLabel label="Опис" controlId="product-description" className="mb-3">
+                    <Field
+                        name="description"
+                        placeholder="Опис"
+                        as="textarea"
+                        style={{ height: 100 }}
+                        component={TextField}
+                    />
+                </BootstrapForm.FloatingLabel>
 
                 <Button type="submit">Додати</Button>
             </Card.Body>

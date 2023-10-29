@@ -82,7 +82,7 @@ namespace eShop.Distribution.Services
             return distributionSettings;
         }
 
-        public async Task<DistributionSettings> SetComissionAmountAsync(DistributionSettings distributionSettings, decimal amount)
+        public async Task<DistributionSettings> SetComissionAmountAsync(DistributionSettings distributionSettings, double amount)
         {
             distributionSettings.ComissionSettings.Amount = amount;
 
@@ -136,6 +136,15 @@ namespace eShop.Distribution.Services
                     shops.Remove(shop);
                 }
             }
+
+            await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
+
+            return distributionSettings;
+        }
+
+        public async Task<DistributionSettings> SetShowSalesAsync(DistributionSettings distributionSettings, bool showSales)
+        {
+            distributionSettings.ShowSales = showSales;
 
             await _distributionSettingsRepository.UpdateDistributionSettingsAsync(distributionSettings);
 

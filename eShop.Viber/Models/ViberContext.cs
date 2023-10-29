@@ -3,8 +3,7 @@
     public static class ViberContext
     {
         public const string RegisterClient = "rc";
-        public const string SettingsEnable = "se";
-        public const string SettingsDisable = "sd";
+        public const string SetIsChatEnalbed = "sice";
         public const string Settings = "st";
         public const string ComissionSettings = "comset";
         public const string CurrencySettings = "cureset";
@@ -17,5 +16,6 @@
         public const string PreferredCurrencySettings = "prefcurset";
         public const string SetPreferredCurrency = "setprefcur";
         public const string SetCurrencyRate = "setcurra";
+        public const string SetShowSales = "setshsales";
     }
 }

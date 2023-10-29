@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eShop.Distribution.Entities.History;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace eShop.Distribution.Entities
@@ -19,6 +20,6 @@ namespace eShop.Distribution.Entities
         public DistributionGroup Group { get; set; }
         public TelegramChat? TelegramChat { get; set; }
         public ViberChat? ViberChat { get; set; }
-        public DistributionSettingsHistoryRecord DistributionSettings { get; set; }
+        public DistributionSettingsRecord DistributionSettings { get; set; }
     }
 }

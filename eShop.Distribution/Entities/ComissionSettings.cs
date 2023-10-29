@@ -5,7 +5,7 @@
         public Guid Id { get; set; }
         public Guid? DistributionSettingsId { get; set; }
 
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
 
         public DistributionSettings? DistributionSettings { get; set; }
     }

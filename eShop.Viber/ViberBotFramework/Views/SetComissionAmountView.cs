@@ -8,9 +8,9 @@ namespace eShop.Viber.ViberBotFramework.Views
     public class SetComissionAmountView : IViberView
     {
         private string _receiverId;
-        private decimal _amount;
+        private double _amount;
 
-        public SetComissionAmountView(string receiverId, decimal amount)
+        public SetComissionAmountView(string receiverId, double amount)
         {
             _receiverId = receiverId;
             _amount = amount;

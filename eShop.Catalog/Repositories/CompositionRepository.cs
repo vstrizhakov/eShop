@@ -15,6 +15,10 @@ namespace eShop.Catalog.Repositories
 
         public async Task CreateCompositionAsync(Composition composition)
         {
+            // TODO: find another way to achieve currency property on product prices exist
+            var currencyIds = composition.Products.SelectMany(product => product.Prices.Select(price => price.CurrencyId)).Distinct();
+            await _context.Currencies.Where(currency => currencyIds.Contains(currency.Id)).ToListAsync();
+
             _context.Compositions.Add(composition);
 
             await _context.SaveChangesAsync();

@@ -57,7 +57,8 @@ namespace eShop.Catalog
             builder.Services.AddScoped<ICompositionRepository, CompositionRepository>();
             builder.Services.AddScoped<IShopRepository, ShopRepository>();
 
-            builder.Services.AddScoped<IFileManager, FileManager>();
+            builder.Services.AddSingleton<IFileManager, AzureBlobManager>();
+            //builder.Services.AddScoped<IFileManager, FileManager>();
             builder.Services.AddScoped<ICompositionService, CompositionService>();
             builder.Services.AddScoped<IShopService, ShopService>();
             builder.Services.AddScoped<ISyncService, SyncService>();
@@ -90,18 +91,18 @@ namespace eShop.Catalog
                 app.UseSwaggerUI();
             }
 
-            var filesConfiguration = app.Services.GetRequiredService<IOptions<FilesConfiguration>>();
-            var staticFilesDirectory = Path.Combine(filesConfiguration.Value.Root, "Catalog");
-            if (!Directory.Exists(staticFilesDirectory))
-            {
-                Directory.CreateDirectory(staticFilesDirectory);
-            }
+            //var filesConfiguration = app.Services.GetRequiredService<IOptions<FilesConfiguration>>();
+            //var staticFilesDirectory = Path.Combine(filesConfiguration.Value.Root, "Catalog");
+            //if (!Directory.Exists(staticFilesDirectory))
+            //{
+            //    Directory.CreateDirectory(staticFilesDirectory);
+            //}
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(staticFilesDirectory),
-                RequestPath = "/catalog",
-            });
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(staticFilesDirectory),
+            //    RequestPath = "/catalog",
+            //});
 
             app.UseRouting();
 

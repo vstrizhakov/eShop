@@ -82,6 +82,8 @@ namespace eShop.Distribution
             builder.Services.AddRequestHandler<SetShopSettingsFilterRequest, SetShopSettingsFilterResponse, SetShopSettingsFilterRequestHandler>();
             builder.Services.AddRequestHandler<GetShopSettingsShopsRequest, GetShopSettingsShopsResponse, GetShopSettingsShopsRequestHandler>();
             builder.Services.AddRequestHandler<SetShopSettingsShopStateRequest, SetShopSettingsShopStateResponse, SetShopSettingsShopStateRequestHandler>();
+            builder.Services.AddRequestHandler<GetDistributionSettingsRequest, GetDistributionSettingsResponse, GetDistributionSettingsRequestHandler>();
+            builder.Services.AddRequestHandler<SetShowSalesRequest, SetShowSalesResponse, SetShowSalesRequestHandler>();
 
             builder.Services.AddMessageHandler<SyncShopsMessage, SyncShopsMessageHandler>();
 

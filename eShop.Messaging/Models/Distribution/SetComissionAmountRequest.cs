@@ -3,9 +3,9 @@
     public class SetComissionAmountRequest : Messaging.Message, IRequest<SetComissionAmountResponse>
     {
         public Guid AccountId { get; }
-        public decimal Amount { get; }
+        public double Amount { get; }
 
-        public SetComissionAmountRequest(Guid accountId, decimal amount)
+        public SetComissionAmountRequest(Guid accountId, double amount)
         {
             AccountId = accountId;
             Amount = amount;

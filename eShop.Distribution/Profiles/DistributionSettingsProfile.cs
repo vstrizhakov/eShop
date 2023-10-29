@@ -15,6 +15,7 @@ namespace eShop.Distribution.Profiles
                 });
             CreateMap<Entities.CurrencyRate, Messaging.Models.Distribution.CurrencyRate>()
                 .ForMember(dest => dest.Currency, options => options.MapFrom(src => src.SourceCurrency));
+            CreateMap<Entities.DistributionSettings, Messaging.Models.Distribution.DistributionSettings>();
         }
     }
 }

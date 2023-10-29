@@ -49,7 +49,7 @@ namespace eShop.Catalog.Services
             }
 
             using var imageStream = image.OpenReadStream();
-            var imagePath = await _fileManager.SaveAsync(Path.Combine("Catalog", "Compositions", composition.Id.ToString(), "Images"), Path.GetExtension(image.FileName), imageStream);
+            var imagePath = await _fileManager.SaveAsync(Path.Combine("Compositions", composition.Id.ToString(), "Images"), Path.GetExtension(image.FileName), imageStream);
 
             // TODO: Handle products` images (request.Products.Images)
 
@@ -66,12 +66,30 @@ namespace eShop.Catalog.Services
                 Composition = new Messaging.Models.Composition
                 {
                     Id = composition.Id,
+                    ShopId = composition.ShopId,
                     Images = composition.Images.Select(e => new Uri(_publicUriBuilder.Path(e.Path))).ToList(),
-                    Products = composition.Products.Select(e => new Messaging.Models.Product
+                    Products = composition.Products.Select(e =>
                     {
-                        Name = e.Name,
-                        Url = e.Url,
-                        Price = e.Prices.FirstOrDefault().Value,
+                        var price = e.Prices.FirstOrDefault();
+                        var currency = price.Currency;
+                        var product = new Messaging.Models.Product
+                        {
+                            Name = e.Name,
+                            Description = e.Description,
+                            Url = e.Url,
+                            Price = new Messaging.Models.ProductPrice
+                            {
+                                Price = price.Value,
+                                DiscountedPrice = price.DiscountedValue,
+                                Currency = new Messaging.Models.Currency
+                                {
+                                    Id = currency.Id,
+                                    Name = currency.Name,
+                                },
+                            },
+                        };
+
+                        return product;
                     }).ToList(),
                 },
             };

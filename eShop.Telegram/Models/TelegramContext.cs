@@ -20,5 +20,6 @@
         public const string SetShopSettingsFilter = "setshsetfilter";
         public const string ShopSettingsShops = "shsetshops";
         public const string SetShopSettingsShopState = "sssss";
+        public const string SetShowSales = "setshsales";
     }
 }

@@ -1,4 +1,6 @@
-﻿using eShop.Viber.Models;
+﻿using eShop.Messaging;
+using eShop.Messaging.Models.Distribution;
+using eShop.Viber.Models;
 using eShop.Viber.Services;
 using eShop.Viber.ViberBotFramework.Views;
 using eShop.ViberBot.Framework;
@@ -11,10 +13,12 @@ namespace eShop.Viber.ViberBotFramework.Controllers
     public class SettingsController
     {
         private readonly IViberService _viberService;
+        private readonly IRequestClient _requestClient;
 
-        public SettingsController(IViberService viberService)
+        public SettingsController(IViberService viberService, IRequestClient requestClient)
         {
             _viberService = viberService;
+            _requestClient = requestClient;
         }
 
         [TextMessage(Action = ViberContext.Settings)]
@@ -23,37 +27,46 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId != null)
             {
+                var request = new GetDistributionSettingsRequest(user.AccountId.Value);
+                var response = await _requestClient.SendAsync(request);
+
                 var isEnabled = user.ChatSettings.IsEnabled;
 
-                return new SettingsView(user.ExternalId, isEnabled);
+                return new SettingsView(user.ExternalId, isEnabled, response.DistributionSettings);
             }
 
             return null;
         }
 
-        [TextMessage(Action = ViberContext.SettingsEnable)]
-        public async Task<IViberView?> SettingsEnable(TextMessageContext context)
+        [TextMessage(Action = ViberContext.SetIsChatEnalbed)]
+        public async Task<IViberView?> SetIsChatEnabled(TextMessageContext context, bool isEnabled)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId != null)
             {
-                await _viberService.SetIsChatEnabledAsync(user, true);
+                await _viberService.SetIsChatEnabledAsync(user, isEnabled);
 
-                return new SettingsView(user.ExternalId, true);
+                var request = new GetDistributionSettingsRequest(user.AccountId.Value);
+                var response = await _requestClient.SendAsync(request);
+
+                return new SettingsView(user.ExternalId, isEnabled, response.DistributionSettings);
             }
 
             return null;
         }
 
-        [TextMessage(Action = ViberContext.SettingsDisable)]
-        public async Task<IViberView?> SettingsDisable(TextMessageContext context)
+        [TextMessage(Action = ViberContext.SetShowSales)]
+        public async Task<IViberView?> SetShowSales(TextMessageContext context, bool showSales)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId != null)
             {
-                await _viberService.SetIsChatEnabledAsync(user, false);
+                var request = new SetShowSalesRequest(user.AccountId.Value, showSales);
+                var response = await _requestClient.SendAsync(request);
 
-                return new SettingsView(user.ExternalId, false);
+                var isEnabled = user.ChatSettings.IsEnabled;
+
+                return new SettingsView(user.ExternalId, isEnabled, response.DistributionSettings);
             }
 
             return null;

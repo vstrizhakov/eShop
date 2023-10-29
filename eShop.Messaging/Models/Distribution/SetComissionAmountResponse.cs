@@ -3,9 +3,9 @@
     public class SetComissionAmountResponse : Messaging.Message, IResponse
     {
         public Guid AccountId { get; }
-        public decimal Amount { get; }
+        public double Amount { get; }
 
-        public SetComissionAmountResponse(Guid accountId, decimal amount)
+        public SetComissionAmountResponse(Guid accountId, double amount)
         {
             AccountId = accountId;
             Amount = amount;

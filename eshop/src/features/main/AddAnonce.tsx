@@ -30,6 +30,11 @@ const AddAnnounce: React.FC = () => {
             },
             description: values.description,
         };
+
+        if (values.sale) {
+            product.price.discountedPrice = values.discountedPrice;
+        }
+
         setProducts(products => ([
             ...products,
             product,

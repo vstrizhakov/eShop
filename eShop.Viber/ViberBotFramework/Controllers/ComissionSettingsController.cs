@@ -63,7 +63,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId != null)
             {
-                if (decimal.TryParse(context.Text, out var amount))
+                if (double.TryParse(context.Text, out var amount))
                 {
                     var request = new SetComissionAmountRequest(user.AccountId.Value, amount);
                     var response = await _requestClient.SendAsync(request);

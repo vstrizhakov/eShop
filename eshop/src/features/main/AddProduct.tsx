@@ -11,6 +11,7 @@ export interface AddProductForm {
     name: string,
     url: string,
     price: number,
+    discountedPrice?: number,
     currencyId: string,
     sale: boolean,
     discount: number,
@@ -71,7 +72,7 @@ const AddProduct: React.FC = () => {
                 </BootstrapForm.FloatingLabel>
 
                 <Row className="mb-1">
-                    <Col xs={9}>
+                    <Col>
                         <BootstrapForm.FloatingLabel label="Ціна" controlId="product-price">
                             <Field
                                 name="price"
@@ -80,7 +81,20 @@ const AddProduct: React.FC = () => {
                             />
                         </BootstrapForm.FloatingLabel>
                     </Col>
-                    <Col xs={3}>
+
+                    {sale && (
+                        <Col>
+                            <BootstrapForm.FloatingLabel label="Ціна зі знижкою" controlId="product-discounted-price">
+                                <Field
+                                    name="discountedPrice"
+                                    placeholder="Ціна зі знижкою"
+                                    component={TextField}
+                                />
+                            </BootstrapForm.FloatingLabel>
+                        </Col>
+                    )}
+
+                    <Col xs="auto">
                         <BootstrapForm.FloatingLabel label="Валюта" controlId="product-currency-id">
                             <Field
                                 name="currencyId"
@@ -101,19 +115,6 @@ const AddProduct: React.FC = () => {
                         component={Check}
                     />
                 </BootstrapForm.Group>
-
-                {sale && (
-                    <InputGroup className="mb-3">
-                        <BootstrapForm.FloatingLabel label="Знижка" controlId="product-discount">
-                            <Field
-                                name="discount"
-                                placeholder="Знижка"
-                                component={TextField}
-                            />
-                        </BootstrapForm.FloatingLabel>
-                        <InputGroup.Text>%</InputGroup.Text>
-                    </InputGroup>
-                )}
 
                 <BootstrapForm.FloatingLabel label="Опис" controlId="product-description" className="mb-3">
                     <Field

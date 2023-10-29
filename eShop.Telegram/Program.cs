@@ -75,6 +75,7 @@ namespace eShop.Telegram
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
+
             builder.Services.AddMessageHandler<BroadcastCompositionToTelegramMessage, BroadcastCompositionToTelegramMessageHandler>();
             builder.Services.AddMessageListener<RegisterTelegramUserResponse>();
             builder.Services.AddMessageListener<GetPreferredCurrencyResponse>();
@@ -90,6 +91,8 @@ namespace eShop.Telegram
             builder.Services.AddMessageListener<SetShopSettingsFilterResponse>();
             builder.Services.AddMessageListener<GetShopSettingsShopsResponse>();
             builder.Services.AddMessageListener<SetShopSettingsShopStateResponse>();
+            builder.Services.AddMessageListener<SetShowSalesResponse>();
+            builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -1,4 +1,5 @@
 ﻿using eShop.Distribution.Entities;
+using eShop.Distribution.Entities.History;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Distribution.DbContexts
@@ -44,19 +45,29 @@ namespace eShop.Distribution.DbContexts
                 .IsUnique()
                 .HasFilter(null);
 
-            modelBuilder.Entity<DistributionSettingsHistoryRecord>()
+            modelBuilder.Entity<DistributionSettingsRecord>()
                 .HasOne(e => e.PreferredCurrency)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<CurrencyRateHistoryRecord>()
+            modelBuilder.Entity<CurrencyRateRecord>()
                 .HasOne(e => e.Currency)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<CurrencyRateHistoryRecord>()
+            modelBuilder.Entity<CurrencyRateRecord>()
                 .HasOne(e => e.DistributionSettings)
                 .WithMany(e => e.CurrencyRates)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ComissionSettingsRecord>()
+                .HasOne(e => e.DistributionSettings)
+                .WithOne(e => e.ComissionSettings)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ShopSettingsRecord>()
+                .HasOne(e => e.DistributionSettings)
+                .WithOne(e => e.ShopSettings)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ComissionSettings>()

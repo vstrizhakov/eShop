@@ -65,7 +65,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
             {
-                if (decimal.TryParse(context.Text.Replace(',', '.'), out var amount))
+                if (double.TryParse(context.Text.Replace(',', '.'), out var amount))
                 {
                     var request = new SetComissionAmountRequest(user.AccountId.Value, amount);
                     var response = await _requestClient.SendAsync(request);

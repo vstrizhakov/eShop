@@ -5,5 +5,6 @@
         Pending,
         Delivered,
         Failed,
+        Filtered,
     }
 }

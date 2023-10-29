@@ -29,16 +29,16 @@ namespace eShop.ViberBot.Framework
             var parameters = method.GetParameters();
 
             var requiredParametersCount = parameters.Count(e => !e.IsOptional);
-            if (requiredParametersCount > inputParameters.Length + 1)
+            var parametersCount = parameters.Length;
+            var inputParametersCount = inputParameters.Length;
+            if (requiredParametersCount > inputParametersCount + 1 || inputParametersCount + 1 > parametersCount)
             {
                 throw new InvalidOperationException();
             }
 
-            var parametersCount = parameters.Length;
             var methodParams = new object[parametersCount];
             methodParams[0] = context;
 
-            var inputParametersCount = inputParameters.Length;
             for (int i = 0, j = 1; i < inputParametersCount; i++, j++)
             {
                 var sourceParameterValue = inputParameters[i];

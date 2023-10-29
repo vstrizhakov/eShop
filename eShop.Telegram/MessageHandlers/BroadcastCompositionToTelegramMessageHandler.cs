@@ -34,6 +34,7 @@ namespace eShop.Telegram.MessageHandlers
                     var media = new InputMediaPhoto(new InputFileUrl(messageToSend.Image))
                     {
                         Caption = messageToSend.Caption,
+                        ParseMode = global::Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
                     };
                     await _botClient.SendMediaGroupAsync(new ChatId(telegramChat.ExternalId), new List<IAlbumInputMedia>() { media });
                 }

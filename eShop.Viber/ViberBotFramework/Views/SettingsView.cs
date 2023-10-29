@@ -1,4 +1,5 @@
 ﻿using eShop.Bots.Common;
+using eShop.Messaging.Models.Distribution;
 using eShop.Viber.Models;
 using eShop.ViberBot;
 using eShop.ViberBot.Framework;
@@ -7,18 +8,21 @@ namespace eShop.Viber.ViberBotFramework.Views
 {
     public class SettingsView : IViberView
     {
-        private string _externalId;
-        private bool _isEnabled;
+        private readonly string _chatId;
+        private readonly bool _isEnabled;
+        private readonly DistributionSettings _distributionSettings;
 
-        public SettingsView(string externalId, bool isEnabled)
+        public SettingsView(string chatId, bool isEnabled, DistributionSettings distributionSettings)
         {
-            _externalId = externalId;
+            _chatId = chatId;
             _isEnabled = isEnabled;
+            _distributionSettings = distributionSettings;
         }
 
         public Message Build(IBotContextConverter botContextConverter)
         {
             var replyText = _isEnabled ? "Надсилання анонсів увімкнено" : "Надсилання анонсів ввимкнено";
+            var showSales = _distributionSettings.ShowSales;
             var keyboard = new Keyboard
             {
                 Buttons = new[]
@@ -27,7 +31,13 @@ namespace eShop.Viber.ViberBotFramework.Views
                     {
                         Rows = 1,
                         Text = _isEnabled ? "Ввимкнути анонси" : "Увікмнути анонси",
-                        ActionBody = botContextConverter.Serialize(_isEnabled ? ViberContext.SettingsDisable : ViberContext.SettingsEnable),
+                        ActionBody = botContextConverter.Serialize(ViberContext.SetIsChatEnalbed, (!_isEnabled).ToString()),
+                    },
+                    new Button
+                    {
+                        Rows = 1,
+                        Text = showSales ? "Не відображати знижки" : "Відображати знижки",
+                        ActionBody = botContextConverter.Serialize(ViberContext.SetShowSales, (!showSales).ToString()),
                     },
                     new Button
                     {
@@ -53,7 +63,7 @@ namespace eShop.Viber.ViberBotFramework.Views
             var message = new Message
             {
                 Type = MessageType.Text,
-                Receiver = _externalId,
+                Receiver = _chatId,
                 Text = replyText,
                 Keyboard = keyboard,
             };

@@ -1,6 +1,8 @@
 ﻿using eShop.Distribution.Entities;
+using eShop.Distribution.Entities.History;
 using eShop.Distribution.Exceptions;
 using eShop.Distribution.Repositories;
+using eShop.Messaging.Models;
 
 namespace eShop.Distribution.Services
 {
@@ -17,7 +19,7 @@ namespace eShop.Distribution.Services
             _distributionSettingsService = distributionSettingsService;
         }
 
-        public async Task<DistributionGroup> CreateDistributionFromProviderIdAsync(Guid providerId)
+        public async Task<DistributionGroup> CreateDistributionAsync(Guid providerId, Composition composition)
         {
             var distributionGroup = new DistributionGroup
             {
@@ -26,6 +28,8 @@ namespace eShop.Distribution.Services
 
             var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId, true, true);
 
+            var shopId = composition.ShopId;
+
             var telegramChatGroups = accounts
                 .SelectMany(e => e.TelegramChats)
                 .Where(e => e.IsEnabled)
@@ -33,7 +37,9 @@ namespace eShop.Distribution.Services
             foreach (var telegramChats in telegramChatGroups)
             {
                 var historyRecord = await CreateHistoryRecord(telegramChats.Key.DistributionSettings);
+                var shopSettings = historyRecord.ShopSettings;
 
+                var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
                 foreach (var telegramChat in telegramChats)
                 {
                     var distributionGroupItem = new DistributionGroupItem
@@ -42,23 +48,34 @@ namespace eShop.Distribution.Services
                         DistributionSettings = historyRecord,
                     };
 
+                    if (isFiltered)
+                    {
+                        distributionGroupItem.Status = DistributionGroupItemStatus.Filtered;
+                    }
+
                     distributionGroup.Items.Add(distributionGroupItem);
                 }
             }
 
             var viberChats = accounts
-                .Where(e => e.ViberChat != null)
-                .Select(e => e.ViberChat)
-                .Where(e => e.IsEnabled);
+                .Where(e => e.ViberChat != null && e.ViberChat.IsEnabled)
+                .Select(e => e.ViberChat);
             foreach (var viberChat in viberChats)
             {
                 var historyRecord = await CreateHistoryRecord(viberChat.Account.DistributionSettings);
+                var shopSettings = historyRecord.ShopSettings;
 
                 var distributionGroupItem = new DistributionGroupItem
                 {
                     ViberChatId = viberChat.Id,
                     DistributionSettings = historyRecord,
                 };
+
+                var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
+                if (isFiltered)
+                {
+                    distributionGroupItem.Status = DistributionGroupItemStatus.Filtered;
+                }
 
                 distributionGroup.Items.Add(distributionGroupItem);
             }
@@ -86,19 +103,43 @@ namespace eShop.Distribution.Services
             await _distributionRepository.UpdateDistributionGroupItemAsync(request);
         }
 
-        private async Task<DistributionSettingsHistoryRecord> CreateHistoryRecord(DistributionSettings distributionSettings)
+        private async Task<DistributionSettingsRecord> CreateHistoryRecord(DistributionSettings distributionSettings)
         {
-            // TODO: Check preferre currency on null
-            var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
-
-            var historyRecord = new DistributionSettingsHistoryRecord
+            var shopSettings = distributionSettings.ShopSettings;
+            var shopSettingsRecord = new ShopSettingsRecord
             {
-                PreferredCurrency = distributionSettings.PreferredCurrency,
-                CurrencyRates = currencyRates.Select(e => new CurrencyRateHistoryRecord
+                Filter = shopSettings.Filter,
+            };
+            if (shopSettings.Filter)
+            {
+                shopSettingsRecord.PreferredShops = shopSettings.PreferredShops;
+            }
+
+            var comissionSettings = distributionSettings.ComissionSettings;
+            var comissionSettingsRecord = new ComissionSettingsRecord
+            {
+                Amount = comissionSettings.Amount,
+            };
+
+            var preferredCurrency = distributionSettings.PreferredCurrency;
+            var currencyRateRecords = Array.Empty<CurrencyRateRecord>();
+            if (preferredCurrency != null)
+            {
+                var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
+
+                currencyRateRecords = currencyRates.Select(e => new CurrencyRateRecord
                 {
                     CurrencyId = e.SourceCurrencyId,
                     Rate = e.Rate,
-                }).ToList(),
+                }).ToArray();
+            }
+            var historyRecord = new DistributionSettingsRecord
+            {
+                PreferredCurrency = preferredCurrency,
+                CurrencyRates = currencyRateRecords,
+                ShowSales = distributionSettings.ShowSales,
+                ShopSettings = shopSettingsRecord,
+                ComissionSettings = comissionSettingsRecord,
             };
 
             return historyRecord;

@@ -35,6 +35,7 @@ export interface Composition {
 interface ProductPrice {
     currencyId: string,
     price: number,
+    discountedPrice?: number,
 };
 
 export interface CreateProductRequest {
@@ -64,10 +65,12 @@ const fillFormData = <T extends object>(formData: FormData, prefix: string, item
         if (isKey(item, property)) {
             const value = item[property];
             const key = `${prefix}.${property}`;
-            if (!(value instanceof Object)) {
-                formData.append(key, value as any);
-            } else {
-                fillFormData(formData, key, value);
+            if (value) {
+                if (!(value instanceof Object)) {
+                    formData.append(key, value as any);
+                } else {
+                    fillFormData(formData, key, value);
+                }
             }
         }
     }
@@ -88,6 +91,7 @@ export const catalogSlice = apiSlice.injectEndpoints({
                 for (let index = 0; index < products.length; index++) {
                     const product = products[index];
 
+                    console.log(product);
                     fillFormData(formData, `products[${index}]`, product);
                 }
 

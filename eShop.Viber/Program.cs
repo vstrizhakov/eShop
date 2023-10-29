@@ -90,6 +90,8 @@ namespace eShop.Viber
             builder.Services.AddMessageListener<GetCurrencyRateResponse>();
             builder.Services.AddMessageListener<SetCurrencyRateResponse>();
             builder.Services.AddMessageListener<GetCurrenciesResponse>();
+            builder.Services.AddMessageListener<SetShowSalesResponse>();
+            builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

@@ -25,7 +25,7 @@ namespace eShop.Distribution.MessageHandlers
             var composition = message.Composition;
 
             // TODO: Handle provider is absent
-            var distribution = await _distributionService.CreateDistributionFromProviderIdAsync(message.ProviderId);
+            var distribution = await _distributionService.CreateDistributionAsync(message.ProviderId, composition);
 
             var distributionId = distribution.Id;
             var update = new BroadcastCompositionUpdateEvent
@@ -36,10 +36,13 @@ namespace eShop.Distribution.MessageHandlers
 
             _producer.Publish(update);
 
-            var telegramRequests = distribution.Items.Where(e => e.TelegramChatId.HasValue);
+            var distributionItems = distribution.Items.Where(e => e.Status == Entities.DistributionGroupItemStatus.Pending);
+
+            var telegramFormatter = new TelegramFormatter();
+            var telegramRequests = distributionItems.Where(e => e.TelegramChatId.HasValue);
             foreach (var telegramRequest in telegramRequests)
             {
-                var messageToSend = _messageBuilder.FromComposition(composition, telegramRequest.DistributionSettings);
+                var messageToSend = _messageBuilder.FromComposition(composition, telegramRequest.DistributionSettings, telegramFormatter);
                 var telegramMessage = new BroadcastCompositionToTelegramMessage
                 {
                     RequestId = telegramRequest.Id,
@@ -49,10 +52,11 @@ namespace eShop.Distribution.MessageHandlers
                 _producer.Publish(telegramMessage);
             }
 
-            var viberRequests = distribution.Items.Where(e => e.ViberChatId.HasValue);
+            var viberFormatter = new ViberFormatter();
+            var viberRequests = distributionItems.Where(e => e.ViberChatId.HasValue);
             foreach (var viberRequest in viberRequests)
             {
-                var messageToSend = _messageBuilder.FromComposition(composition, viberRequest.DistributionSettings);
+                var messageToSend = _messageBuilder.FromComposition(composition, viberRequest.DistributionSettings, viberFormatter);
                 var viberMessage = new BroadcastCompositionToViberMessage
                 {
                     RequestId = viberRequest.Id,

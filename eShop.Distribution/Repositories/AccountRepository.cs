@@ -49,7 +49,12 @@ namespace eShop.Distribution.Repositories
                     .Include(e => e.DistributionSettings)
                         .ThenInclude(e => e.CurrencyRates)
                     .Include(e => e.DistributionSettings)
-                        .ThenInclude(e => e.PreferredCurrency);
+                        .ThenInclude(e => e.PreferredCurrency)
+                    .Include(e => e.DistributionSettings)
+                        .ThenInclude(e => e.ComissionSettings)
+                    .Include(e => e.DistributionSettings)
+                        .ThenInclude(e => e.ShopSettings)
+                            .ThenInclude(e => e.PreferredShops);
             }
 
             if (isActivated.HasValue)

@@ -19,6 +19,7 @@ namespace eShop.Catalog.Profiles
                 .ForMember(dest => dest.Compositions, options => options.Ignore());
             CreateMap<Models.Products.ProductPrice, Entities.ProductPrice>()
                 .ForMember(dest => dest.Value, options => options.MapFrom(src => src.Price))
+                .ForMember(dest => dest.DiscountedValue, options => options.MapFrom(src => src.DiscountedPrice))
                 .ForMember(dest => dest.Id, options => options.Ignore())
                 .ForMember(dest => dest.ProductId, options => options.Ignore())
                 .ForMember(dest => dest.CreatedAt, options => options.Ignore())

@@ -11,8 +11,6 @@ namespace eShop.Catalog.Entities
         public Uri Url { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public Guid OwnerId { get; set; }
-        public bool Sale { get; set; }
-        public double? Discount { get; set; }
         public string? Description { get; set; }
 
         public Category? Category { get; set; }

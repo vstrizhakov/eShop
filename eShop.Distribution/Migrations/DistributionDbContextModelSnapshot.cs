@@ -73,8 +73,8 @@ namespace eShop.Distribution.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
 
                     b.Property<Guid?>("DistributionSettingsId")
                         .HasColumnType("uniqueidentifier");
@@ -205,24 +205,6 @@ namespace eShop.Distribution.Migrations
                         });
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.CurrencyRateHistoryRecord", b =>
-                {
-                    b.Property<Guid>("DistributionSettingsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CurrencyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("Rate")
-                        .HasColumnType("float");
-
-                    b.HasKey("DistributionSettingsId", "CurrencyId");
-
-                    b.HasIndex("CurrencyId");
-
-                    b.ToTable("CurrencyRateHistoryRecord");
-                });
-
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -294,7 +276,45 @@ namespace eShop.Distribution.Migrations
                     b.ToTable("DistributionSettings");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.History.ComissionSettingsRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("DistributionSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistributionSettingsId")
+                        .IsUnique();
+
+                    b.ToTable("ComissionSettingsRecord");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.History.CurrencyRateRecord", b =>
+                {
+                    b.Property<Guid>("DistributionSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Rate")
+                        .HasColumnType("float");
+
+                    b.HasKey("DistributionSettingsId", "CurrencyId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("CurrencyRateRecord");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.History.DistributionSettingsRecord", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -303,11 +323,34 @@ namespace eShop.Distribution.Migrations
                     b.Property<Guid>("PreferredCurrencyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("ShowSales")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PreferredCurrencyId");
 
-                    b.ToTable("DistributionSettingsHistoryRecord");
+                    b.ToTable("DistributionSettingsRecord");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.History.ShopSettingsRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DistributionSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Filter")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistributionSettingsId")
+                        .IsUnique();
+
+                    b.ToTable("ShopSettingsRecord");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.Shop", b =>
@@ -320,7 +363,12 @@ namespace eShop.Distribution.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ShopSettingsRecordId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ShopSettingsRecordId");
 
                     b.ToTable("Shops");
                 });
@@ -446,28 +494,9 @@ namespace eShop.Distribution.Migrations
                     b.Navigation("TargetCurrency");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.CurrencyRateHistoryRecord", b =>
-                {
-                    b.HasOne("eShop.Distribution.Entities.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", "DistributionSettings")
-                        .WithMany("CurrencyRates")
-                        .HasForeignKey("DistributionSettingsId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Currency");
-
-                    b.Navigation("DistributionSettings");
-                });
-
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>
                 {
-                    b.HasOne("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", "DistributionSettings")
+                    b.HasOne("eShop.Distribution.Entities.History.DistributionSettingsRecord", "DistributionSettings")
                         .WithMany()
                         .HasForeignKey("DistributionSettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -505,7 +534,37 @@ namespace eShop.Distribution.Migrations
                     b.Navigation("PreferredCurrency");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.History.ComissionSettingsRecord", b =>
+                {
+                    b.HasOne("eShop.Distribution.Entities.History.DistributionSettingsRecord", "DistributionSettings")
+                        .WithOne("ComissionSettings")
+                        .HasForeignKey("eShop.Distribution.Entities.History.ComissionSettingsRecord", "DistributionSettingsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DistributionSettings");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.History.CurrencyRateRecord", b =>
+                {
+                    b.HasOne("eShop.Distribution.Entities.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("eShop.Distribution.Entities.History.DistributionSettingsRecord", "DistributionSettings")
+                        .WithMany("CurrencyRates")
+                        .HasForeignKey("DistributionSettingsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("DistributionSettings");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.History.DistributionSettingsRecord", b =>
                 {
                     b.HasOne("eShop.Distribution.Entities.Currency", "PreferredCurrency")
                         .WithMany()
@@ -514,6 +573,24 @@ namespace eShop.Distribution.Migrations
                         .IsRequired();
 
                     b.Navigation("PreferredCurrency");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.History.ShopSettingsRecord", b =>
+                {
+                    b.HasOne("eShop.Distribution.Entities.History.DistributionSettingsRecord", "DistributionSettings")
+                        .WithOne("ShopSettings")
+                        .HasForeignKey("eShop.Distribution.Entities.History.ShopSettingsRecord", "DistributionSettingsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DistributionSettings");
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.Shop", b =>
+                {
+                    b.HasOne("eShop.Distribution.Entities.History.ShopSettingsRecord", null)
+                        .WithMany("PreferredShops")
+                        .HasForeignKey("ShopSettingsRecordId");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.ShopSettings", b =>
@@ -571,9 +648,20 @@ namespace eShop.Distribution.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettingsHistoryRecord", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.History.DistributionSettingsRecord", b =>
                 {
+                    b.Navigation("ComissionSettings")
+                        .IsRequired();
+
                     b.Navigation("CurrencyRates");
+
+                    b.Navigation("ShopSettings")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("eShop.Distribution.Entities.History.ShopSettingsRecord", b =>
+                {
+                    b.Navigation("PreferredShops");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,7 +7,7 @@ using eShop.Messaging.Models.Distribution;
 using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.Messaging.Models.Viber;
 using eShop.Viber.DbContexts;
-using eShop.Viber.MessageHandlers;
+using eShop.Viber.Handlers;
 using eShop.Viber.Repositories;
 using eShop.Viber.Services;
 using eShop.Viber.ViberBotFramework;

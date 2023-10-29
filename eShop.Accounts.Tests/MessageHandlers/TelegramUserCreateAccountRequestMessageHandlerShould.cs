@@ -1,5 +1,5 @@
 using eShop.Accounts.Entities;
-using eShop.Accounts.MessageHandlers;
+using eShop.Accounts.Handlers;
 using eShop.Accounts.Services;
 using eShop.Messaging.Models.Telegram;
 

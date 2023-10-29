@@ -1,5 +1,5 @@
 using eShop.Catalog.DbContexts;
-using eShop.Catalog.MessageHandlers;
+using eShop.Catalog.Handlers;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common.Extensions;

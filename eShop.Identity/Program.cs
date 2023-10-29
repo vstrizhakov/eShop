@@ -1,7 +1,7 @@
 ﻿using eShop.Common;
 using eShop.Identity.DbContexts;
 using eShop.Identity.Entities;
-using eShop.Identity.MessageHandlers;
+using eShop.Identity.Handlers;
 using eShop.Identity.Services;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models.Identity;

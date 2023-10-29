@@ -7,7 +7,7 @@ using eShop.Messaging.Models.Distribution;
 using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.Messaging.Models.Telegram;
 using eShop.Telegram.DbContexts;
-using eShop.Telegram.MessageHandlers;
+using eShop.Telegram.Handlers;
 using eShop.Telegram.Repositories;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework;

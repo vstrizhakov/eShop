@@ -1,5 +1,5 @@
 using eShop.Distribution.DbContexts;
-using eShop.Distribution.MessageHandlers;
+using eShop.Distribution.Handlers;
 using eShop.Distribution.Repositories;
 using eShop.Distribution.Services;
 using eShop.Messaging.Extensions;

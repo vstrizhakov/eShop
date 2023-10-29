@@ -1,5 +1,5 @@
 using eShop.Accounts.DbContexts;
-using eShop.Accounts.MessageHandlers;
+using eShop.Accounts.Handlers;
 using eShop.Accounts.Repositories;
 using eShop.Accounts.Services;
 using eShop.Messaging.Extensions;

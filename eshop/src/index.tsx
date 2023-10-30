@@ -15,6 +15,8 @@ import SignIn from './features/signIn/SignIn';
 import SignOut from './features/signOut/SignOut';
 import SignUp from './features/signUp/SignUp';
 import Main from './features/main/Main';
+import Compositions from './features/main/Compositions';
+import Composition from './features/main/Composition';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -53,6 +55,10 @@ const router = createBrowserRouter([
             {
                 path: "/clients",
                 element: <Clients />,
+            },
+            {
+                path: "/announces/:announceId",
+                element: <Composition />,
             },
             {
                 path: "/",

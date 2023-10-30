@@ -1,6 +1,4 @@
-﻿using eShop.Distribution.Entities;
-
-namespace eShop.Distribution.Models
+﻿namespace eShop.Distribution.Models
 {
     public class DistributionItem
     {

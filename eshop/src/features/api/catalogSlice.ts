@@ -91,7 +91,6 @@ export const catalogSlice = apiSlice.injectEndpoints({
                 for (let index = 0; index < products.length; index++) {
                     const product = products[index];
 
-                    console.log(product);
                     fillFormData(formData, `products[${index}]`, product);
                 }
 
@@ -104,6 +103,10 @@ export const catalogSlice = apiSlice.injectEndpoints({
                 };
             },
             invalidatesTags: ["compositions"],
+        }),
+        getComposition: builder.query<Composition, string>({
+            query: compositionId => `/catalog/compositions/${compositionId}`,
+            providesTags: ["compositions"],
         }),
 
         getCategories: builder.query<Category[], unknown>({
@@ -142,6 +145,7 @@ export const catalogSlice = apiSlice.injectEndpoints({
 export const {
     useGetCompositionsQuery,
     useCreateCompositionMutation,
+    useGetCompositionQuery,
     useGetCurrenciesQuery,
     useCreateCurrencyMutation,
     useGetShopsQuery,

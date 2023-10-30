@@ -1,8 +1,10 @@
 ﻿using eShop.Distribution.Entities;
 using eShop.Distribution.Entities.History;
 using eShop.Distribution.Exceptions;
+using eShop.Distribution.Hubs;
 using eShop.Distribution.Repositories;
 using eShop.Messaging.Models;
+using Microsoft.AspNetCore.SignalR;
 
 namespace eShop.Distribution.Services
 {
@@ -11,12 +13,18 @@ namespace eShop.Distribution.Services
         private readonly IDistributionRepository _distributionRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IDistributionHubServer _distributionHubServer;
 
-        public DistributionService(IDistributionRepository distributionRepository, IAccountRepository accountRepository, IDistributionSettingsService distributionSettingsService)
+        public DistributionService(
+            IDistributionRepository distributionRepository,
+            IAccountRepository accountRepository,
+            IDistributionSettingsService distributionSettingsService,
+            IDistributionHubServer distributionHubServer)
         {
             _distributionRepository = distributionRepository;
             _accountRepository = accountRepository;
             _distributionSettingsService = distributionSettingsService;
+            _distributionHubServer = distributionHubServer;
         }
 
         public async Task<DistributionGroup> CreateDistributionAsync(Guid providerId, Composition composition)
@@ -101,6 +109,8 @@ namespace eShop.Distribution.Services
             request.Status = deliveryFailed ? DistributionGroupItemStatus.Failed : DistributionGroupItemStatus.Delivered;
 
             await _distributionRepository.UpdateDistributionGroupItemAsync(request);
+
+            await _distributionHubServer.SendRequestUpdatedAsync(request);
         }
 
         private async Task<DistributionSettingsRecord> CreateHistoryRecord(DistributionSettings distributionSettings)

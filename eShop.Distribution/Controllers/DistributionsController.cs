@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShop.Distribution.Controllers
 {
-    [Route("api/distribution")]
+    [Route("api/distributions")]
     [ApiController]
     [Authorize]
     public class DistributionsController : ControllerBase

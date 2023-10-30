@@ -37,21 +37,25 @@
         "Delete"
       ]
     },
+
     {
-      "DownstreamPathTemplate": "/catalog/{everything}",
-      "DownstreamScheme": "http",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ],
+      "UpstreamPathTemplate": "/api/distribution/notifications",
+      "DownstreamPathTemplate": "/api/distribution/notifications",
+      "DownstreamScheme": "wss",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5002
+          "Port": 5003
         }
-      ],
-      "UpstreamPathTemplate": "/catalog/{everything}",
-      "UpstreamHttpMethod": [
-        "Get"
       ]
     },
-
     {
       "DownstreamPathTemplate": "/api/distribution/{everything}",
       "DownstreamScheme": "http",
@@ -82,7 +86,7 @@
       ],
       "UpstreamPathTemplate": "/.well-known/openid-configuration",
       "UpstreamHttpMethod": [ "Get" ]
-      
+
     },
     {
       "DownstreamPathTemplate": "/.well-known/openid-configuration/{everything}",

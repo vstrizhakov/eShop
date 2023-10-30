@@ -1,5 +1,6 @@
 using eShop.Distribution.DbContexts;
 using eShop.Distribution.Handlers;
+using eShop.Distribution.Hubs;
 using eShop.Distribution.Repositories;
 using eShop.Distribution.Services;
 using eShop.Messaging.Extensions;
@@ -33,6 +34,15 @@ namespace eShop.Distribution
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
+
+            builder.Services.AddSignalR()
+                .AddNewtonsoftJsonProtocol(options =>
+                {
+                    options.PayloadSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.PayloadSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.PayloadSerializerSettings.Converters.Add(new StringEnumConverter());
+                });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -60,6 +70,7 @@ namespace eShop.Distribution
             builder.Services.AddScoped<ICurrencyService, CurrencyService>();
             builder.Services.AddScoped<IDistributionSettingsService, DistributionSettingsService>();
             builder.Services.AddScoped<IShopService, ShopService>();
+            builder.Services.AddScoped<IDistributionHubServer, DistributionHubServer>();
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
@@ -110,6 +121,7 @@ namespace eShop.Distribution
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapHub<DistributionHub>("/api/distribution/notifications");
 
             app.Run();
         }

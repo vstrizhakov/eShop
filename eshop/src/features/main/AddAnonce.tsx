@@ -6,6 +6,7 @@ import AddProduct, { AddProductForm } from "./AddProduct";
 import { Form } from "react-final-form";
 import { CreateCompositionRequest, CreateProductRequest, useCreateCompositionMutation } from "../api/catalogSlice";
 import Product from "./Product";
+import { useNavigate } from "react-router-dom";
 
 const AddAnnounce: React.FC = () => {
     const [image, setImage] = useState<File | undefined>(undefined);
@@ -43,15 +44,19 @@ const AddAnnounce: React.FC = () => {
 
     const [createComposition] = useCreateCompositionMutation();
 
+    const navigate = useNavigate();
+
     const canFinish = shopId && image && products.length > 0;
-    const onFinishClick = () => {
+    const onFinishClick = async () => {
         if (canFinish) {
             const request: CreateCompositionRequest = {
                 shopId: shopId,
                 image: image,
                 products: products,
             };
-            createComposition(request);
+
+            const composition = await createComposition(request).unwrap();
+            navigate(`/announces/${composition.id}`);
         }
     };
 

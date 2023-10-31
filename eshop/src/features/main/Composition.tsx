@@ -30,7 +30,7 @@ const Composition: React.FC = props => {
 
                 await connection.start();
 
-                connection.invoke("subscribe", composition.distributionGroupId);
+                connection.invoke("subscribe", composition.distributionId);
             }
         };
 

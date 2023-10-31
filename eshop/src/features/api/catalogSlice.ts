@@ -29,7 +29,7 @@ export interface Composition {
     name: string,
     images: string[],
     products: Product[],
-    distributionGroupId?: string,
+    distributionId?: string,
 };
 
 interface ProductPrice {

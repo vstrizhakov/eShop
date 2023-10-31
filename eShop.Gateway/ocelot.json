@@ -48,7 +48,7 @@
       ],
       "UpstreamPathTemplate": "/api/distribution/notifications",
       "DownstreamPathTemplate": "/api/distribution/notifications",
-      "DownstreamScheme": "wss",
+      "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",

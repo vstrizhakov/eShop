@@ -4,7 +4,7 @@ using eShop.Messaging.Models;
 
 namespace eShop.Distribution.Handlers
 {
-    public class BroadcastCompositionMessageHandler : IMessageHandler<BroadcastCompositionMessage>
+    public class BroadcastCompositionMessageHandler : IMessageHandler<BroadcastAnnounceMessage>
     {
         private readonly IProducer _producer;
         private readonly IDistributionService _distributionService;
@@ -20,23 +20,23 @@ namespace eShop.Distribution.Handlers
             _messageBuilder = messageBuilder;
         }
 
-        public async Task HandleMessageAsync(BroadcastCompositionMessage message)
+        public async Task HandleMessageAsync(BroadcastAnnounceMessage message)
         {
-            var composition = message.Composition;
+            var composition = message.Announce;
 
             // TODO: Handle provider is absent
             var distribution = await _distributionService.CreateDistributionAsync(message.ProviderId, composition);
 
             var distributionId = distribution.Id;
-            var update = new BroadcastCompositionUpdateEvent
+            var update = new BroadcastAnnounceUpdateEvent
             {
-                CompositionId = composition.Id,
-                DistributionGroupId = distributionId,
+                AnnounceId = composition.Id,
+                DistributionId = distributionId,
             };
 
             _producer.Publish(update);
 
-            var distributionItems = distribution.Items.Where(e => e.Status == Entities.DistributionGroupItemStatus.Pending);
+            var distributionItems = distribution.Items.Where(e => e.Status == Entities.DistributionItemStatus.Pending);
 
             var telegramFormatter = new TelegramFormatter();
             var telegramRequests = distributionItems.Where(e => e.TelegramChatId.HasValue);

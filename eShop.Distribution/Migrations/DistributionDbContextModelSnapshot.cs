@@ -205,7 +205,7 @@ namespace eShop.Distribution.Migrations
                         });
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroup", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.Distribution", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -216,16 +216,19 @@ namespace eShop.Distribution.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DistributionGroups");
+                    b.ToTable("Distribution");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.DistributionItem", b =>
                 {
-                    b.Property<Guid>("GroupId")
+                    b.Property<Guid>("DistributionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("DistributionSettingsId")
@@ -240,7 +243,9 @@ namespace eShop.Distribution.Migrations
                     b.Property<Guid?>("ViberChatId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("GroupId", "Id");
+                    b.HasKey("DistributionId", "Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("DistributionSettingsId");
 
@@ -248,7 +253,7 @@ namespace eShop.Distribution.Migrations
 
                     b.HasIndex("ViberChatId");
 
-                    b.ToTable("DistributionGroupItems");
+                    b.ToTable("DistributionItems");
                 });
 
             modelBuilder.Entity("eShop.Distribution.Entities.DistributionSettings", b =>
@@ -494,17 +499,23 @@ namespace eShop.Distribution.Migrations
                     b.Navigation("TargetCurrency");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroupItem", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.DistributionItem", b =>
                 {
-                    b.HasOne("eShop.Distribution.Entities.History.DistributionSettingsRecord", "DistributionSettings")
+                    b.HasOne("eShop.Distribution.Entities.Account", "Account")
                         .WithMany()
-                        .HasForeignKey("DistributionSettingsId")
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("eShop.Distribution.Entities.DistributionGroup", "Group")
+                    b.HasOne("eShop.Distribution.Entities.Distribution", "Distribution")
                         .WithMany("Items")
-                        .HasForeignKey("GroupId")
+                        .HasForeignKey("DistributionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eShop.Distribution.Entities.History.DistributionSettingsRecord", "DistributionSettings")
+                        .WithMany()
+                        .HasForeignKey("DistributionSettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -516,9 +527,11 @@ namespace eShop.Distribution.Migrations
                         .WithMany()
                         .HasForeignKey("ViberChatId");
 
-                    b.Navigation("DistributionSettings");
+                    b.Navigation("Account");
 
-                    b.Navigation("Group");
+                    b.Navigation("Distribution");
+
+                    b.Navigation("DistributionSettings");
 
                     b.Navigation("TelegramChat");
 
@@ -632,7 +645,7 @@ namespace eShop.Distribution.Migrations
                     b.Navigation("ViberChat");
                 });
 
-            modelBuilder.Entity("eShop.Distribution.Entities.DistributionGroup", b =>
+            modelBuilder.Entity("eShop.Distribution.Entities.Distribution", b =>
                 {
                     b.Navigation("Items");
                 });

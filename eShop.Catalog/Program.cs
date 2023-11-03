@@ -1,5 +1,6 @@
 using eShop.Catalog.DbContexts;
 using eShop.Catalog.Handlers;
+using eShop.Catalog.Hubs;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common.Extensions;
@@ -9,8 +10,6 @@ using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -54,33 +53,54 @@ namespace eShop.Catalog
             builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<ICompositionRepository, CompositionRepository>();
+            builder.Services.AddScoped<IAnnounceRepository, AnnounceRepository>();
             builder.Services.AddScoped<IShopRepository, ShopRepository>();
 
             builder.Services.AddSingleton<IFileManager, AzureBlobManager>();
             //builder.Services.AddScoped<IFileManager, FileManager>();
-            builder.Services.AddScoped<ICompositionService, CompositionService>();
+            builder.Services.AddScoped<IAnnouncesService, AnnounceService>();
             builder.Services.AddScoped<IShopService, ShopService>();
             builder.Services.AddScoped<ISyncService, SyncService>();
+            builder.Services.AddScoped<IAnnouncesHubServer, AnnounceHubServer>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
                     options.Authority = builder.Configuration["PublicUri:Identity"];
                     options.Audience = "api";
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/api/catalog/ws")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             builder.Services.Configure<FilesConfiguration>(options => builder.Configuration.Bind("Files", options));
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<BroadcastCompositionUpdateEvent, BroadcastCompositionUpdateEventHandler>();
+            builder.Services.AddMessageHandler<BroadcastAnnounceUpdateEvent, BroadcastAnnounceUpdateEventHandler>();
             builder.Services.AddRequestHandler<GetCurrenciesRequest, GetCurrenciesResponse, GetCurrenciesRequestHandler>();
 
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 
             builder.Services.AddHostedService<SyncBackgroundService>();
+
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
@@ -109,6 +129,7 @@ namespace eShop.Catalog
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapHub<AnnouncesHub>("/api/catalog/ws");
 
             app.Run();
         }

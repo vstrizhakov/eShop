@@ -5,7 +5,8 @@ namespace eShop.Distribution.Services
 {
     public interface IDistributionService
     {
-        Task<DistributionGroup> CreateDistributionAsync(Guid providerId, Composition composition);
+        Task<Entities.Distribution> CreateDistributionAsync(Guid providerId, Announce composition);
+        Task<Entities.Distribution?> GetDistributionAsync(Guid distributionId);
         Task UpdateDistributionRequestStatusAsync(Guid distributionRequestId, bool deliveryFailed);
     }
 }

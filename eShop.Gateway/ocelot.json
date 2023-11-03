@@ -20,6 +20,24 @@
     },
 
     {
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ],
+      "UpstreamPathTemplate": "/api/catalog/ws",
+      "DownstreamPathTemplate": "/api/catalog/ws",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ]
+    },
+    {
       "DownstreamPathTemplate": "/api/catalog/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -46,8 +64,8 @@
         "Delete",
         "Options"
       ],
-      "UpstreamPathTemplate": "/api/distribution/notifications",
-      "DownstreamPathTemplate": "/api/distribution/notifications",
+      "UpstreamPathTemplate": "/api/distribution/ws",
+      "DownstreamPathTemplate": "/api/distribution/ws",
       "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {

@@ -8,15 +8,14 @@ import store from "./app/store";
 import AuthProvider from './features/auth/AuthProvider';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import AddAnnounce from './features/main/AddAnonce';
+import AddAnnounce from './features/announces/add/AddAnonce';
 import Clients from './features/main/Clients';
 import Invitation from './features/main/Invitation';
 import SignIn from './features/signIn/SignIn';
 import SignOut from './features/signOut/SignOut';
 import SignUp from './features/signUp/SignUp';
 import Main from './features/main/Main';
-import Compositions from './features/main/Compositions';
-import Composition from './features/main/Composition';
+import AnnounceContainer from './features/announces/view/AnnounceContainer';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -58,7 +57,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/announces/:announceId",
-                element: <Composition />,
+                element: <AnnounceContainer />,
             },
             {
                 path: "/",

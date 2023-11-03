@@ -15,23 +15,28 @@ interface Client {
     viberChat: Chat,
 };
 
-enum DeliveryStatus {
+export enum DeliveryStatus {
     Pending = "pending",
     Delivered = "delivered",
     Failed = "failed",
 };
 
-interface DistributionItem {
+export interface DistributionItem {
     id: string,
     deliveryStatus: DeliveryStatus,
     viberChatId?: string,
     telegramChatId?: string,
 };
 
-interface Distribution {
-    id: string,
+interface DistributionRecipient {
+    client: Client,
     items: DistributionItem[],
 }
+
+export interface Distribution {
+    id: string,
+    recipients: DistributionRecipient[],
+};
 
 const distributionSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
@@ -55,7 +60,7 @@ const distributionSlice = apiSlice.injectEndpoints({
         }),
         
         getDistribution: builder.query<Distribution, string>({
-            query: distributionId => `/distribution/${distributionId}`,
+            query: distributionId => `/distribution/distributions/${distributionId}`,
         }),
     }),
 });

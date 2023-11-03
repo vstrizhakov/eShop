@@ -16,13 +16,13 @@ namespace eShop.Catalog.Tests.Services
 
             var ownerId = Guid.NewGuid();
 
-            var compositions = Array.Empty<Composition>();
+            var compositions = Array.Empty<Announce>();
 
             var fileManager = new Mock<IFileManager>();
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
             compositionRepository
-                .Setup(e => e.GetCompositionsAsync(ownerId))
+                .Setup(e => e.GetAnnouncesAsync(ownerId))
                 .ReturnsAsync(compositions);
 
             var publicUriBuilder = new Mock<IPublicUriBuilder>();
@@ -50,14 +50,14 @@ namespace eShop.Catalog.Tests.Services
         {
             // Arrange
 
-            var composition = new Composition();
+            var composition = new Announce();
             var compositionId = composition.Id;
 
             var fileManager = new Mock<IFileManager>();
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
             compositionRepository
-                .Setup(e => e.GetCompositionByIdAsync(compositionId))
+                .Setup(e => e.GetAnnounceByIdAsync(compositionId))
                 .ReturnsAsync(composition);
 
             var publicUriBuilder = new Mock<IPublicUriBuilder>();
@@ -84,9 +84,9 @@ namespace eShop.Catalog.Tests.Services
         public async Task CreateComposition()
         {
             // Arrange
-            Messaging.Models.BroadcastCompositionMessage? result = null;
+            Messaging.Models.BroadcastAnnounceMessage? result = null;
 
-            var composition = new Composition
+            var composition = new Announce
             {
                 OwnerId = Guid.NewGuid(),
             };
@@ -111,9 +111,9 @@ namespace eShop.Catalog.Tests.Services
                 .Setup(e => e.SaveAsync(directory, extension, stream))
                 .ReturnsAsync(imagePath);
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
             compositionRepository
-                .Setup(e => e.CreateCompositionAsync(composition))
+                .Setup(e => e.CreateAnnounceAsync(composition))
                 .Returns(Task.CompletedTask);
 
             var publicUriBuilder = new Mock<IPublicUriBuilder>();
@@ -123,8 +123,8 @@ namespace eShop.Catalog.Tests.Services
 
             var producer = new Mock<IProducer>();
             producer
-                .Setup(e => e.Publish(It.IsAny<Messaging.Models.BroadcastCompositionMessage>()))
-                .Callback<Messaging.Models.BroadcastCompositionMessage>(message => result = message);
+                .Setup(e => e.Publish(It.IsAny<Messaging.Models.BroadcastAnnounceMessage>()))
+                .Callback<Messaging.Models.BroadcastAnnounceMessage>(message => result = message);
 
             var service = new CompositionService(fileManager.Object, compositionRepository.Object, publicUriBuilder.Object, producer.Object);
 
@@ -143,7 +143,7 @@ namespace eShop.Catalog.Tests.Services
             Assert.NotEmpty(composition.Images);
             Assert.NotNull(result);
             Assert.Equal(composition.OwnerId, result.ProviderId);
-            Assert.NotNull(result.Composition);
+            Assert.NotNull(result.Announce);
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace eShop.Catalog.Tests.Services
 
             var fileManager = new Mock<IFileManager>();
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
 
             var publicUriBuilder = new Mock<IPublicUriBuilder>();
 
@@ -178,7 +178,7 @@ namespace eShop.Catalog.Tests.Services
 
             var fileManager = new Mock<IFileManager>();
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
 
             var publicUriBuilder = new Mock<IPublicUriBuilder>();
 
@@ -190,7 +190,7 @@ namespace eShop.Catalog.Tests.Services
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await service.CreateCompositionAsync(new Composition(), null);
+                await service.CreateCompositionAsync(new Announce(), null);
             });
         }
 
@@ -199,14 +199,14 @@ namespace eShop.Catalog.Tests.Services
         {
             // Arrange
 
-            var composition = new Composition
+            var composition = new Announce
             {
                 Images =
                 {
-                    new CompositionImage
+                    new AnnounceImage
                     {
                     },
-                    new CompositionImage
+                    new AnnounceImage
                     {
                     },
                 },
@@ -217,9 +217,9 @@ namespace eShop.Catalog.Tests.Services
                 .Setup(e => e.DeleteAsync(It.IsAny<string>()))
                 .Returns(Task.CompletedTask);
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
             compositionRepository
-                .Setup(e => e.DeleteCompositionAsync(composition))
+                .Setup(e => e.DeleteAnnounceAsync(composition))
                 .Returns(Task.CompletedTask);
 
             var publicUriBuilder = new Mock<IPublicUriBuilder>();
@@ -249,7 +249,7 @@ namespace eShop.Catalog.Tests.Services
 
             var fileManager = new Mock<IFileManager>();
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
 
             var publicUriBuilder = new Mock<IPublicUriBuilder>();
 

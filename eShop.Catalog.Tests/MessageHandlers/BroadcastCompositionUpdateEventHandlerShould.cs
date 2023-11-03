@@ -11,21 +11,21 @@ namespace eShop.Catalog.Tests.MessageHandlers
         {
             // Arrange
 
-            var composition = new Entities.Composition();
+            var composition = new Entities.Announce();
 
-            var message = new BroadcastCompositionUpdateEvent
+            var message = new BroadcastAnnounceUpdateEvent
             {
-                CompositionId = composition.Id,
-                DistributionGroupId = Guid.NewGuid(),
+                AnnounceId = composition.Id,
+                DistributionId = Guid.NewGuid(),
             };
 
-            var compositionRepository = new Mock<ICompositionRepository>();
+            var compositionRepository = new Mock<IAnnounceRepository>();
             compositionRepository
-                .Setup(e => e.GetCompositionByIdAsync(composition.Id))
+                .Setup(e => e.GetAnnounceByIdAsync(composition.Id))
                 .ReturnsAsync(composition);
 
             compositionRepository
-                .Setup(e => e.UpdateCompositionAsync(It.IsAny<Entities.Composition>()))
+                .Setup(e => e.UpdateAnnounceAsync(It.IsAny<Entities.Announce>()))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -39,7 +39,7 @@ namespace eShop.Catalog.Tests.MessageHandlers
 
             compositionRepository.VerifyAll();
 
-            Assert.Equal(message.DistributionGroupId, composition.DistributionGroupId);
+            Assert.Equal(message.DistributionId, composition.DistributionId);
         }
     }
 }

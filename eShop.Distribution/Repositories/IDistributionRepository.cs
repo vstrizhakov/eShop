@@ -4,9 +4,9 @@ namespace eShop.Distribution.Repositories
 {
     public interface IDistributionRepository
     {
-        Task CreateDistributionGroupAsync(DistributionGroup distributionGroup);
-        Task<DistributionGroup?> GetDistributionGroupByIdAsync(Guid id);
-        Task<DistributionGroupItem?> GetDistributionRequestAsync(Guid distributionRequestId);
-        Task UpdateDistributionGroupItemAsync(DistributionGroupItem distributionItem);
+        Task CreateDistributionAsync(Entities.Distribution distribution);
+        Task<Entities.Distribution?> GetDistributionByIdAsync(Guid id);
+        Task<DistributionItem?> GetDistributionRequestAsync(Guid distributionRequestId);
+        Task UpdateDistributionItemAsync(DistributionItem item);
     }
 }

@@ -22,19 +22,66 @@ namespace eShop.Catalog.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CompositionProduct", b =>
+            modelBuilder.Entity("AnnounceProduct", b =>
                 {
-                    b.Property<Guid>("CompositionsId")
+                    b.Property<Guid>("AnnouncesId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ProductsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("CompositionsId", "ProductsId");
+                    b.HasKey("AnnouncesId", "ProductsId");
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("CompositionProduct");
+                    b.ToTable("AnnounceProduct");
+                });
+
+            modelBuilder.Entity("eShop.Catalog.Entities.Announce", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DistributionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ShopId");
+
+                    b.ToTable("Announces");
+                });
+
+            modelBuilder.Entity("eShop.Catalog.Entities.AnnounceImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnnounceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnnounceId");
+
+                    b.ToTable("AnnounceImages");
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Category", b =>
@@ -65,53 +112,6 @@ namespace eShop.Catalog.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("eShop.Catalog.Entities.Composition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("DistributionGroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("Compositions");
-                });
-
-            modelBuilder.Entity("eShop.Catalog.Entities.CompositionImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CompositionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompositionId");
-
-                    b.ToTable("CompositionImages");
-                });
-
             modelBuilder.Entity("eShop.Catalog.Entities.Currency", b =>
                 {
                     b.Property<Guid>("Id")
@@ -133,19 +133,19 @@ namespace eShop.Catalog.Migrations
                         new
                         {
                             Id = new Guid("9724739e-e4b8-45eb-ac11-efe2b0558a34"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 29, 8, 10, 44, 422, DateTimeKind.Unspecified).AddTicks(2140), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "UAH"
                         },
                         new
                         {
                             Id = new Guid("bf879fb6-7b4b-41c7-9cc5-df8724d511e5"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 29, 8, 10, 44, 422, DateTimeKind.Unspecified).AddTicks(2143), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "USD"
                         },
                         new
                         {
                             Id = new Guid("41ed0945-7196-4ead-8f5e-db262e62e536"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 29, 8, 10, 44, 422, DateTimeKind.Unspecified).AddTicks(2145), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "EUR"
                         });
                 });
@@ -259,28 +259,28 @@ namespace eShop.Catalog.Migrations
                         new
                         {
                             Id = new Guid("7ebdc9b0-4846-415f-af63-29d74e4b7b36"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 29, 8, 10, 44, 422, DateTimeKind.Unspecified).AddTicks(1964), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Nike"
                         },
                         new
                         {
                             Id = new Guid("17a27ec2-eb71-4de8-be81-734aeffd28f9"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 29, 8, 10, 44, 422, DateTimeKind.Unspecified).AddTicks(1981), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Puma"
                         },
                         new
                         {
                             Id = new Guid("9afc47e2-3866-42f8-96db-1042800aafa7"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2023, 10, 29, 8, 10, 44, 422, DateTimeKind.Unspecified).AddTicks(1996), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Adidas"
                         });
                 });
 
-            modelBuilder.Entity("CompositionProduct", b =>
+            modelBuilder.Entity("AnnounceProduct", b =>
                 {
-                    b.HasOne("eShop.Catalog.Entities.Composition", null)
+                    b.HasOne("eShop.Catalog.Entities.Announce", null)
                         .WithMany()
-                        .HasForeignKey("CompositionsId")
+                        .HasForeignKey("AnnouncesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -291,17 +291,7 @@ namespace eShop.Catalog.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("eShop.Catalog.Entities.Category", b =>
-                {
-                    b.HasOne("eShop.Catalog.Entities.Category", "ParentCategory")
-                        .WithMany("SubCategories")
-                        .HasForeignKey("ParentCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentCategory");
-                });
-
-            modelBuilder.Entity("eShop.Catalog.Entities.Composition", b =>
+            modelBuilder.Entity("eShop.Catalog.Entities.Announce", b =>
                 {
                     b.HasOne("eShop.Catalog.Entities.Shop", "Shop")
                         .WithMany()
@@ -312,15 +302,25 @@ namespace eShop.Catalog.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("eShop.Catalog.Entities.CompositionImage", b =>
+            modelBuilder.Entity("eShop.Catalog.Entities.AnnounceImage", b =>
                 {
-                    b.HasOne("eShop.Catalog.Entities.Composition", "Composition")
+                    b.HasOne("eShop.Catalog.Entities.Announce", "Announce")
                         .WithMany("Images")
-                        .HasForeignKey("CompositionId")
+                        .HasForeignKey("AnnounceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Composition");
+                    b.Navigation("Announce");
+                });
+
+            modelBuilder.Entity("eShop.Catalog.Entities.Category", b =>
+                {
+                    b.HasOne("eShop.Catalog.Entities.Category", "ParentCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Product", b =>
@@ -362,16 +362,16 @@ namespace eShop.Catalog.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("eShop.Catalog.Entities.Announce", b =>
+                {
+                    b.Navigation("Images");
+                });
+
             modelBuilder.Entity("eShop.Catalog.Entities.Category", b =>
                 {
                     b.Navigation("Products");
 
                     b.Navigation("SubCategories");
-                });
-
-            modelBuilder.Entity("eShop.Catalog.Entities.Composition", b =>
-                {
-                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("eShop.Catalog.Entities.Product", b =>

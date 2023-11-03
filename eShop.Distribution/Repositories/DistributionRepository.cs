@@ -13,29 +13,30 @@ namespace eShop.Distribution.Repositories
             _context = context;
         }
 
-        public async Task CreateDistributionGroupAsync(DistributionGroup distributionGroup)
+        public async Task CreateDistributionAsync(Entities.Distribution distribution)
         {
-            _context.DistributionGroups.Add(distributionGroup);
+            _context.Distribution.Add(distribution);
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task<DistributionGroup?> GetDistributionGroupByIdAsync(Guid id)
+        public async Task<Entities.Distribution?> GetDistributionByIdAsync(Guid id)
         {
-            var distributionGroup = await _context.DistributionGroups
+            var distribution = await _context.Distribution
                 .Include(e => e.Items)
+                    .ThenInclude(e => e.Account)
                 .FirstOrDefaultAsync(e => e.Id == id);
-            return distributionGroup;
+            return distribution;
         }
 
-        public async Task<DistributionGroupItem?> GetDistributionRequestAsync(Guid distributionRequestId)
+        public async Task<DistributionItem?> GetDistributionRequestAsync(Guid distributionRequestId)
         {
-            var distributionRequest = await _context.DistributionGroupItems
+            var distributionRequest = await _context.DistributionItems
                 .FirstOrDefaultAsync(e => e.Id == distributionRequestId);
             return distributionRequest;
         }
 
-        public async Task UpdateDistributionGroupItemAsync(DistributionGroupItem distributionItem)
+        public async Task UpdateDistributionItemAsync(DistributionItem item)
         {
             await _context.SaveChangesAsync();
         }

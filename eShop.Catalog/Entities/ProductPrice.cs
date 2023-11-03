@@ -2,7 +2,7 @@
 {
     public class ProductPrice
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public Guid ProductId { get; set; }
         public Guid CurrencyId { get; set; }
         public double Value { get; set; }

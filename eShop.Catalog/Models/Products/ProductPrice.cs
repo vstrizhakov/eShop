@@ -1,8 +1,10 @@
-﻿namespace eShop.Catalog.Models.Products
+﻿using eShop.Catalog.Models.Currencies;
+
+namespace eShop.Catalog.Models.Products
 {
     public class ProductPrice
     {
-        public Guid? CurrencyId { get; set; }
+        public Currency Currency { get; set; }
         public double Price { get; set; }
         public double? DiscountedPrice { get; set; }
     }

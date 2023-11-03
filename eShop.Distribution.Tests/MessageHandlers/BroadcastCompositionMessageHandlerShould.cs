@@ -13,24 +13,24 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var composition = new Composition
+            var composition = new Announce
             {
                 Id = Guid.NewGuid(),
             };
-            var message = new BroadcastCompositionMessage
+            var message = new BroadcastAnnounceMessage
             {
                 ProviderId = Guid.NewGuid(),
-                Composition = composition,
+                Announce = composition,
             };
 
-            BroadcastCompositionUpdateEvent? updateEvent = null;
+            BroadcastAnnounceUpdateEvent? updateEvent = null;
             BroadcastCompositionToTelegramMessage? broadcastToTelegramMessage = null;
             BroadcastCompositionToViberMessage? broadcastToViberMessage = null;
 
             var producer = new Mock<IProducer>();
             producer
-                .Setup(e => e.Publish(It.IsAny<BroadcastCompositionUpdateEvent>()))
-                .Callback<BroadcastCompositionUpdateEvent>(e => updateEvent = e);
+                .Setup(e => e.Publish(It.IsAny<BroadcastAnnounceUpdateEvent>()))
+                .Callback<BroadcastAnnounceUpdateEvent>(e => updateEvent = e);
             producer
                 .Setup(e => e.Publish(It.IsAny<BroadcastCompositionToTelegramMessage>()))
                 .Callback<BroadcastCompositionToTelegramMessage>(e => broadcastToTelegramMessage = e);
@@ -38,20 +38,20 @@ namespace eShop.Distribution.Tests.MessageHandlers
                 .Setup(e => e.Publish(It.IsAny<BroadcastCompositionToViberMessage>()))
                 .Callback<BroadcastCompositionToViberMessage>(e => broadcastToViberMessage = e);
 
-            var telegramRequest = new DistributionGroupItem
+            var telegramRequest = new DistributionItem
             {
                 TelegramChatId = Guid.NewGuid(),
                 DistributionSettings = new DistributionSettings(),
             };
-            var viberRequest = new DistributionGroupItem
+            var viberRequest = new DistributionItem
             {
                 ViberChatId = Guid.NewGuid(),
                 DistributionSettings = new DistributionSettings(),
             };
             var distributionSettings = new DistributionSettings();
-            var distribution = new DistributionGroup()
+            var distribution = new Entities.Distribution()
             {
-                Items = new List<DistributionGroupItem>
+                Items = new List<DistributionItem>
                 {
                     telegramRequest,
                     viberRequest,
@@ -84,8 +84,8 @@ namespace eShop.Distribution.Tests.MessageHandlers
             messageBuilder.VerifyAll();
 
             Assert.NotNull(updateEvent);
-            Assert.Equal(composition.Id, updateEvent.CompositionId);
-            Assert.Equal(distribution.Id, updateEvent.DistributionGroupId);
+            Assert.Equal(composition.Id, updateEvent.AnnounceId);
+            Assert.Equal(distribution.Id, updateEvent.DistributionId);
 
             Assert.NotNull(broadcastToTelegramMessage);
             Assert.Equal(messageFromComposition, broadcastToTelegramMessage.Message);

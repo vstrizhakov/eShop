@@ -5,7 +5,7 @@
         public string Name { get; set; }
         public Guid? CategoryId { get; set; }
         public string Url { get; set; }
-        public ProductPrice Price { get; set; }
+        public CreateProductPrice Price { get; set; }
         public IEnumerable<IFormFile>? Images { get; set; }
         public string? Description { get; set; }
     }

@@ -5,7 +5,7 @@ namespace eShop.Catalog.Entities
     [Index(nameof(OwnerId))]
     public class Category
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid? ParentCategoryId { get; set; }
         public Guid OwnerId { get; set; }

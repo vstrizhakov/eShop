@@ -6,7 +6,7 @@ namespace eShop.Distribution.Services
 {
     public class MessageBuilder : IMessageBuilder
     {
-        public Message FromComposition(Composition composition, DistributionSettingsRecord distributionSettings, ITextFormatter formatter)
+        public Message FromComposition(Announce composition, DistributionSettingsRecord distributionSettings, ITextFormatter formatter)
         {
             var image = composition.Images.FirstOrDefault();
 

@@ -5,6 +5,6 @@ namespace eShop.Distribution.Services
 {
     public interface IMessageBuilder
     {
-        Message FromComposition(Composition composition, DistributionSettingsRecord distributionSettings, ITextFormatter formatter);
+        Message FromComposition(Announce composition, DistributionSettingsRecord distributionSettings, ITextFormatter formatter);
     }
 }

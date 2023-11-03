@@ -59,12 +59,12 @@ namespace eShop.Distribution.Tests.Services
                 .Setup(e => e.GetAccountsByProviderIdAsync(providerId, true, true))
                 .ReturnsAsync(accounts);
 
-            DistributionGroup? result = null;
+            Entities.Distribution? result = null;
 
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
-                .Setup(e => e.CreateDistributionGroupAsync(It.IsAny<DistributionGroup>()))
-                .Callback<DistributionGroup>(distribution => result = distribution);
+                .Setup(e => e.CreateDistributionGroupAsync(It.IsAny<Distribution>()))
+                .Callback<Distribution>(distribution => result = distribution);
 
             var sut = new DistributionService(distributionRepository.Object, accountRepository.Object);
 
@@ -81,7 +81,7 @@ namespace eShop.Distribution.Tests.Services
             Assert.DoesNotContain(result.Items, item => item.ViberChatId == accounts[1].ViberChat.Id);
             Assert.DoesNotContain(result.Items, item => item.TelegramChatId == accounts[1].TelegramChats.ElementAt(0).Id);
             Assert.DoesNotContain(result.Items, item => !item.ViberChatId.HasValue && !item.TelegramChatId.HasValue);
-            Assert.All(result.Items, item => Assert.Equal(DistributionGroupItemStatus.Pending, item.Status));
+            Assert.All(result.Items, item => Assert.Equal(DistributionItemStatus.Pending, item.Status));
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace eShop.Distribution.Tests.Services
         {
             // Arrange
 
-            var distributionRequest = new DistributionGroupItem();
+            var distributionRequest = new DistributionItem();
             var distributionRequestId = distributionRequest.Id;
 
             var distributionRepository = new Mock<IDistributionRepository>();
@@ -97,7 +97,7 @@ namespace eShop.Distribution.Tests.Services
                 .Setup(e => e.GetDistributionRequestAsync(distributionRequestId))
                 .ReturnsAsync(distributionRequest);
             distributionRepository
-                .Setup(e => e.UpdateDistributionGroupItemAsync(distributionRequest))
+                .Setup(e => e.UpdateDistributionItemAsync(distributionRequest))
                 .Returns(Task.CompletedTask);
 
             var accountRepository = new Mock<IAccountRepository>();
@@ -113,7 +113,7 @@ namespace eShop.Distribution.Tests.Services
             distributionRepository.VerifyAll();
             accountRepository.VerifyAll();
 
-            Assert.Equal(DistributionGroupItemStatus.Delivered, distributionRequest.Status);
+            Assert.Equal(DistributionItemStatus.Delivered, distributionRequest.Status);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace eShop.Distribution.Tests.Services
         {
             // Arrange
 
-            var distributionRequest = new DistributionGroupItem();
+            var distributionRequest = new DistributionItem();
             var distributionRequestId = distributionRequest.Id;
 
             var distributionRepository = new Mock<IDistributionRepository>();
@@ -129,7 +129,7 @@ namespace eShop.Distribution.Tests.Services
                 .Setup(e => e.GetDistributionRequestAsync(distributionRequestId))
                 .ReturnsAsync(distributionRequest);
             distributionRepository
-                .Setup(e => e.UpdateDistributionGroupItemAsync(distributionRequest))
+                .Setup(e => e.UpdateDistributionItemAsync(distributionRequest))
                 .Returns(Task.CompletedTask);
 
             var accountRepository = new Mock<IAccountRepository>();
@@ -145,7 +145,7 @@ namespace eShop.Distribution.Tests.Services
             distributionRepository.VerifyAll();
             accountRepository.VerifyAll();
 
-            Assert.Equal(DistributionGroupItemStatus.Failed, distributionRequest.Status);
+            Assert.Equal(DistributionItemStatus.Failed, distributionRequest.Status);
         }
 
         [Fact]
@@ -153,9 +153,9 @@ namespace eShop.Distribution.Tests.Services
         {
             // Arrange
 
-            var distributionRequest = new DistributionGroupItem
+            var distributionRequest = new DistributionItem
             {
-                Status = DistributionGroupItemStatus.Delivered,
+                Status = DistributionItemStatus.Delivered,
             };
             var distributionRequestId = distributionRequest.Id;
 
@@ -164,7 +164,7 @@ namespace eShop.Distribution.Tests.Services
                 .Setup(e => e.GetDistributionRequestAsync(distributionRequestId))
                 .ReturnsAsync(distributionRequest);
             distributionRepository
-                .Setup(e => e.UpdateDistributionGroupItemAsync(distributionRequest))
+                .Setup(e => e.UpdateDistributionItemAsync(distributionRequest))
                 .Returns(Task.CompletedTask);
 
             var accountRepository = new Mock<IAccountRepository>();
@@ -189,7 +189,7 @@ namespace eShop.Distribution.Tests.Services
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
                 .Setup(e => e.GetDistributionRequestAsync(distributionRequestId))
-                .ReturnsAsync(default(DistributionGroupItem));
+                .ReturnsAsync(default(DistributionItem));
 
             var accountRepository = new Mock<IAccountRepository>();
 

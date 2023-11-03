@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using eShop.Catalog.Entities;
-using eShop.Catalog.Models.Products;
 
 namespace eShop.Catalog.Profiles
 {
@@ -8,16 +7,16 @@ namespace eShop.Catalog.Profiles
     {
         public ProductProfile()
         {
-            CreateMap<CreateProductRequest, Product>()
+            CreateMap<Models.Products.CreateProductRequest, Product>()
                 .ForMember(dest => dest.Prices, options =>
-                    options.MapFrom(src => new List<Models.Products.ProductPrice>() { src.Price }))
+                    options.MapFrom(src => new List<Models.Products.CreateProductPrice>() { src.Price }))
                 .ForMember(dest => dest.Images, options => options.Ignore())
                 .ForMember(dest => dest.Id, options => options.Ignore())
                 .ForMember(dest => dest.OwnerId, options => options.Ignore())
                 .ForMember(dest => dest.CreatedAt, options => options.Ignore())
                 .ForMember(dest => dest.Category, options => options.Ignore())
-                .ForMember(dest => dest.Compositions, options => options.Ignore());
-            CreateMap<Models.Products.ProductPrice, Entities.ProductPrice>()
+                .ForMember(dest => dest.Announces, options => options.Ignore());
+            CreateMap<Models.Products.CreateProductPrice, Entities.ProductPrice>()
                 .ForMember(dest => dest.Value, options => options.MapFrom(src => src.Price))
                 .ForMember(dest => dest.DiscountedValue, options => options.MapFrom(src => src.DiscountedPrice))
                 .ForMember(dest => dest.Id, options => options.Ignore())
@@ -25,6 +24,11 @@ namespace eShop.Catalog.Profiles
                 .ForMember(dest => dest.CreatedAt, options => options.Ignore())
                 .ForMember(dest => dest.Currency, options => options.Ignore())
                 .ForMember(dest => dest.Product, options => options.Ignore());
+            CreateMap<Product, Models.Products.Product>()
+                .ForMember(dest => dest.Price, options => options.MapFrom(src => src.Prices.FirstOrDefault()));
+            CreateMap<ProductPrice, Models.Products.ProductPrice>()
+                .ForMember(dest => dest.Price, options => options.MapFrom(src => src.Value))
+                .ForMember(dest => dest.DiscountedPrice, options => options.MapFrom(src => src.DiscountedValue));
         }
     }
 }

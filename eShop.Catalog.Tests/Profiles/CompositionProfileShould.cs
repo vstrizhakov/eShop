@@ -14,7 +14,7 @@ namespace eShop.Catalog.Tests.Profiles
 
             var sut = new MapperConfiguration(config =>
             {
-                config.AddProfile<CompositionProfile>();
+                config.AddProfile<AnnounceProfile>();
 
                 config.CreateMap<CreateProductRequest, Product>()
                     .ForAllMembers(options => options.Ignore());

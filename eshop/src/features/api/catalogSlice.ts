@@ -18,21 +18,31 @@ export interface CreateCurrencyRequest {
     name: string,
 };
 
+interface ProductPrice {
+    currency: Currency,
+    price: number,
+    discountedPrice?: number,
+};
+
 interface Product {
     id: string,
     name: string,
     url: string,
+    description?: string,
+    createdAt: string,
+    price: ProductPrice,
 };
 
-export interface Composition {
+export interface Announce {
     id: string,
-    name: string,
-    images: string[],
-    products: Product[],
     distributionId?: string,
+    shop: Shop,
+    products: Product[],
+    images: string[],
+    createdAt: string,
 };
 
-interface ProductPrice {
+interface CreateProductPrice {
     currencyId: string,
     price: number,
     discountedPrice?: number,
@@ -41,11 +51,11 @@ interface ProductPrice {
 export interface CreateProductRequest {
     name: string,
     url: string,
-    price: ProductPrice,
+    price: CreateProductPrice,
     description: string,
 };
 
-export interface CreateCompositionRequest {
+export interface CreateAnnounceRequest {
     shopId: string,
     image: File,
     products: CreateProductRequest[],
@@ -78,11 +88,11 @@ const fillFormData = <T extends object>(formData: FormData, prefix: string, item
 
 export const catalogSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
-        getCompositions: builder.query<Composition[], unknown>({
-            query: () => "/catalog/compositions",
-            providesTags: ["compositions"],
+        getAnnounces: builder.query<Announce[], unknown>({
+            query: () => "/catalog/announces",
+            providesTags: ["announces"],
         }),
-        createComposition: builder.mutation<Composition, CreateCompositionRequest>({
+        createAnnounce: builder.mutation<Announce, CreateAnnounceRequest>({
             query: request => {
                 const formData = new FormData();
                 formData.append("image", request.image);
@@ -97,16 +107,16 @@ export const catalogSlice = apiSlice.injectEndpoints({
                 formData.append("shopId", request.shopId);
 
                 return {
-                    url: "/catalog/compositions",
+                    url: "/catalog/announces",
                     method: "POST",
                     body: formData,
                 };
             },
-            invalidatesTags: ["compositions"],
+            invalidatesTags: ["announces"],
         }),
-        getComposition: builder.query<Composition, string>({
-            query: compositionId => `/catalog/compositions/${compositionId}`,
-            providesTags: ["compositions"],
+        getAnnounce: builder.query<Announce, string>({
+            query: announceId => `/catalog/announces/${announceId}`,
+            providesTags: ["announces"],
         }),
 
         getCategories: builder.query<Category[], unknown>({
@@ -143,9 +153,9 @@ export const catalogSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-    useGetCompositionsQuery,
-    useCreateCompositionMutation,
-    useGetCompositionQuery,
+    useGetAnnouncesQuery,
+    useCreateAnnounceMutation,
+    useGetAnnounceQuery,
     useGetCurrenciesQuery,
     useCreateCurrencyMutation,
     useGetShopsQuery,

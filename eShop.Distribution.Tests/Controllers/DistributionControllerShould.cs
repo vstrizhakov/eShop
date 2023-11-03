@@ -36,7 +36,7 @@ namespace eShop.Distribution.Tests.Controllers
         {
             // Arrange
 
-            var distribution = new DistributionGroup
+            var distribution = new Entities.Distribution
             {
                 ProviderId = _accountId,
             };
@@ -44,14 +44,14 @@ namespace eShop.Distribution.Tests.Controllers
 
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
-                .Setup(e => e.GetDistributionGroupByIdAsync(distributionId))
+                .Setup(e => e.GetDistributionByIdAsync(distributionId))
                 .ReturnsAsync(distribution);
 
             var expectedResult = new Models.Distribution();
 
             var mapper = new Mock<IMapper>();
             mapper
-                .Setup(e => e.Map<Models.Distribution>(distribution))
+                .Setup(e => e.Map<Models.Distributions.Distribution>(distribution))
                 .Returns(expectedResult);
 
             var controller = new DistributionsController
@@ -81,8 +81,8 @@ namespace eShop.Distribution.Tests.Controllers
 
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
-                .Setup(e => e.GetDistributionGroupByIdAsync(distributionId))
-                .ReturnsAsync(default(DistributionGroup));
+                .Setup(e => e.GetDistributionByIdAsync(distributionId))
+                .ReturnsAsync(default(Distribution));
 
             var expectedResult = new Models.Distribution();
 
@@ -110,12 +110,12 @@ namespace eShop.Distribution.Tests.Controllers
         {
             // Arrange
 
-            var distribution = new DistributionGroup();
+            var distribution = new Entities.Distribution();
             var distributionId = distribution.Id;
 
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
-                .Setup(e => e.GetDistributionGroupByIdAsync(distributionId))
+                .Setup(e => e.GetDistributionByIdAsync(distributionId))
                 .ReturnsAsync(distribution);
 
             var expectedResult = new Models.Distribution();

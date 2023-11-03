@@ -9,8 +9,8 @@ namespace eShop.Distribution.DbContexts
         public DbSet<Account> Accounts { get; set; }
         public DbSet<TelegramChat> TelegramChats { get; set; }
         public DbSet<ViberChat> ViberChats { get; set; }
-        public DbSet<DistributionGroup> DistributionGroups { get; set; }
-        public DbSet<DistributionGroupItem> DistributionGroupItems { get; set; }
+        public DbSet<Entities.Distribution> Distribution { get; set; }
+        public DbSet<DistributionItem> DistributionItems { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<DistributionSettings> DistributionSettings { get; set; }
         public DbSet<CurrencyRate> CurrencyRates { get; set; }

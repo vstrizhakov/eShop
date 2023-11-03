@@ -6,27 +6,27 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShop.Distribution.Controllers
 {
-    [Route("api/distributions")]
+    [Route("api/distribution/distributions")]
     [ApiController]
     [Authorize]
     public class DistributionsController : ControllerBase
     {
         [HttpGet("{id}")]
-        public async Task<ActionResult<Models.Distribution>> GetDistribution(
+        public async Task<ActionResult<Models.Distributions.Distribution>> GetDistribution(
             [FromRoute] Guid id,
             [FromServices] IDistributionRepository distributionRepository,
             [FromServices] IMapper mapper)
         {
-            var distributionGroup = await distributionRepository.GetDistributionGroupByIdAsync(id);
+            var distribution = await distributionRepository.GetDistributionByIdAsync(id);
 
             var providerId = User.GetAccountId().Value;
-            if (distributionGroup == null || distributionGroup.ProviderId != providerId)
+            if (distribution == null || distribution.ProviderId != providerId)
             {
                 return NotFound();
             }
 
-            var distribution = mapper.Map<Models.Distribution>(distributionGroup);
-            return Ok(distribution);
+            var mappedDistribution = mapper.Map<Models.Distributions.Distribution>(distribution);
+            return Ok(mappedDistribution);
         }
     }
 }

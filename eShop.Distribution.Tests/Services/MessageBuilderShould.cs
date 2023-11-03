@@ -15,7 +15,7 @@ namespace eShop.Distribution.Tests.Services
         {
             // Arrange
 
-            var composition = new Composition
+            var composition = new Announce
             {
                 Images = new List<Uri>
                 {

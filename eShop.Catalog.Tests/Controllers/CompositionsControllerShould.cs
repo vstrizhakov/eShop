@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using eShop.Catalog.Controllers;
+using eShop.Catalog.Models.Announces;
 using eShop.Catalog.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -35,21 +36,21 @@ namespace eShop.Catalog.Tests.Controllers
         {
             // Arrange
 
-            var compositions = Array.Empty<Entities.Composition>();
+            var compositions = Array.Empty<Entities.Announce>();
 
-            var compositionService = new Mock<ICompositionService>();
+            var compositionService = new Mock<IAnnouncesService>();
             compositionService
-                .Setup(e => e.GetCompositionsAsync(_accountId))
+                .Setup(e => e.GetAnnouncesAsync(_accountId))
                 .ReturnsAsync(compositions);
 
-            var expectedResponse = Array.Empty<Models.Compositions.Composition>();
+            var expectedResponse = Array.Empty<Announce>();
 
             var mapper = new Mock<IMapper>();
             mapper
-                .Setup(e => e.Map<IEnumerable<Models.Compositions.Composition>>(compositions))
+                .Setup(e => e.Map<IEnumerable<Announce>>(compositions))
                 .Returns(expectedResponse);
 
-            var sut = new CompositionsController(compositionService.Object, mapper.Object)
+            var sut = new AnnouncesController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
@@ -72,25 +73,25 @@ namespace eShop.Catalog.Tests.Controllers
         {
             // Arrange
 
-            var composition = new Entities.Composition
+            var composition = new Entities.Announce
             {
                 OwnerId = _accountId,
             };
             var compositionId = composition.Id;
 
-            var compositionService = new Mock<ICompositionService>();
+            var compositionService = new Mock<IAnnouncesService>();
             compositionService
-                .Setup(e => e.GetCompositionAsync(compositionId))
+                .Setup(e => e.GetAnnounceAsync(compositionId))
                 .ReturnsAsync(composition);
 
-            var expectedResponse = new Models.Compositions.Composition();
+            var expectedResponse = new Models.Compositions.Announce();
 
             var mapper = new Mock<IMapper>();
             mapper
-                .Setup(e => e.Map<Models.Compositions.Composition>(composition))
+                .Setup(e => e.Map<Announce>(composition))
                 .Returns(expectedResponse);
 
-            var controller = new CompositionsController(compositionService.Object, mapper.Object)
+            var controller = new AnnouncesController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
@@ -112,17 +113,17 @@ namespace eShop.Catalog.Tests.Controllers
         {
             // Arrange
 
-            var composition = new Entities.Composition();
+            var composition = new Entities.Announce();
             var compositionId = composition.Id;
 
-            var compositionService = new Mock<ICompositionService>();
+            var compositionService = new Mock<IAnnouncesService>();
             compositionService
-                .Setup(e => e.GetCompositionAsync(compositionId))
+                .Setup(e => e.GetAnnounceAsync(compositionId))
                 .ReturnsAsync(composition);
 
             var mapper = new Mock<IMapper>();
 
-            var controller = new CompositionsController(compositionService.Object, mapper.Object)
+            var controller = new AnnouncesController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
@@ -146,14 +147,14 @@ namespace eShop.Catalog.Tests.Controllers
 
             var compositionId = Guid.NewGuid();
 
-            var compositionService = new Mock<ICompositionService>();
+            var compositionService = new Mock<IAnnouncesService>();
             compositionService
-                .Setup(e => e.GetCompositionAsync(compositionId))
-                .ReturnsAsync(default(Entities.Composition));
+                .Setup(e => e.GetAnnounceAsync(compositionId))
+                .ReturnsAsync(default(Entities.Announce));
 
             var mapper = new Mock<IMapper>();
 
-            var controller = new CompositionsController(compositionService.Object, mapper.Object)
+            var controller = new AnnouncesController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
@@ -175,25 +176,25 @@ namespace eShop.Catalog.Tests.Controllers
         {
             // Arrange
 
-            var request = new Models.Compositions.CreateCompositionRequest();
-            var composition = new Entities.Composition();
+            var request = new Models.Compositions.CreateAnnounceRequest();
+            var composition = new Entities.Announce();
 
-            var compositionService = new Mock<ICompositionService>();
+            var compositionService = new Mock<IAnnouncesService>();
             compositionService
-                .Setup(e => e.CreateCompositionAsync(composition, request.Image))
+                .Setup(e => e.CreateAnnounceAsync(composition, request.Image))
                 .Returns(Task.CompletedTask);
 
-            var expectedResponse = new Models.Compositions.Composition();
+            var expectedResponse = new Models.Compositions.Announce();
 
             var mapper = new Mock<IMapper>();
             mapper
-                .Setup(e => e.Map<Entities.Composition>(request))
+                .Setup(e => e.Map<Entities.Announce>(request))
                 .Returns(composition);
             mapper
-                .Setup(e => e.Map<Models.Compositions.Composition>(composition))
+                .Setup(e => e.Map<Announce>(composition))
                 .Returns(expectedResponse);
 
-            var controller = new CompositionsController(compositionService.Object, mapper.Object)
+            var controller = new AnnouncesController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
@@ -217,23 +218,23 @@ namespace eShop.Catalog.Tests.Controllers
         {
             // Arrange
 
-            var composition = new Entities.Composition
+            var composition = new Entities.Announce
             {
                 OwnerId = _accountId,
             };
             var compositionId = composition.Id;
 
-            var compositionService = new Mock<ICompositionService>();
+            var compositionService = new Mock<IAnnouncesService>();
             compositionService
-                .Setup(e => e.GetCompositionAsync(compositionId))
+                .Setup(e => e.GetAnnounceAsync(compositionId))
                 .ReturnsAsync(composition);
             compositionService
-                .Setup(e => e.DeleteCompositionAsync(composition))
+                .Setup(e => e.DeleteAnnounceAsync(composition))
                 .Returns(Task.CompletedTask);
 
             var mapper = new Mock<IMapper>();
 
-            var controller = new CompositionsController(compositionService.Object, mapper.Object)
+            var controller = new AnnouncesController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };
@@ -255,17 +256,17 @@ namespace eShop.Catalog.Tests.Controllers
         {
             // Arrange
 
-            var composition = new Entities.Composition();
+            var composition = new Entities.Announce();
             var compositionId = composition.Id;
 
-            var compositionService = new Mock<ICompositionService>();
+            var compositionService = new Mock<IAnnouncesService>();
             compositionService
-                .Setup(e => e.GetCompositionAsync(compositionId))
+                .Setup(e => e.GetAnnounceAsync(compositionId))
                 .ReturnsAsync(composition);
 
             var mapper = new Mock<IMapper>();
 
-            var controller = new CompositionsController(compositionService.Object, mapper.Object)
+            var controller = new AnnouncesController(compositionService.Object, mapper.Object)
             {
                 ControllerContext = _controllerContext,
             };

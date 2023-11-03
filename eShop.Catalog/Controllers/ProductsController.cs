@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using eShop.Catalog.Entities;
-using eShop.Catalog.Models.Products;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common.Extensions;
@@ -47,7 +46,7 @@ namespace eShop.Catalog.Controllers
 
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(
-            [FromForm] CreateProductRequest request,
+            [FromForm] Models.Products.CreateProductRequest request,
             [FromServices] IFileManager fileManager)
         {
             var product = _mapper.Map<Product>(request);

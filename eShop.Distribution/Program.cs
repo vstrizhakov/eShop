@@ -70,7 +70,7 @@ namespace eShop.Distribution
             builder.Services.AddScoped<ICurrencyService, CurrencyService>();
             builder.Services.AddScoped<IDistributionSettingsService, DistributionSettingsService>();
             builder.Services.AddScoped<IShopService, ShopService>();
-            builder.Services.AddScoped<IDistributionHubServer, DistributionHubServer>();
+            builder.Services.AddScoped<IDistributionsHubServer, DistributionsHubServer>();
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
@@ -78,7 +78,7 @@ namespace eShop.Distribution
             builder.Services.AddMessageHandler<AccountUpdatedEvent, AccountUpdatedEventHandler>();
             builder.Services.AddMessageHandler<TelegramChatUpdatedEvent, TelegramChatUpdatedEventHandler>();
             builder.Services.AddMessageHandler<ViberChatUpdatedEvent, ViberChatUpdatedEventHandler>();
-            builder.Services.AddMessageHandler<BroadcastCompositionMessage, BroadcastCompositionMessageHandler>();
+            builder.Services.AddMessageHandler<BroadcastAnnounceMessage, BroadcastCompositionMessageHandler>();
             builder.Services.AddMessageHandler<BroadcastMessageUpdateEvent, BroadcastMessageUpdateEventHandler>();
             builder.Services.AddMessageHandler<SyncCurrenciesMessage, SyncCurrenciesMessageHandler>();
             builder.Services.AddRequestHandler<GetPreferredCurrencyRequest, GetPreferredCurrencyResponse, GetPreferredCurrencyRequestHandler>();
@@ -103,6 +103,24 @@ namespace eShop.Distribution
                 {
                     options.Authority = builder.Configuration["PublicUri:Identity"];
                     options.Audience = "api";
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/api/distribution/ws")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -121,7 +139,7 @@ namespace eShop.Distribution
             app.UseAuthorization();
 
             app.MapControllers();
-            app.MapHub<DistributionHub>("/api/distribution/notifications");
+            app.MapHub<DistributionsHub>("/api/distribution/ws");
 
             app.Run();
         }

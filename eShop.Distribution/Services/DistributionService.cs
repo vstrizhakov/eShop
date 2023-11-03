@@ -1,10 +1,8 @@
 ﻿using eShop.Distribution.Entities;
 using eShop.Distribution.Entities.History;
 using eShop.Distribution.Exceptions;
-using eShop.Distribution.Hubs;
 using eShop.Distribution.Repositories;
 using eShop.Messaging.Models;
-using Microsoft.AspNetCore.SignalR;
 
 namespace eShop.Distribution.Services
 {
@@ -13,13 +11,13 @@ namespace eShop.Distribution.Services
         private readonly IDistributionRepository _distributionRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IDistributionSettingsService _distributionSettingsService;
-        private readonly IDistributionHubServer _distributionHubServer;
+        private readonly IDistributionsHubServer _distributionHubServer;
 
         public DistributionService(
             IDistributionRepository distributionRepository,
             IAccountRepository accountRepository,
             IDistributionSettingsService distributionSettingsService,
-            IDistributionHubServer distributionHubServer)
+            IDistributionsHubServer distributionHubServer)
         {
             _distributionRepository = distributionRepository;
             _accountRepository = accountRepository;
@@ -27,9 +25,9 @@ namespace eShop.Distribution.Services
             _distributionHubServer = distributionHubServer;
         }
 
-        public async Task<DistributionGroup> CreateDistributionAsync(Guid providerId, Composition composition)
+        public async Task<Entities.Distribution> CreateDistributionAsync(Guid providerId, Announce composition)
         {
-            var distributionGroup = new DistributionGroup
+            var distribution = new Entities.Distribution
             {
                 ProviderId = providerId,
             };
@@ -37,63 +35,68 @@ namespace eShop.Distribution.Services
             var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId, true, true);
 
             var shopId = composition.ShopId;
-
-            var telegramChatGroups = accounts
-                .SelectMany(e => e.TelegramChats)
-                .Where(e => e.IsEnabled)
-                .GroupBy(e => e.Account);
-            foreach (var telegramChats in telegramChatGroups)
+            foreach (var account in accounts)
             {
-                var historyRecord = await CreateHistoryRecord(telegramChats.Key.DistributionSettings);
+                var historyRecord = await CreateHistoryRecord(account.DistributionSettings);
                 var shopSettings = historyRecord.ShopSettings;
 
-                var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
-                foreach (var telegramChat in telegramChats)
+                var telegramChatGroups = account.TelegramChats
+                    .Where(e => e.IsEnabled)
+                    .GroupBy(e => e.Account);
+                foreach (var telegramChats in telegramChatGroups)
                 {
-                    var distributionGroupItem = new DistributionGroupItem
+                    var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
+                    foreach (var telegramChat in telegramChats)
                     {
-                        TelegramChatId = telegramChat.Id,
+                        var item = new DistributionItem
+                        {
+                            AccountId = account.Id,
+                            TelegramChatId = telegramChat.Id,
+                            DistributionSettings = historyRecord,
+                        };
+
+                        if (isFiltered)
+                        {
+                            item.Status = DistributionItemStatus.Filtered;
+                        }
+
+                        distribution.Items.Add(item);
+                    }
+                }
+
+                var viberChats = new[] { account.ViberChat }
+                    .Where(e => e != null && e.IsEnabled);
+                foreach (var viberChat in viberChats)
+                {
+                    var item = new DistributionItem
+                    {
+                        AccountId = account.Id,
+                        ViberChatId = viberChat.Id,
                         DistributionSettings = historyRecord,
                     };
 
+                    var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
                     if (isFiltered)
                     {
-                        distributionGroupItem.Status = DistributionGroupItemStatus.Filtered;
+                        item.Status = DistributionItemStatus.Filtered;
                     }
 
-                    distributionGroup.Items.Add(distributionGroupItem);
+                    distribution.Items.Add(item);
                 }
             }
 
-            var viberChats = accounts
-                .Where(e => e.ViberChat != null && e.ViberChat.IsEnabled)
-                .Select(e => e.ViberChat);
-            foreach (var viberChat in viberChats)
-            {
-                var historyRecord = await CreateHistoryRecord(viberChat.Account.DistributionSettings);
-                var shopSettings = historyRecord.ShopSettings;
+            await _distributionRepository.CreateDistributionAsync(distribution);
 
-                var distributionGroupItem = new DistributionGroupItem
-                {
-                    ViberChatId = viberChat.Id,
-                    DistributionSettings = historyRecord,
-                };
-
-                var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
-                if (isFiltered)
-                {
-                    distributionGroupItem.Status = DistributionGroupItemStatus.Filtered;
-                }
-
-                distributionGroup.Items.Add(distributionGroupItem);
-            }
-
-            await _distributionRepository.CreateDistributionGroupAsync(distributionGroup);
-
-            return distributionGroup;
+            return distribution;
         }
 
-        public async Task UpdateDistributionRequestStatusAsync(Guid distributionRequestId, bool deliveryFailed)
+        public async Task<Entities.Distribution?> GetDistributionAsync(Guid distributionId)
+        {
+            var distribution = await _distributionRepository.GetDistributionByIdAsync(distributionId);
+            return distribution;
+        }
+
+        public async Task UpdateDistributionRequestStatusAsync(Guid distributionRequestId, bool succeeded)
         {
             var request = await _distributionRepository.GetDistributionRequestAsync(distributionRequestId);
             if (request == null)
@@ -101,14 +104,14 @@ namespace eShop.Distribution.Services
                 throw new DistributionRequestNotFoundException();
             }
 
-            if (request.Status != DistributionGroupItemStatus.Pending)
+            if (request.Status != DistributionItemStatus.Pending)
             {
                 throw new InvalidDistributionRequestStatusException();
             }
 
-            request.Status = deliveryFailed ? DistributionGroupItemStatus.Failed : DistributionGroupItemStatus.Delivered;
+            request.Status = succeeded ? DistributionItemStatus.Delivered : DistributionItemStatus.Failed;
 
-            await _distributionRepository.UpdateDistributionGroupItemAsync(request);
+            await _distributionRepository.UpdateDistributionItemAsync(request);
 
             await _distributionHubServer.SendRequestUpdatedAsync(request);
         }

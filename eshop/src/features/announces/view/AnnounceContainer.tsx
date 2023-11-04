@@ -29,8 +29,7 @@ const AnnounceContainer: React.FC<PropsFromRedux> = props => {
 
     const {
         data,
-        isLoading,
-        isSuccess,
+        isError,
     } = useGetAnnounceQuery(announceId!);
 
     useEffect(() => {
@@ -39,16 +38,12 @@ const AnnounceContainer: React.FC<PropsFromRedux> = props => {
         }
     }, [data]);
 
-    if (isLoading) {
-        return <>"Завантаження..."</>;
-    }
-
-    if (!isSuccess) {
+    if (isError) {
         return <>Під час завантаження сталася помилка</>;
     }
 
     if (!announce) {
-        return null;
+        return <>Завантаження...</>
     }
 
     return <Announce announce={announce} />

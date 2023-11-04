@@ -1,10 +1,10 @@
-import React, { Fragment, useEffect, useMemo } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Badge, Card, Col, ProgressBar, Row, Table } from "react-bootstrap";
 import { DeliveryStatus, DistributionItem, Distribution as DistributionModel } from "../../api/distributionSlice";
-import { HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { RootState } from "../../../app/store";
 import { ConnectedProps, connect } from "react-redux";
-import { updateDistributionItem } from "./viewAnnounceSlice";
+import { updateDistributionItem, reset } from "./viewAnnounceSlice";
 
 const mapStateToProps = (state: RootState) => ({
     accessToken: state.auth.token,
@@ -12,6 +12,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
     updateDistributionItem,
+    reset,
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -28,55 +29,51 @@ const Distribution: React.FC<IProps> = props => {
         updateDistributionItem,
     } = props;
 
-    const connection = useMemo(() => {
+    useEffect(() => {
+        return () => {
+            reset();
+        };
+    }, []);
+
+    useEffect(() => {
         const connection = new HubConnectionBuilder()
             .withUrl("/api/distribution/ws", {
                 accessTokenFactory: () => accessToken!,
             })
             .withAutomaticReconnect()
             .build();
-        return connection;
-    }, [])
 
-    useEffect(() => {
-        const initialize = async () => {
-            if (connection.state === HubConnectionState.Disconnected) {
-                connection.on("requestUpdated", (item: DistributionItem) => {
-                    updateDistributionItem(item);
-                });
+        let canceled = false;
+        const task = (async function () {
+            connection.on("requestUpdated", (item: DistributionItem) => {
+                updateDistributionItem(item);
+            });
 
-                await connection.start();
+            await connection.start();
 
-                //if (connection.state === HubConnectionState.Connected) {
+            if (!canceled) {
                 await connection.invoke("subscribe", {
                     distributionId: distribution.id,
                 });
-                //}
             }
-        };
-
-        const uninitialize = async () => {
-            if (connection.state === HubConnectionState.Connected) {
-                await connection.invoke("unsubscribe", {
-                    distributionId: distribution.id,
-                });
-
-                await connection.stop();
-            }
-        }
-
-        initialize();
+        })();
 
         return () => {
-            uninitialize();
+            (async function () {
+                canceled = true;
+
+                await task;
+
+                await connection.stop()
+            })();
         };
-    }, [connection]);
+    }, []);
 
     const items = distribution.recipients.reduce<DistributionItem[]>((prev, current) => [...prev, ...current.items], []);
-    const inProgress = items.filter(item => item.deliveryStatus === DeliveryStatus.Pending).length > 0;
-    const anyFailed = items.filter(item => item.deliveryStatus === DeliveryStatus.Failed).length > 0;
+    const totalInProgress = items.filter(item => item.deliveryStatus === DeliveryStatus.Pending).length > 0;
+    const totalAnyFailed = items.filter(item => item.deliveryStatus === DeliveryStatus.Failed).length > 0;
 
-    const totalStatus = inProgress ? DeliveryStatus.Pending : anyFailed ? DeliveryStatus.Failed : DeliveryStatus.Delivered;
+    const totalStatus = totalAnyFailed ? DeliveryStatus.Failed : totalInProgress ? DeliveryStatus.Pending : DeliveryStatus.Delivered;
 
     const getVariant = (deliveryStatus: DeliveryStatus): string => {
         switch (deliveryStatus) {
@@ -87,44 +84,43 @@ const Distribution: React.FC<IProps> = props => {
             case DeliveryStatus.Failed:
                 return "danger";
         }
-    }
+    };
+
+    const totalRecipients = distribution.recipients.length;
+    const finishedRecipients = distribution.recipients.filter(recipient => recipient.items.every(item => item.deliveryStatus !== DeliveryStatus.Pending)).length;
+
     return (
         <>
             <div className="d-flex align-items-center flex-row gap-3 mb-3">
                 <h4>
                     <span>Отримувачі</span>
-                    <Badge className="ms-2" bg="secondary" pill>{distribution.recipients.length}</Badge>
                 </h4>
-                <ProgressBar className="flex-grow-1" variant={getVariant(totalStatus)} now={100} animated />
+                <ProgressBar className="flex-grow-1" variant={getVariant(totalStatus)} now={100} animated label={`${finishedRecipients}/${totalRecipients}`}></ProgressBar>
             </div>
             <Row>
-                {distribution.recipients.map(recipient => (
-                    <Col xs={4} key={recipient.client.id}>
-                        <Card>
-                            <Card.Header>
-                                {recipient.client.firstName} {recipient.client.lastName}
-                            </Card.Header>
-                            <Card.Body>
-                                {recipient.items.map(item => (
-                                    <Fragment key={item.id}>
-                                        {item.telegramChatId && (
-                                            <div className="d-flex align-items-center flex-row gap-3">
-                                                <span>Telegram</span>
-                                                <ProgressBar className="w-100" variant={getVariant(item.deliveryStatus)} animated now={100} />
-                                            </div>
-                                        )}
-                                        {item.viberChatId && (
-                                            <div className="d-flex align-items-center flex-row gap-3">
-                                                <span>Viber</span>
-                                                <ProgressBar className="w-100" variant={getVariant(item.deliveryStatus)} animated now={100} />
-                                            </div>
-                                        )}
-                                    </Fragment>
-                                ))}
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
+                {distribution.recipients.map(recipient => {
+                    const items = recipient.items;
+                    const totalItems = items.length;
+                    const finishedItems = items.filter(item => item.deliveryStatus !== DeliveryStatus.Pending).length;
+
+                    const inProgress = items.filter(item => item.deliveryStatus === DeliveryStatus.Pending).length > 0;
+                    const anyFailed = items.filter(item => item.deliveryStatus === DeliveryStatus.Failed).length > 0;
+
+                    const status = anyFailed ? DeliveryStatus.Failed : inProgress ? DeliveryStatus.Pending : DeliveryStatus.Delivered;
+
+                    return (
+                        <Col xs={4} key={recipient.client.id}>
+                            <Card>
+                                <Card.Body>
+                                    <div className="d-flex align-items-center flex-row gap-3">
+                                        <strong>{recipient.client.firstName} {recipient.client.lastName}</strong>
+                                        <ProgressBar className="flex-grow-1" variant={getVariant(status)} now={100} animated label={`${finishedItems}/${totalItems}`} />
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    );
+                })}
             </Row>
         </>
     );

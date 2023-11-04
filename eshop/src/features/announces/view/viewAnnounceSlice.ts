@@ -48,6 +48,7 @@ const slice = createSlice({
                 }
             }
         },
+        reset: () => initialState,
     },
 });
 
@@ -55,6 +56,7 @@ export const {
     setAnnounce,
     setDistribution,
     updateDistributionItem,
+    reset,
 } = slice.actions;
 
 export default slice.reducer;

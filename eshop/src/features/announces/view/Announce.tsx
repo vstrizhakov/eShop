@@ -29,52 +29,6 @@ const Announce: React.FC<IProps> = props => {
         accessToken,
     } = props;
 
-    const connection = useMemo(() => {
-        const connection = new HubConnectionBuilder()
-            .withUrl("/api/catalog/ws", {
-                accessTokenFactory: () => accessToken!,
-            })
-            .withAutomaticReconnect()
-            .build();
-        return connection;
-    }, [])
-
-    useEffect(() => {
-        const initialize = async () => {
-            if (connection.state === HubConnectionState.Disconnected) {
-                connection.on("announceUpdated", (announce: AnnounceModel) => {
-                    setAnnounce(announce);
-                });
-
-                await connection.start();
-
-                //if (connection.state === HubConnectionState.Connected) {
-                await connection.invoke("subscribe", {
-                    announceId: announce.id,
-                });
-                //}
-            }
-        };
-
-        const uninitialize = async () => {
-            if (connection.state === HubConnectionState.Connected) {
-                await connection.invoke("unsubscribe", {
-                    announceId: announce.id,
-                });
-
-                await connection.stop();
-            }
-        }
-
-        if (!announce.distributionId) {
-            initialize();
-
-            return () => {
-                uninitialize();
-            };
-        }
-    }, [connection, announce.distributionId]);
-
     const mainImage = announce.images[0];
 
     return (

@@ -29,26 +29,21 @@ const DistributionContainer: React.FC<IProps> = props => {
 
     const {
         data,
-        isLoading,
-        isSuccess,
+        isError,
     } = useGetDistributionQuery(distributionId);
 
     useEffect(() => {
-        if (data) {
+        if (data && !distribution) {
             setDistribution(data);
         }
-    }, [data]);
+    }, [data, distribution]);
 
-    if (isLoading) {
-        return <>Завантаження...</>
-    }
-
-    if (!isSuccess) {
+    if (isError) {
         return <>Під час завантаження сталася помилка</>;
     }
 
     if (!distribution) {
-        return null;
+        return <>Завантаження...</>
     }
 
     return <Distribution distribution={distribution} />;

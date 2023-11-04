@@ -1,4 +1,6 @@
-﻿using eShop.Catalog.Services;
+﻿using AutoMapper;
+using eShop.Catalog.Models.Announces;
+using eShop.Catalog.Services;
 using eShop.Common.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -9,10 +11,12 @@ namespace eShop.Catalog.Hubs
     public class AnnouncesHub : Hub<IAnnouncesHubClient>
     {
         private readonly IAnnouncesService _announcesService;
+        private readonly IMapper _mapper;
 
-        public AnnouncesHub(IAnnouncesService announcesService)
+        public AnnouncesHub(IAnnouncesService announcesService, IMapper mapper)
         {
             _announcesService = announcesService;
+            _mapper = mapper;
         }
 
         public async Task Subscribe(SubscribeToAnnounceRequest request)
@@ -27,6 +31,9 @@ namespace eShop.Catalog.Hubs
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, announceId.ToString());
+
+            var mappedAnnounce = _mapper.Map<Announce>(announce);
+            await Clients.Caller.AnnounceUpdated(mappedAnnounce);
         }
 
         public async Task Unsubscribe(UnsubscribeFromAnnounceRequest request)

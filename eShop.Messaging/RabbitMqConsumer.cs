@@ -46,11 +46,6 @@ namespace eShop.Messaging
 
             _queueName = result.QueueName;
 
-            _channel.BasicQos(
-                prefetchSize: 0,
-                prefetchCount: 1,
-                global: false);
-
             _channel.QueueBind(
                 queue: _queueName,
                 exchange: Exchange,
@@ -68,6 +63,12 @@ namespace eShop.Messaging
 
         public void Start()
         {
+            var qos = _options.QoS;
+            _channel.BasicQos(
+                prefetchSize: qos.PrefetchSize,
+                prefetchCount: qos.PrefetchCount,
+                global: false);
+
             _consumerTag = _channel.BasicConsume(
                 queue: _queueName,
                 //queue: _options.QueueName,

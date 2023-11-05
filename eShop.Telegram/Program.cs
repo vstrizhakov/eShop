@@ -63,7 +63,15 @@ namespace eShop.Telegram
                 {
                     var botConfiguration = serviceProvider.GetRequiredService<IOptions<TelegramBotConfiguration>>();
                     var options = new TelegramBotClientOptions(botConfiguration.Value.Token);
-                    return new TelegramBotClient(options, httpClient);
+                    var botClient = new TelegramBotClient(options, httpClient);
+
+                    var logger = serviceProvider.GetRequiredService<ILogger<TelegramBotClient>>();
+                    botClient.OnMakingApiRequest += async (botClient, args, cancellationToken) =>
+                    {
+                        logger.LogInformation($"[{DateTime.UtcNow.TimeOfDay}] Sending API reguest...");
+                    };
+
+                    return botClient;
                 });
 
             builder.Services.AddHostedService<TelegramBotConfigurationService>();
@@ -107,6 +115,9 @@ namespace eShop.Telegram
 
             builder.Services.AddScoped<ITelegramMiddleware, IdentityManagementTelegramMiddleware>();
             builder.Services.AddTelegramFramework<TelegramContextStore>();
+
+            builder.Services.AddSingleton<IRateLimiter, RateLimiter>();
+            builder.Services.AddScoped<IRateLimitedTelegramBotClient, RateLimitedTelegramBotClient>();
 
             var app = builder.Build();
 

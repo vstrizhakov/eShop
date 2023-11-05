@@ -15,7 +15,7 @@ namespace eShop.Messaging.Extensions
             return services;
         }
 
-        public static IServiceCollection AddMessageListener<TMessage>(this IServiceCollection services)
+        public static IServiceCollection AddMessageListener<TMessage>(this IServiceCollection services, Action<RabbitMqConsumerOptions<TMessage>>? configure = null)
             where TMessage : notnull, IMessage
         {
             services.AddBasicMessaging();
@@ -30,16 +30,21 @@ namespace eShop.Messaging.Extensions
                 var name = typeof(TMessage).Name;
                 options.QueueName = name;
                 options.RoutingKey = name;
+
+                if (configure != null)
+                {
+                    configure(options);
+                }
             });
-            
+
             return services;
         }
 
-        public static IServiceCollection AddMessageHandler<TMessage, THandler>(this IServiceCollection services)
+        public static IServiceCollection AddMessageHandler<TMessage, THandler>(this IServiceCollection services, Action<RabbitMqConsumerOptions<TMessage>>? configure = null)
             where THandler : class, IMessageHandler<TMessage>
             where TMessage : notnull, IMessage
         {
-            services.AddMessageListener<TMessage>();
+            services.AddMessageListener<TMessage>(configure);
             services.AddScoped<IMessageHandler<TMessage>, THandler>();
 
             return services;

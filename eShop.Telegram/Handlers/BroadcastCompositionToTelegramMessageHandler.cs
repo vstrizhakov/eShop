@@ -1,19 +1,21 @@
 ﻿using eShop.Messaging;
 using eShop.Messaging.Models;
 using eShop.Telegram.Repositories;
+using eShop.Telegram.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace eShop.Telegram.Handlers
 {
     public class BroadcastCompositionToTelegramMessageHandler : IMessageHandler<BroadcastCompositionToTelegramMessage>
     {
-        private readonly ITelegramBotClient _botClient;
+        private readonly IRateLimitedTelegramBotClient _botClient;
         private readonly ITelegramChatRepository _telegramChatRepository;
         private readonly IProducer _producer;
 
         public BroadcastCompositionToTelegramMessageHandler(
-            ITelegramBotClient botClient,
+            IRateLimitedTelegramBotClient botClient,
             ITelegramChatRepository telegramChatRepository,
             IProducer producer)
         {
@@ -34,9 +36,14 @@ namespace eShop.Telegram.Handlers
                     var media = new InputMediaPhoto(new InputFileUrl(messageToSend.Image))
                     {
                         Caption = messageToSend.Caption,
-                        ParseMode = global::Telegram.Bot.Types.Enums.ParseMode.MarkdownV2,
+                        ParseMode = ParseMode.MarkdownV2,
                     };
-                    await _botClient.SendMediaGroupAsync(new ChatId(telegramChat.ExternalId), new List<IAlbumInputMedia>() { media });
+
+                    var chatId = new ChatId(telegramChat.ExternalId);
+                    var isGroup = telegramChat.Type == ChatType.Group;
+
+                    await _botClient.SendRequestAsync(chatId, isGroup, botClient =>
+                        botClient.SendMediaGroupAsync(chatId, new List<IAlbumInputMedia>() { media }));
                 }
                 catch
                 {

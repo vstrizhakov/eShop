@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.TelegramFramework", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.ViberBot.Framework", "eShop.ViberBot.Framework\eShop.ViberBot.Framework.csproj", "{141C03D2-0314-4AEF-8BB0-F33E1F8DBE5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.Bots.Links", "eShop.Bots.Links\eShop.Bots.Links.csproj", "{C45DF769-D6DF-4B85-A368-8E4ADF902D0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,10 @@ Global
 		{141C03D2-0314-4AEF-8BB0-F33E1F8DBE5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{141C03D2-0314-4AEF-8BB0-F33E1F8DBE5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{141C03D2-0314-4AEF-8BB0-F33E1F8DBE5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C45DF769-D6DF-4B85-A368-8E4ADF902D0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C45DF769-D6DF-4B85-A368-8E4ADF902D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C45DF769-D6DF-4B85-A368-8E4ADF902D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C45DF769-D6DF-4B85-A368-8E4ADF902D0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

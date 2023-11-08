@@ -1,6 +1,7 @@
 ﻿using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using eShop.Identity.Entities;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -28,10 +29,14 @@ namespace eShop.Identity.Services
             {
                 var claims = new List<Claim>();
 
-                var accountId = user.AccountId;
-                if (accountId.HasValue)
+                var accountIdClaimType = "account_id";
+                if (context.RequestedClaimTypes.Contains(accountIdClaimType))
                 {
-                    claims.Add(new Claim("account_id", accountId.Value.ToString()));
+                    var accountId = user.AccountId;
+                    if (accountId.HasValue)
+                    {
+                        claims.Add(new Claim(accountIdClaimType, accountId.Value.ToString()));
+                    }
                 }
 
                 context.AddRequestedClaims(claims);

@@ -215,7 +215,7 @@ namespace eShop.Identity.Tests.Controllers
             var interactionService = new Mock<IIdentityServerInteractionService>();
 
             _signInManager
-                .Setup(e => e.PasswordSignInAsync(request.Username, request.Password, request.Remember, false))
+                .Setup(e => e.PasswordSignInAsync(request.PhoneNumber, request.Password, request.Remember, false))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
             var serverUrls = new Mock<IServerUrls>();
@@ -249,7 +249,7 @@ namespace eShop.Identity.Tests.Controllers
 
             var request = new SignInRequest
             {
-                Username = "john.smith@example.com",
+                PhoneNumber = "john.smith@example.com",
                 Password = "password",
                 Remember = true,
             };
@@ -260,7 +260,7 @@ namespace eShop.Identity.Tests.Controllers
                 .ReturnsAsync(default(AuthorizationRequest));
 
             _signInManager
-                .Setup(e => e.PasswordSignInAsync(request.Username, request.Password, request.Remember, false))
+                .Setup(e => e.PasswordSignInAsync(request.PhoneNumber, request.Password, request.Remember, false))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
             var baseUrl = Guid.NewGuid().ToString();
@@ -300,7 +300,7 @@ namespace eShop.Identity.Tests.Controllers
 
             var request = new SignInRequest
             {
-                Username = "john.smith@example.com",
+                PhoneNumber = "john.smith@example.com",
                 Password = "password",
                 Remember = true,
                 ReturnUrl = Guid.NewGuid().ToString(),
@@ -314,7 +314,7 @@ namespace eShop.Identity.Tests.Controllers
                 .ReturnsAsync(authorizationRequest);
 
             _signInManager
-                .Setup(e => e.PasswordSignInAsync(request.Username, request.Password, request.Remember, false))
+                .Setup(e => e.PasswordSignInAsync(request.PhoneNumber, request.Password, request.Remember, false))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
             var serverUrls = new Mock<IServerUrls>();

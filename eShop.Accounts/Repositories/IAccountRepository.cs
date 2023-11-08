@@ -10,5 +10,6 @@ namespace eShop.Accounts.Repositories
         Task<Account?> GetAccountByViberUserIdAsync(Guid viberUserId);
         Task<Account?> GetAccountByIdAsync(Guid id);
         Task UpdateAccountAsync(Account account);
+        Task<Account?> GetAccountByIdentityUserIdAsync(string identityUserId);
     }
 }

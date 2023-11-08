@@ -6,6 +6,7 @@ using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using System.Text.RegularExpressions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -15,6 +16,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     [TelegramController]
     public class RegistrationController
     {
+        private static readonly Regex PhoneNumberRegex = new Regex(@"^(\+?38)?(\s|-)?0(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])$");
+
         private readonly ITelegramService _telegramService;
         private readonly ITelegramUserRepository _telegramUserRepository;
         private readonly IRequestClient _requestClient;
@@ -59,7 +62,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var providerId = user!.RegistrationProviderId;
             if (providerId != null)
             {
-                var phoneNumber = contact.PhoneNumber;
+                var phoneNumber = PhoneNumberRegex.Replace(contact.PhoneNumber, "+380$4$6$8$10$12$14$16$18$20");
 
                 user.PhoneNumber = phoneNumber;
                 user.RegistrationProviderId = null;

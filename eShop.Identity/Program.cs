@@ -1,7 +1,8 @@
-﻿using eShop.Common;
+﻿using eShop.Bots.Links;
 using eShop.Identity.DbContexts;
 using eShop.Identity.Entities;
 using eShop.Identity.Handlers;
+using eShop.Identity.Repositories;
 using eShop.Identity.Services;
 using eShop.Messaging.Extensions;
 using eShop.Messaging.Models.Identity;
@@ -46,6 +47,7 @@ namespace eShop.Identity
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
+                options.SignIn.RequireConfirmedPhoneNumber = true;
                 options.Password.RequireNonAlphanumeric = false;
             })
                 .AddEntityFrameworkStores<IdentityDbContext>()
@@ -69,7 +71,8 @@ namespace eShop.Identity
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
 
-            builder.Services.AddAuthentication();
+            builder.Services.AddAuthentication()
+                .AddCookie("PhoneNumberConfirmationCookie");
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -80,7 +83,21 @@ namespace eShop.Identity
 
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<RegisterIdentityUserResponse, IdentityUserCreateAccountResponseMessageHandler>();
+
+            builder.Services.AddMessageHandler<RegisterIdentityUserResponse, RegisterIdentityUserResponseHandler>();
+            builder.Services.AddRequestHandler<ConfirmPhoneNumberByViberRequest, ConfirmPhoneNumberByViberResponse, ConfirmPhoneNumberByViberRequestHandler>();
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            builder.Services.AddTelegramLinks(options =>
+            {
+                options.Username = builder.Configuration["TelegramBot:Username"];
+            });
+
+            builder.Services.AddViberLinks(options =>
+            {
+                options.ChatUrl = builder.Configuration["ViberBot:ChatUrl"];
+            });
 
             var app = builder.Build();
 

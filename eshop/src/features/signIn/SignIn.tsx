@@ -1,12 +1,13 @@
-﻿import React, { useCallback, useMemo } from "react";
-import { Button, Form as BootstrapForm } from "react-bootstrap";
+﻿import React, { useCallback, useEffect, useMemo } from "react";
+import { Button, Form as BootstrapForm, Row, Col, Anchor } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 import { connect, ConnectedProps } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useHref, useNavigate, useSearchParams } from "react-router-dom";
 import { RootState } from "../../app/store";
 import TextField from "../../components/TextField";
-import { useSignInMutation } from "../api/authSlice";
+import { useGetSignInInfoQuery, useSignInMutation } from "../api/authSlice";
 import { setIsError } from "./signInSlice";
+import { LinkContainer } from "react-router-bootstrap";
 
 const mapStateToProps = (state: RootState) => ({
     isError: state.signIn.isError,
@@ -26,70 +27,107 @@ const SignIn: React.FC<PropsFromRedux> = (props) => {
     } = props;
 
     const [searchParams] = useSearchParams();
-
     const returnUrl = useMemo(() => searchParams.get("returnUrl"), [searchParams]);
 
+    const {
+        data: signInInfo,
+    } = useGetSignInInfoQuery(undefined);
+
+    useEffect(() => {
+        if (signInInfo) {
+            if (signInInfo.waitingForConfirmation) {
+                navigate(`/auth/confirm?returnUrl=${returnUrl}`);
+            }
+        }
+    }, [signInInfo, returnUrl]);
+
     const [signIn] = useSignInMutation();
+
+    const navigate = useNavigate();
 
     const onSubmit = useCallback(async (values: Record<string, any>) => {
         if (returnUrl) {
             const response = await signIn({
-                username: values.username,
+                phoneNumber: values.phoneNumber,
                 password: values.password,
                 returnUrl: returnUrl,
             }).unwrap();
 
             if (response.succeeded) {
                 if (response.validReturnUrl) {
-                    window.location.replace(response.validReturnUrl);
+                    window.location.assign(response.validReturnUrl);
                 }
             } else {
-                setIsError(true);
+                if (response.confirmationRequired) {
+                    navigate(`/auth/confirm?returnUrl=${returnUrl}`);
+                } else {
+                    setIsError(true);
+                }
             }
         }
     }, [signIn, returnUrl, setIsError]);
 
-    const navigate = useNavigate();
-
-    const signUp = useCallback(() => {
-        navigate("/auth/signUp");
-    }, [navigate]);
+    if (!signInInfo || signInInfo.waitingForConfirmation) {
+        return <>"Loading..."</>;
+    }
 
     return (
         <Form
             onSubmit={onSubmit}
             render={({ handleSubmit }) => (
                 <BootstrapForm onSubmit={handleSubmit}>
-                    <h2>Sign In</h2>
+                    <Row>
+                        <Col xs={4}></Col>
+                        <Col xs={4}>
+                            <h3 className="mb-3">Вхід</h3>
 
-                    <Field
-                        id="username"
-                        name="username"
-                        type="text"
-                        label="Username"
-                        component={TextField} />
-                    <Field
-                        id="password"
-                        name="password"
-                        type="password"
-                        label="Password"
-                        component={TextField} />
-                    {isError && (
-                        <div>Неправильний логін або пароль</div>
-                    )}
-                    <div>
-                        <Button
-                            type="submit"
-                            variant="primary">
-                            Увійти
-                        </Button>
-                        <Button
-                            type="button"
-                            onClick={signUp}>
-                            Зареєструватися
-                        </Button>
-                    </div>
-                </BootstrapForm>
+                            <BootstrapForm.Group>
+                                <BootstrapForm.Label>Номер телефону</BootstrapForm.Label>
+                                <Field
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    type="tel"
+                                    pattern="\+380[0-9]{9}"
+                                    placeholder="+380123456789"
+                                    className="mb-2"
+                                    component={TextField} />
+                            </BootstrapForm.Group>
+
+                            <BootstrapForm.Group>
+                                <BootstrapForm.Label>Пароль</BootstrapForm.Label>
+                                <Field
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Пароль"
+                                    className="mb-2"
+                                    component={TextField} />
+                            </BootstrapForm.Group>
+
+                            {isError && (
+                                <center>
+                                    <span className="text-danger">Неправильний логін або пароль</span>
+                                </center>
+                            )}
+                            <div className="d-flex flex-column mt-2">
+                                <Button
+                                    className="fw-semibold"
+                                    type="submit"
+                                    variant="primary">
+                                    Увійти
+                                </Button>
+                                <LinkContainer to={{
+                                    pathname: "/auth/signUp",
+                                    search: searchParams.toString(),
+                                }}>
+                                    <Anchor className="align-self-center text-decoration-none mt-1">
+                                        Зареєструватися
+                                    </Anchor>
+                                </LinkContainer>
+                            </div>
+                        </Col>
+                    </Row>
+                </BootstrapForm >
             )}
         />
     );

@@ -5,6 +5,7 @@ using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
 using eShop.Messaging.Models.Distribution.ShopSettings;
+using eShop.Messaging.Models.Identity;
 using eShop.Messaging.Models.Viber;
 using eShop.Viber.DbContexts;
 using eShop.Viber.Handlers;
@@ -92,6 +93,7 @@ namespace eShop.Viber
             builder.Services.AddMessageListener<GetCurrenciesResponse>();
             builder.Services.AddMessageListener<SetShowSalesResponse>();
             builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
+            builder.Services.AddMessageHandler<ConfirmPhoneNumberByViberResponse, ConfirmPhoneNumberByViberResponseHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 
@@ -102,7 +104,6 @@ namespace eShop.Viber
                     options.Audience = "api";
                 });
 
-            builder.Services.AddScoped<IViberInvitationLinkGenerator, ViberInvitationLinkGenerator>();
             builder.Services.AddScoped<IViberService, ViberService>();
 
             builder.Services.AddViberFramework<ViberContextStore>();

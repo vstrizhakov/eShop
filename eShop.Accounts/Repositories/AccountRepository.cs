@@ -27,6 +27,13 @@ namespace eShop.Accounts.Repositories
             return account;
         }
 
+        public async Task<Account?> GetAccountByIdentityUserIdAsync(string identityUserId)
+        {
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(e => e.IdentityUserId == identityUserId);
+            return account;
+        }
+
         public async Task<Account?> GetAccountByPhoneNumberAsync(string phoneNumber)
         {
             var account = await _context.Accounts

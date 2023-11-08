@@ -3,6 +3,6 @@
     public class AccountRegisteredEvent : Messaging.Message
     {
         public Account Account { get; set; }
-        public Guid ProviderId { get; set; }
+        public Guid? ProviderId { get; set; }
     }
 }

@@ -3,7 +3,6 @@ import { apiSlice } from "./apiSlice";
 interface SignUpRequest {
     firstName: string,
     lastName: string,
-    email: string,
     phoneNumber: string,
     password: string,
 };
@@ -12,8 +11,12 @@ interface SignUpResponse {
     succeeded: boolean,
 };
 
+interface SignInInfo {
+    waitingForConfirmation?: boolean,
+};
+
 interface SignInRequest {
-    username: string,
+    phoneNumber: string,
     password: string,
     remember?: boolean,
     returnUrl: string,
@@ -21,6 +24,7 @@ interface SignInRequest {
 
 interface SignInResponse {
     succeeded: boolean,
+    confirmationRequired?: boolean,
     validReturnUrl?: string,
 };
 
@@ -34,6 +38,16 @@ interface SignOutInfo {
     postInfo?: PostSignOutInfo,
 };
 
+interface ConfirmationLinks {
+    telegram: string,
+    viber: string,
+};
+
+export interface CheckConfirmationResponse {
+    confirmed: boolean,
+    links?: ConfirmationLinks,
+};
+
 export const authSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
         signUp: builder.mutation<SignUpResponse, SignUpRequest>({
@@ -42,6 +56,9 @@ export const authSlice = apiSlice.injectEndpoints({
                 method: "POST",
                 body: request,
             }),
+        }),
+        getSignInInfo: builder.query<SignInInfo, unknown>({
+            query: () => "/auth/signIn",
         }),
         signIn: builder.mutation<SignInResponse, SignInRequest>({
             query: request => ({
@@ -67,11 +84,19 @@ export const authSlice = apiSlice.injectEndpoints({
                 },
             }),
         }),
+        checkConfirmation: builder.mutation<CheckConfirmationResponse, unknown>({
+            query: () => ({
+                url: "/auth/checkConfirmation",
+                method: "POST",
+            }),
+        }),
     }),
 });
 
 export const {
     useSignUpMutation,
+    useCheckConfirmationMutation,
+    useGetSignInInfoQuery,
     useSignInMutation,
     useTrySignOutQuery,
     useSignOutMutation,

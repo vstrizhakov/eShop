@@ -31,11 +31,16 @@ export interface DistributionItem {
 interface DistributionRecipient {
     client: Client,
     items: DistributionItem[],
-}
+};
 
 export interface Distribution {
     id: string,
     recipients: DistributionRecipient[],
+};
+
+interface GetAnnouncerInvitationResponse {
+    telegram: string,
+    viber: string,
 };
 
 const distributionSlice = apiSlice.injectEndpoints({
@@ -62,6 +67,10 @@ const distributionSlice = apiSlice.injectEndpoints({
         getDistribution: builder.query<Distribution, string>({
             query: distributionId => `/distribution/distributions/${distributionId}`,
         }),
+        
+        getAnnouncerInvitation: builder.query<GetAnnouncerInvitationResponse, string>({
+            query: announcerId => `/distribution/announcers/${announcerId}/invitation`,
+        }),
     }),
 });
 
@@ -72,4 +81,5 @@ export const {
     useGetDistributionQuery,
     useActivateClientMutation,
     useDeactivateClientMutation,
+    useGetAnnouncerInvitationQuery,
 } = distributionSlice;

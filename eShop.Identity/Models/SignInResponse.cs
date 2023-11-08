@@ -4,10 +4,8 @@ namespace eShop.Identity.Models
 {
     public class SignInResponse
     {
-        [JsonProperty("succeeded")]
         public bool Succeeded { get; set; }
-
-        [JsonProperty("validReturnUrl")]
+        public bool? ConfirmationRequired { get; set; }
         public string ValidReturnUrl { get; set; }
     }
 }

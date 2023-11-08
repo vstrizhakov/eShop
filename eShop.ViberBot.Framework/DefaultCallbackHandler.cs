@@ -8,18 +8,18 @@ namespace eShop.ViberBot.Framework
     {
         private readonly IBotContextConverter _botContextConverter;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IViberBotClient _botClient;
+        private readonly IViewRunner _viewRunner;
         private readonly IContextStore _contextStore;
 
         public DefaultCallbackHandler(
             IBotContextConverter botContextConverter,
             IServiceProvider serviceProvider,
-            IViberBotClient botClient,
+            IViewRunner viewRunner,
             IContextStore contextStore)
         {
             _botContextConverter = botContextConverter;
             _serviceProvider = serviceProvider;
-            _botClient = botClient;
+            _viewRunner = viewRunner;
             _contextStore = contextStore;
         }
 
@@ -46,7 +46,9 @@ namespace eShop.ViberBot.Framework
                 }
                 else if (message.Type == MessageType.Contact)
                 {
-                    response = await HandleAsync(callback, ViberContext.ContactMessage);
+                    var activeContext = await _contextStore.GetActiveContextAsync(callback);
+
+                    response = await HandleAsync(callback, ViberContext.ContactMessage, activeContext: activeContext);
                 }
             }
 
@@ -81,17 +83,7 @@ namespace eShop.ViberBot.Framework
 
                 if (view != null)
                 {
-                    message = view.Build(_botContextConverter);
-
-                    if (message != null)
-                    {
-                        if (context != ViberContext.ConversationStarted)
-                        {
-                            await _botClient.SendMessageAsync(message);
-
-                            message = null;
-                        }
-                    }
+                    message = await _viewRunner.RunAsync(view);
                 }
             }
 
@@ -134,7 +126,7 @@ namespace eShop.ViberBot.Framework
             return context switch
             {
                 ViberContext.ConversationStarted => new ConversationStartedStrategy(action, parameters),
-                ViberContext.ContactMessage => new ContactMessageStrategy(),
+                ViberContext.ContactMessage => new ContactMessageStrategy(action, parameters, activeAction, activeParameters),
                 ViberContext.TextMessage => new TextMessageStrategy(action, parameters, activeAction, activeParameters),
                 _ => throw new InvalidOperationException(),
             };

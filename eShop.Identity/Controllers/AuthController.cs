@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
 using Duende.IdentityServer.Services;
+using eShop.Bots.Links;
 using eShop.Identity.Entities;
 using eShop.Identity.Models;
+using eShop.Identity.Repositories;
 using eShop.Messaging;
-using eShop.Messaging.Models;
 using eShop.Messaging.Models.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace eShop.Identity.Controllers
 {
@@ -18,30 +22,26 @@ namespace eShop.Identity.Controllers
         [HttpPost("signUp")]
         public async Task<ActionResult<SignUpResponse>> SignUp(
             [FromBody] SignUpRequest request,
+            [FromServices] IUserRepository userRepository,
             [FromServices] UserManager<User> userManager,
-            [FromServices] IProducer producer,
             [FromServices] IMapper mapper)
         {
             var succeeded = false;
 
             if (!User.Identity.IsAuthenticated)
             {
-                var user = mapper.Map<User>(request);
-                var result = await userManager.CreateAsync(user, request.Password);
+                var user = await userRepository.GetByPhoneNumberAsync(request.PhoneNumber);
+                if (user == null)
+                {
+                    user = mapper.Map<User>(request);
+                    var result = await userManager.CreateAsync(user, request.Password);
 
-                succeeded = result.Succeeded;
+                    succeeded = result.Succeeded;
+                }
 
                 if (succeeded)
                 {
-                    var message = new RegisterIdentityUserRequest
-                    {
-                        IdentityUserId = user.Id,
-                        FirstName = request.FirstName,
-                        LastName = request.LastName,
-                        Email = request.Email,
-                        PhoneNumber = request.PhoneNumber,
-                    };
-                    producer.Publish(message);
+                    await HttpContext.SignInAsync("PhoneNumberConfirmationCookie", BuildUserPrincipal(user));
                 }
             }
 
@@ -52,25 +52,116 @@ namespace eShop.Identity.Controllers
             return Ok(response);
         }
 
+        [HttpPost("checkConfirmation")]
+        public async Task<ActionResult<CheckConfirmationResponse>> GetSignUpConfirmation(
+            [FromServices] UserManager<User> userManager,
+            [FromServices] SignInManager<User> signInManager,
+            [FromServices] ITelegramLinkGenerator telegramLinkGenerator,
+            [FromServices] IViberLinkGenerator viberLinkGenerator)
+        {
+            var result = await HttpContext.AuthenticateAsync("PhoneNumberConfirmationCookie");
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            var response = new CheckConfirmationResponse
+            {
+                Confirmed = false,
+            };
+
+            var principal = result.Principal;
+            if (principal != null)
+            {
+                var userId = principal.FindFirstValue("user_id")!;
+                if (userId != null)
+                {
+                    var user = await userManager.FindByIdAsync(userId);
+                    if (user != null)
+                    {
+                        response.Confirmed = user.PhoneNumberConfirmed;
+
+                        if (!response.Confirmed)
+                        {
+                            var token = await userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber!);
+
+                            response.Links = new ConfirmationLinks
+                            {
+                                Telegram = telegramLinkGenerator.Generate("cpn", token),
+                                Viber = viberLinkGenerator.Generate("cpn", token),
+                            };
+                        }
+                        else
+                        {
+                            // TODO: implement persistent
+                            await signInManager.SignInAsync(user, false);
+
+                            await HttpContext.SignOutAsync("PhoneNumberConfirmationCookie");
+                        }
+                    }
+                }
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("signIn")]
+        public async Task<ActionResult<SignInInfo>> SignIn()
+        {
+            var response = new SignInInfo();
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                var result = await HttpContext.AuthenticateAsync("PhoneNumberConfirmationCookie");
+                if (result.Succeeded)
+                {
+                    response.WaitingForConfirmation = true;
+                }
+            }
+
+            return Ok(response);
+        }
 
         [HttpPost("signIn")]
         public async Task<ActionResult<SignInResponse>> SignIn(
             [FromBody] SignInRequest request,
             [FromServices] IIdentityServerInteractionService interaction,
+            [FromServices] IUserRepository userRepository,
+            [FromServices] UserManager<User> userManager,
             [FromServices] SignInManager<User> signInManager,
             [FromServices] IServerUrls serverUrls)
         {
             var response = new SignInResponse();
-            var succeeded = false;
 
             if (!User.Identity.IsAuthenticated)
             {
-                var result = await signInManager.PasswordSignInAsync(request.Username, request.Password, request.Remember, false);
-                succeeded = result.Succeeded;
+                var user = await userRepository.GetByPhoneNumberAsync(request.PhoneNumber);
+                if (user != null)
+                {
+                    var password = request.Password;
+                    var isValidCrendetials = await userManager.CheckPasswordAsync(user, password);
+                    if (isValidCrendetials)
+                    {
+                        if (user.PhoneNumberConfirmed)
+                        {
+                            var result = await signInManager.PasswordSignInAsync(user, request.Password, request.Remember, false);
+                            response.Succeeded = result.Succeeded;
+                        }
+                        else
+                        {
+                            response.ConfirmationRequired = true;
+
+                            await HttpContext.SignInAsync("PhoneNumberConfirmationCookie", BuildUserPrincipal(user));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                response.Succeeded = true;
             }
 
-            response.Succeeded = succeeded;
-            if (succeeded)
+            if (response.Succeeded)
             {
                 // TODO: Check request.ReturnUrl is null
                 var url = request.ReturnUrl;
@@ -140,6 +231,14 @@ namespace eShop.Identity.Controllers
                     RedirectUrl = logoutInfo?.PostLogoutRedirectUri,
                 },
             });
+        }
+
+        private ClaimsPrincipal BuildUserPrincipal(User user)
+        {
+            var identity = new ClaimsIdentity("PhoneNumberConfirmationCookie");
+            identity.AddClaim(new Claim("user_id", user.Id));
+
+            return new ClaimsPrincipal(identity);
         }
     }
 }

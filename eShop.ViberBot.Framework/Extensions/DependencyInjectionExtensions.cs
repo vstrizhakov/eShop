@@ -10,7 +10,7 @@ namespace eShop.ViberBot.Framework.Extensions
             services.AddScoped<IPipeline, DefaultPipeline>();
 
             services.AddScoped<IContextStore, TContextStore>();
-            //services.AddScoped<ITelegramViewRunner, TelegramViewRunner>();
+            services.AddScoped<IViewRunner, DefaultViewRunner>();
             services.AddScoped<ICallbackHandler, DefaultCallbackHandler>();
 
             return services;

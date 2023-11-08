@@ -8,14 +8,13 @@ using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
 using eShop.Messaging.Models.Distribution.ShopSettings;
-using eShop.Messaging.Models.Telegram;
-using eShop.Messaging.Models.Viber;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using eShop.Bots.Links;
 
 namespace eShop.Distribution
 {
@@ -124,6 +123,16 @@ namespace eShop.Distribution
                 });
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            builder.Services.AddTelegramLinks(options =>
+            {
+                options.Username = builder.Configuration["TelegramBot:Username"];
+            });
+
+            builder.Services.AddViberLinks(options =>
+            {
+                options.ChatUrl = builder.Configuration["ViberBot:ChatUrl"];
+            });
 
             var app = builder.Build();
 

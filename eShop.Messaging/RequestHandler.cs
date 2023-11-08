@@ -16,10 +16,12 @@
         public async Task HandleMessageAsync(TRequest request)
         {
             var response = await _requestHandler.HandleRequestAsync(request);
+            if (response != null)
+            {
+                response.RequestId = request.RequestId; // TODO: seems hukky-hackky
 
-            response.RequestId = request.RequestId; // TODO: seems hukky-hackky
-
-            _producer.Publish(response);
+                _producer.Publish(response);
+            }
         }
     }
 }

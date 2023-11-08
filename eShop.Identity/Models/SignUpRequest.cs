@@ -16,9 +16,7 @@ namespace eShop.Identity.Models
         public string LastName { get; set; }
 
         [Required]
-        public string Email { get; set; }
-
-        [Required]
+        [RegularExpression(@"^\+380[0-9]{9}$")]
         public string PhoneNumber { get; set; }
 
         [Required]

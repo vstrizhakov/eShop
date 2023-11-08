@@ -37,7 +37,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
             redirect_uri: `${window.location.origin}/auth/signIn/callback`,
             post_logout_redirect_uri: `${window.location.origin}/auth/signOut/callback`,
             response_type: "code",
-            scope: "openid profile account api",
+            scope: "openid profile phone account api",
             automaticSilentRenew: true,
         };
 

@@ -46,10 +46,6 @@ namespace eShop.Accounts.Handlers
             {
                 // Publish message with error
             }
-            catch (InvalidProviderException)
-            {
-                // Publish message with error
-            }
 
             return null; // TODO: handle
         }

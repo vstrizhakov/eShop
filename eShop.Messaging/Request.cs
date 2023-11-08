@@ -2,6 +2,6 @@
 {
     public class Message : IMessage
     {
-        public Guid RequestId { get; set; }
+        public Guid RequestId { get; set; } = Guid.NewGuid();
     }
 }

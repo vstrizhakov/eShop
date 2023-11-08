@@ -1,9 +1,8 @@
 import { useParams } from "react-router-dom";
-import { useGetInvitationLinkQuery } from "../api/telegramSlice";
-import { useGetViberInviteLinkQuery } from "../api/viberSlice";
 import { Card, Spinner } from "react-bootstrap";
 import { ReactComponent as Viber } from "../../assets/viber.svg";
 import { ReactComponent as Telegram } from "../../assets/telegram.svg";
+import { useGetAnnouncerInvitationQuery } from "../api/distributionSlice";
 
 const Invitation: React.FC = () => {
     const {
@@ -11,32 +10,26 @@ const Invitation: React.FC = () => {
     } = useParams();
 
     const {
-        isLoading: telegramInvitationLoading,
-        data: telegramInvitation,
-    } = useGetInvitationLinkQuery(providerId!);
+        isLoading,
+        data: invitation,
+    } = useGetAnnouncerInvitationQuery(providerId!);
 
-    const {
-        data: viberInvitation,
-        isLoading: viberInvitationLoading,
-    } = useGetViberInviteLinkQuery(providerId!);
-
-    const isLoading = telegramInvitationLoading || viberInvitationLoading;
 
     return (
         <div className="d-flex flex-column align-items-center justify-content-center mt-5">
             {isLoading && (
                 <Spinner />
             )}
-            {telegramInvitation && viberInvitation && (
+            {invitation && (
                 <Card>
                     <Card.Body className="d-flex gap-4 p-4">
-                        <a target="_blank" href={telegramInvitation.inviteLink} className="d-block text-reset text-decoration-none">
+                        <a target="_blank" href={invitation.telegram} className="d-block text-reset text-decoration-none">
                             <Telegram className="text-white" fill="white" width="4rem" height="4rem" />
                             <center>
                                 <span>Telegram</span>
                             </center>
                         </a>
-                        <a target="_blank" href={viberInvitation.inviteLink} className="d-block text-reset text-decoration-none">
+                        <a target="_blank" href={invitation.viber} className="d-block text-reset text-decoration-none">
                             <Viber fill="white" width="4rem" height="4rem" />
                             <center>
                                 <span>Viber</span>

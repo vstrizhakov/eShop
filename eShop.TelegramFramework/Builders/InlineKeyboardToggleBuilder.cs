@@ -19,12 +19,11 @@ namespace eShop.TelegramFramework.Builders
             var text = currentValue ? element.TrueCaption : element.FalseCaption;
 
             var args = new List<string>();
-            args.Add(element.Action);
             args.AddRange(element.Arguments);
             args.Add((!currentValue).ToString());
             var button = new InlineKeyboardButton(text)
             {
-                CallbackData = _botContextConverter.Serialize(args.ToArray()),
+                CallbackData = _botContextConverter.Serialize(element.Action, args.ToArray()),
             };
 
             return button;

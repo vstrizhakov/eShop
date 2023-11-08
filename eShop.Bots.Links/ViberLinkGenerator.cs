@@ -1,25 +1,25 @@
 ﻿using eShop.Bots.Common;
-using eShop.Viber.Models;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
-namespace eShop.Viber.Services
+namespace eShop.Bots.Links
 {
-    public class ViberInvitationLinkGenerator : IViberInvitationLinkGenerator
+    internal class ViberLinkGenerator : IViberLinkGenerator
     {
         private readonly IBotContextConverter _botContextConverter;
-        private readonly ViberBotConfiguration _viberBotConfiguration;
+        private readonly ViberLinkOptions _viberBotConfiguration;
 
-        public ViberInvitationLinkGenerator(IBotContextConverter botContextConverter, IOptions<ViberBotConfiguration> viberBotConfiguration)
+        public ViberLinkGenerator(IBotContextConverter botContextConverter, IOptions<ViberLinkOptions> viberBotConfiguration)
         {
             _botContextConverter = botContextConverter;
             _viberBotConfiguration = viberBotConfiguration.Value;
         }
 
-        public string Generate(Guid providerId)
+        public string Generate(string action, params string[] args)
         {
-            var viberContext = _botContextConverter.Serialize(ViberContext.RegisterClient, providerId.ToString());
+            var viberContext = _botContextConverter.Serialize(action, args);
 
+            // ViberContext.RegisterClient, providerId.ToString()
             var inviteLink = QueryHelpers.AddQueryString($"viber://pa", new Dictionary<string, string?>()
             {
                 { "chatURI", _viberBotConfiguration.ChatUrl },

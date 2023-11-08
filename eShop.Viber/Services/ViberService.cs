@@ -21,6 +21,12 @@ namespace eShop.Viber.Services
             return user;
         }
 
+        public async Task<ViberUser?> GetUserByViberUserIdAsync(Guid viberUserId)
+        {
+            var user = await _viberUserRepository.GetViberUserByIdAsync(viberUserId);
+            return user;
+        }
+
         public async Task SetAccountIdAsync(ViberUser user, Guid accountId)
         {
             await _viberUserRepository.UpdateAccountIdAsync(user, accountId);
@@ -45,13 +51,6 @@ namespace eShop.Viber.Services
             };
 
             _producer.Publish(internalMessage);
-        }
-
-        public async Task SetRegistrationProviderIdAsync(ViberUser user, Guid providerId)
-        {
-            user.RegistrationProviderId = providerId;
-
-            await _viberUserRepository.UpdateViberUserAsync(user);
         }
 
         public async Task UpdateUserAsync(ViberUser user)

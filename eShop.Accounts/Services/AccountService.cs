@@ -19,6 +19,28 @@ namespace eShop.Accounts.Services
             _producer = producer;
         }
 
+        public async Task<Account> RegisterAccountByIdentityUserIdAsync(Account account)
+        {
+            if (account.IdentityUserId == null)
+            {
+                throw new ArgumentException(nameof(account.IdentityUserId));
+            }
+
+            var identityUserId = account.IdentityUserId;
+
+            var result = await _accountRepository.GetAccountByIdentityUserIdAsync(identityUserId);
+            if (result == null)
+            {
+                result = await UpdateOrCreateAccountAsync(null, account);
+            }
+            else
+            {
+                throw new AccountAlreadyRegisteredException();
+            }
+
+            return result;
+        }
+
         public async Task<Account> RegisterAccountByTelegramUserIdAsync(Guid providerId, Account account)
         {
             if (!account.TelegramUserId.HasValue)
@@ -63,65 +85,60 @@ namespace eShop.Accounts.Services
             return result;
         }
 
-        private async Task<Account> UpdateOrCreateAccountAsync(Guid providerId, Account account)
+        private async Task<Account> UpdateOrCreateAccountAsync(Guid? providerId, Account account)
         {
             Account result;
 
-            var provider = await _accountRepository.GetAccountByIdAsync(providerId);
-            if (provider != null)
+            if (providerId.HasValue)
             {
-                var existingAccount = await _accountRepository.GetAccountByPhoneNumberAsync(account.PhoneNumber);
-                if (existingAccount == null)
+                var provider = await _accountRepository.GetAccountByIdAsync(providerId.Value);
+                if (provider == null)
                 {
-                    result = account;
-
-                    await _accountRepository.CreateAccountAsync(result);
-
-                    var @event = new Messaging.Models.AccountRegisteredEvent
-                    {
-                        Account = _mapper.Map<Messaging.Models.Account>(result),
-                        ProviderId = providerId,
-                    };
-                    _producer.Publish(@event);
+                    throw new ProviderNotExistsException();
                 }
-                else
+            }
+
+            var existingAccount = await _accountRepository.GetAccountByPhoneNumberAsync(account.PhoneNumber);
+            if (existingAccount == null)
+            {
+                result = account;
+
+                await _accountRepository.CreateAccountAsync(result);
+
+                var @event = new Messaging.Models.AccountRegisteredEvent
                 {
-                    if (existingAccount.Id != providerId)
-                    {
-                        if (account.TelegramUserId.HasValue)
-                        {
-                            existingAccount.TelegramUserId = account.TelegramUserId;
-                        }
-
-                        if (account.ViberUserId.HasValue)
-                        {
-                            existingAccount.ViberUserId = account.ViberUserId;
-                        }
-
-                        if (account.IdentityUserId != null)
-                        {
-                            existingAccount.IdentityUserId = account.IdentityUserId;
-                        }
-
-                        await _accountRepository.UpdateAccountAsync(existingAccount);
-
-                        var @event = new Messaging.Models.AccountUpdatedEvent
-                        {
-                            Account = _mapper.Map<Messaging.Models.Account>(existingAccount),
-                        };
-                        _producer.Publish(@event);
-
-                        result = existingAccount;
-                    }
-                    else
-                    {
-                        throw new InvalidProviderException();
-                    }
-                }
+                    Account = _mapper.Map<Messaging.Models.Account>(result),
+                    ProviderId = providerId,
+                };
+                _producer.Publish(@event);
             }
             else
             {
-                throw new ProviderNotExistsException();
+                if (account.TelegramUserId.HasValue)
+                {
+                    existingAccount.TelegramUserId = account.TelegramUserId;
+                }
+
+                if (account.ViberUserId.HasValue)
+                {
+                    existingAccount.ViberUserId = account.ViberUserId;
+                }
+
+                if (account.IdentityUserId != null)
+                {
+                    existingAccount.IdentityUserId = account.IdentityUserId;
+                }
+
+                await _accountRepository.UpdateAccountAsync(existingAccount);
+
+                var @event = new Messaging.Models.AccountUpdatedEvent
+                {
+                    Account = _mapper.Map<Messaging.Models.Account>(existingAccount),
+                    ProviderId = providerId,
+                };
+                _producer.Publish(@event);
+
+                result = existingAccount;
             }
 
             return result;

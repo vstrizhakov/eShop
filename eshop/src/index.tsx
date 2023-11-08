@@ -16,6 +16,7 @@ import SignOut from './features/signOut/SignOut';
 import SignUp from './features/signUp/SignUp';
 import Main from './features/main/Main';
 import AnnounceContainer from './features/announces/view/AnnounceContainer';
+import Confirm from './features/confirm/Confirm';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
             {
                 path: "/auth/signOut/callback",
                 element: <div>Signing you out...</div>,
+            },
+            {
+                path: "/auth/confirm",
+                element: <Confirm />,
             },
             {
                 path: "/addAnnounce",

@@ -15,12 +15,9 @@ namespace eShop.TelegramFramework.Builders
 
         public InlineKeyboardButton Build(InlineKeyboardAction element)
         {
-            var args = new List<string>();
-            args.Add(element.Action);
-            args.AddRange(element.Arguments);
             var button = new InlineKeyboardButton(element.Caption)
             {
-                CallbackData = _botContextConverter.Serialize(args.ToArray()),
+                CallbackData = _botContextConverter.Serialize(element.Action, element.Arguments),
             };
 
             return button;

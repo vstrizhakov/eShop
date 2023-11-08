@@ -3,7 +3,7 @@ using eShop.Viber.Models;
 using eShop.ViberBot;
 using eShop.ViberBot.Framework;
 
-namespace eShop.Viber.ViberBotFramework.Views
+namespace eShop.Viber.ViberBotFramework.Views.Registration
 {
     public class SuccessfullyRegisteredView : IViberView
     {

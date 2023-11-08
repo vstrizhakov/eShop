@@ -17,5 +17,6 @@
         public const string SetPreferredCurrency = "setprefcur";
         public const string SetCurrencyRate = "setcurra";
         public const string SetShowSales = "setshsales";
+        public const string ConfirmPhoneNumber = "cpn";
     }
 }

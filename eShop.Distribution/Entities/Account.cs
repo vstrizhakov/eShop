@@ -6,7 +6,7 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public bool IsActivated { get; set; }
-        public Guid ProviderId { get; set; }
+        public Guid? ProviderId { get; set; }
 
         public ICollection<TelegramChat> TelegramChats { get; set; } = new List<TelegramChat>();
         public ViberChat? ViberChat { get; set; }

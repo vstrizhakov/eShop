@@ -14,6 +14,7 @@ public static class Config
         {
             new IdentityResources.OpenId(),
             new IdentityResources.Profile(),
+            new IdentityResources.Phone(),
             new IdentityResource
             {
                 Name = IdentityAccountScope,
@@ -63,6 +64,7 @@ public static class Config
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Phone,
                     IdentityAccountScope,
                     ApiScope,
                 },
@@ -79,6 +81,7 @@ public static class Config
                 {
                     host,
                 },
+                AlwaysIncludeUserClaimsInIdToken = true,
             },
         };
 }

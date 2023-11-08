@@ -7,19 +7,15 @@ namespace eShop.Identity.Models
     {
         [Required]
         [MaxLength(100)]
-        [JsonProperty("username")]
-        public string Username { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required]
         [MaxLength(100)]
-        [JsonProperty("password")]
         public string Password { get; set; }
 
-        [JsonProperty("remember")]
         public bool Remember { get; set; }
 
         [MaxLength(2000)]
-        [JsonProperty("returnUrl")]
         public string ReturnUrl { get; set; }
     }
 }

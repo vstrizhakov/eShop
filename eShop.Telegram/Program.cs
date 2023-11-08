@@ -110,7 +110,6 @@ namespace eShop.Telegram
                     options.Audience = "api";
                 });
 
-            builder.Services.AddScoped<ITelegramInvitationLinkGenerator, TelegramInvitationLinkGenerator>();
             builder.Services.AddScoped<ITelegramService, TelegramService>();
 
             builder.Services.AddScoped<ITelegramMiddleware, IdentityManagementTelegramMiddleware>();

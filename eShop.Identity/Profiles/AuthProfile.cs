@@ -8,7 +8,7 @@ namespace eShop.Identity.Profiles
         public AuthProfile()
         {
             CreateMap<SignUpRequest, User>()
-                .ForMember(dest => dest.UserName, options => options.MapFrom(src => src.Email))
+                .ForMember(dest => dest.UserName, options => options.Ignore())
                 .ForMember(dest => dest.NormalizedUserName, options => options.Ignore())
                 .ForMember(dest => dest.NormalizedEmail, options => options.Ignore())
                 .ForMember(dest => dest.EmailConfirmed, options => options.Ignore())

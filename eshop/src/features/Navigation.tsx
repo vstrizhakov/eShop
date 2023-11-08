@@ -4,12 +4,19 @@ import { AuthContextProps } from "./auth/authContext";
 import { withAuth } from "./auth/withAuth";
 import DropdownAnchorToggle from "../components/DropdownAnchorToggle";
 import { LinkContainer } from "react-router-bootstrap";
+import { useLocation } from "react-router-dom";
 
 const Navigation: React.FC<AuthContextProps> = props => {
     const {
         isAuthenticated,
+        claims,
         signIn,
+        signOut,
     } = props;
+
+    const location = useLocation();
+
+    console.log(claims);
 
     return (
         <Navbar>
@@ -25,15 +32,23 @@ const Navigation: React.FC<AuthContextProps> = props => {
                                 Володимир Стрижаков
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
+                                <LinkContainer to="/">
+                                    <Dropdown.Item>Анонси</Dropdown.Item>
+                                </LinkContainer>
                                 <LinkContainer to="/clients">
                                     <Dropdown.Item>Клієнти</Dropdown.Item>
                                 </LinkContainer>
+                                <Dropdown.Item onClick={signOut}>Вийти з акаунту</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : (
-                        <Button onClick={signIn} size="sm">
-                            Sign In
-                        </Button>
+                        <>
+                            {!location.pathname.includes("/auth") && (
+                                <Button onClick={signIn} size="sm" className="fw-semibold">
+                                    Увійти
+                                </Button>
+                            )}
+                        </>
                     )}
                 </Navbar.Collapse>
             </Container>

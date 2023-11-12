@@ -1,147 +1,114 @@
-﻿using AutoMapper;
-using eShop.Accounts.Entities;
+﻿using eShop.Accounts.Entities;
 using eShop.Accounts.Exceptions;
 using eShop.Accounts.Repositories;
-using eShop.Messaging;
 
 namespace eShop.Accounts.Services
 {
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly IMapper _mapper;
-        private readonly IProducer _producer;
 
-        public AccountService(IAccountRepository accountRepository, IMapper mapper, IProducer producer)
+        public AccountService(IAccountRepository accountRepository)
         {
             _accountRepository = accountRepository;
-            _mapper = mapper;
-            _producer = producer;
         }
 
-        public async Task<Account> RegisterAccountByIdentityUserIdAsync(Account account)
+        public async Task<Account?> GetAccountByPhoneNumberAsync(string phoneNumber)
         {
-            if (account.IdentityUserId == null)
+            if (phoneNumber == null)
             {
-                throw new ArgumentException(nameof(account.IdentityUserId));
+                throw new ArgumentNullException(nameof(phoneNumber));
             }
 
-            var identityUserId = account.IdentityUserId;
+            var account = await _accountRepository.GetAccountByPhoneNumberAsync(phoneNumber);
+            return account;
+        }
 
-            var result = await _accountRepository.GetAccountByIdentityUserIdAsync(identityUserId);
-            if (result == null)
+        public async Task<Account> RegisterAccountAsync(string phoneNumber, Account account)
+        {
+            if (phoneNumber == null)
             {
-                result = await UpdateOrCreateAccountAsync(null, account);
+                throw new ArgumentNullException(nameof(phoneNumber));
             }
-            else
+
+            if (account == null)
+            {
+                throw new ArgumentNullException(nameof(account));
+            }
+
+            var result = await _accountRepository.GetAccountByPhoneNumberAsync(phoneNumber);
+            if (result != null)
             {
                 throw new AccountAlreadyRegisteredException();
             }
 
-            return result;
-        }
+            await _accountRepository.CreateAccountAsync(account);
 
-        public async Task<Account> RegisterAccountByTelegramUserIdAsync(Guid providerId, Account account)
-        {
-            if (!account.TelegramUserId.HasValue)
-            {
-                throw new ArgumentException(nameof(account.TelegramUserId));
-            }
-
-            var telegramUserId = account.TelegramUserId.Value;
-
-            var result = await _accountRepository.GetAccountByTelegramUserIdAsync(telegramUserId);
-            if (result == null)
-            {
-                result = await UpdateOrCreateAccountAsync(providerId, account);
-            }
-            else
-            {
-                throw new AccountAlreadyRegisteredException();
-            }
+            result = account;
 
             return result;
         }
 
-        public async Task<Account> RegisterAccountByViberUserIdAsync(Guid providerId, Account account)
+        public async Task LinkTelegramUserAsync(Account account, Guid telegramUserId)
         {
-            if (!account.ViberUserId.HasValue)
+            if (account == null)
             {
-                throw new ArgumentException(nameof(account.ViberUserId));
+                throw new ArgumentNullException(nameof(account));
             }
 
-            var viberUserId = account.ViberUserId.Value;
-
-            var result = await _accountRepository.GetAccountByViberUserIdAsync(viberUserId);
-            if (result == null)
+            if (account.TelegramUserId.HasValue)
             {
-                result = await UpdateOrCreateAccountAsync(providerId, account);
-            }
-            else
-            {
-                throw new AccountAlreadyRegisteredException();
+                throw new InvalidOperationException(); // TODO: make new exception type
             }
 
-            return result;
+            account.TelegramUserId = telegramUserId;
+
+            await _accountRepository.UpdateAccountAsync(account);
         }
 
-        private async Task<Account> UpdateOrCreateAccountAsync(Guid? providerId, Account account)
+        public async Task LinkViberUserAsync(Account account, Guid viberUserId)
         {
-            Account result;
-
-            if (providerId.HasValue)
+            if (account == null)
             {
-                var provider = await _accountRepository.GetAccountByIdAsync(providerId.Value);
-                if (provider == null)
-                {
-                    throw new ProviderNotExistsException();
-                }
+                throw new ArgumentNullException(nameof(account));
             }
 
-            var existingAccount = await _accountRepository.GetAccountByPhoneNumberAsync(account.PhoneNumber);
-            if (existingAccount == null)
+            if (account.ViberUserId.HasValue)
             {
-                result = account;
-
-                await _accountRepository.CreateAccountAsync(result);
-
-                var @event = new Messaging.Models.AccountRegisteredEvent
-                {
-                    Account = _mapper.Map<Messaging.Models.Account>(result),
-                    ProviderId = providerId,
-                };
-                _producer.Publish(@event);
-            }
-            else
-            {
-                if (account.TelegramUserId.HasValue)
-                {
-                    existingAccount.TelegramUserId = account.TelegramUserId;
-                }
-
-                if (account.ViberUserId.HasValue)
-                {
-                    existingAccount.ViberUserId = account.ViberUserId;
-                }
-
-                if (account.IdentityUserId != null)
-                {
-                    existingAccount.IdentityUserId = account.IdentityUserId;
-                }
-
-                await _accountRepository.UpdateAccountAsync(existingAccount);
-
-                var @event = new Messaging.Models.AccountUpdatedEvent
-                {
-                    Account = _mapper.Map<Messaging.Models.Account>(existingAccount),
-                    ProviderId = providerId,
-                };
-                _producer.Publish(@event);
-
-                result = existingAccount;
+                throw new InvalidOperationException(); // TODO: make new exception type
             }
 
-            return result;
+            account.ViberUserId = viberUserId;
+
+            await _accountRepository.UpdateAccountAsync(account);
+        }
+
+        public async Task LinkIdentityUserAsync(Account account, string identityUserId)
+        {
+            if (account == null)
+            {
+                throw new ArgumentNullException(nameof(account));
+            }
+
+            if (identityUserId == null)
+            {
+                throw new ArgumentNullException(nameof(identityUserId));
+            }
+
+            if (account.IdentityUserId != null)
+            {
+                throw new InvalidOperationException(); // TODO: make new exception type
+            }
+
+            account.IdentityUserId = identityUserId;
+
+            await _accountRepository.UpdateAccountAsync(account);
+        }
+
+        public async Task<Account?> GetAccountByIdAsync(Guid id)
+        {
+            var account = await _accountRepository.GetAccountByIdAsync(id);
+            return account;
         }
     }
 }

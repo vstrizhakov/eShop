@@ -40,7 +40,7 @@ namespace eShop.Accounts
 
             builder.Services.AddRequestHandler<RegisterTelegramUserRequest, RegisterTelegramUserResponse, RegisterTelegramUserRequestHandler>();
             builder.Services.AddRequestHandler<RegisterViberUserRequest, RegisterViberUserResponse, RegisterViberUserRequestHandler>();
-            builder.Services.AddRequestHandler<RegisterIdentityUserRequest, RegisterIdentityUserResponse, RegisterIdentityUserRequestHandler>();
+            builder.Services.AddMessageHandler<GetIdentityUserResponse, GetIdentityUserResponseHandler>();
 
             if (builder.Environment.IsDevelopment())
             {

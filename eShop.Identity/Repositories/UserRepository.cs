@@ -6,18 +6,23 @@ namespace eShop.Identity.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly IdentityDbContext _dbContext;
+        private readonly IdentityDbContext _context;
 
-        public UserRepository(IdentityDbContext dbContext)
+        public UserRepository(IdentityDbContext context)
         {
-            _dbContext = dbContext;
+            _context = context;
         }
 
         public async Task<User?> GetByPhoneNumberAsync(string phoneNumber)
         {
-            var user = await _dbContext.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(e => e.PhoneNumber == phoneNumber);
             return user;
+        }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -43,9 +43,14 @@ interface ConfirmationLinks {
     viber: string,
 };
 
+export interface CheckConfirmationRequest {
+    returnUrl?: string,
+};
+
 export interface CheckConfirmationResponse {
     confirmed: boolean,
     links?: ConfirmationLinks,
+    validReturnUrl?: string,
 };
 
 export const authSlice = apiSlice.injectEndpoints({
@@ -84,10 +89,11 @@ export const authSlice = apiSlice.injectEndpoints({
                 },
             }),
         }),
-        checkConfirmation: builder.mutation<CheckConfirmationResponse, unknown>({
-            query: () => ({
+        checkConfirmation: builder.mutation<CheckConfirmationResponse, CheckConfirmationRequest>({
+            query: request => ({
                 url: "/auth/checkConfirmation",
                 method: "POST",
+                body: request,
             }),
         }),
     }),

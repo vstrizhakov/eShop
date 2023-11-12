@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Duende.IdentityServer.Services;
 using eShop.Bots.Links;
 using eShop.Identity.Entities;
@@ -11,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
+using System;
 using System.Security.Claims;
 
 namespace eShop.Identity.Controllers
@@ -54,10 +57,13 @@ namespace eShop.Identity.Controllers
 
         [HttpPost("checkConfirmation")]
         public async Task<ActionResult<CheckConfirmationResponse>> GetSignUpConfirmation(
+            [FromBody] CheckConfirmationRequest request,
             [FromServices] UserManager<User> userManager,
             [FromServices] SignInManager<User> signInManager,
             [FromServices] ITelegramLinkGenerator telegramLinkGenerator,
-            [FromServices] IViberLinkGenerator viberLinkGenerator)
+            [FromServices] IViberLinkGenerator viberLinkGenerator,
+            [FromServices] IIdentityServerInteractionService interaction,
+            [FromServices] IServerUrls serverUrls)
         {
             var result = await HttpContext.AuthenticateAsync("PhoneNumberConfirmationCookie");
             if (!result.Succeeded)
@@ -83,12 +89,10 @@ namespace eShop.Identity.Controllers
 
                         if (!response.Confirmed)
                         {
-                            var token = await userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber!);
-
                             response.Links = new ConfirmationLinks
                             {
-                                Telegram = telegramLinkGenerator.Generate("cpn", token),
-                                Viber = viberLinkGenerator.Generate("cpn", token),
+                                Telegram = telegramLinkGenerator.Generate("cpn"),
+                                Viber = viberLinkGenerator.Generate("cpn"),
                             };
                         }
                         else
@@ -97,6 +101,8 @@ namespace eShop.Identity.Controllers
                             await signInManager.SignInAsync(user, false);
 
                             await HttpContext.SignOutAsync("PhoneNumberConfirmationCookie");
+
+                            response.ValidReturnUrl = await GetValidReturnUrlAsync(interaction, serverUrls, request.ReturnUrl);
                         }
                     }
                 }
@@ -163,17 +169,7 @@ namespace eShop.Identity.Controllers
 
             if (response.Succeeded)
             {
-                // TODO: Check request.ReturnUrl is null
-                var url = request.ReturnUrl;
-                var context = await interaction.GetAuthorizationContextAsync(url);
-                if (context != null)
-                {
-                    response.ValidReturnUrl = url;
-                }
-                else
-                {
-                    response.ValidReturnUrl = serverUrls.BaseUrl;
-                }
+                response.ValidReturnUrl = await GetValidReturnUrlAsync(interaction, serverUrls, request.ReturnUrl);
             }
 
             return Ok(response);
@@ -239,6 +235,22 @@ namespace eShop.Identity.Controllers
             identity.AddClaim(new Claim("user_id", user.Id));
 
             return new ClaimsPrincipal(identity);
+        }
+
+        private async Task<string> GetValidReturnUrlAsync(IIdentityServerInteractionService interaction, IServerUrls serverUrls, string? returnUrl)
+        {
+            string validReturnUrl;
+            var context = await interaction.GetAuthorizationContextAsync(returnUrl);
+            if (context != null)
+            {
+                validReturnUrl = returnUrl!;
+            }
+            else
+            {
+                validReturnUrl = serverUrls.BaseUrl;
+            }
+
+            return validReturnUrl;
         }
     }
 }

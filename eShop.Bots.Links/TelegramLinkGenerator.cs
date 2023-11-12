@@ -15,11 +15,16 @@ namespace eShop.Bots.Links
             _options = options.Value;
         }
 
+        public string Generate()
+        {
+            var link = $"https://t.me/{_options.Username}";
+            return link;
+        }
+
         public string Generate(string action, params string[] args)
         {
             var context = _botContextConverter.Serialize(action, args);
 
-            // TelegramAction.RegisterClient, providerId.ToString()
             var link = QueryHelpers.AddQueryString($"https://t.me/{_options.Username}", "start", context);
             return link;
         }

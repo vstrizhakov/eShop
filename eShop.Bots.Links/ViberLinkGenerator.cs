@@ -1,6 +1,7 @@
 ﻿using eShop.Bots.Common;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace eShop.Bots.Links
 {
@@ -15,11 +16,20 @@ namespace eShop.Bots.Links
             _viberBotConfiguration = viberBotConfiguration.Value;
         }
 
+        public string Generate()
+        {
+            var inviteLink = QueryHelpers.AddQueryString($"viber://pa", new Dictionary<string, string?>()
+            {
+                { "chatURI", _viberBotConfiguration.ChatUrl },
+            });
+
+            return inviteLink;
+        }
+
         public string Generate(string action, params string[] args)
         {
             var viberContext = _botContextConverter.Serialize(action, args);
 
-            // ViberContext.RegisterClient, providerId.ToString()
             var inviteLink = QueryHelpers.AddQueryString($"viber://pa", new Dictionary<string, string?>()
             {
                 { "chatURI", _viberBotConfiguration.ChatUrl },

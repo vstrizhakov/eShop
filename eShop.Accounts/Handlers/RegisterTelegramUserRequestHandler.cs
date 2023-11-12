@@ -2,6 +2,7 @@
 using eShop.Accounts.Exceptions;
 using eShop.Accounts.Services;
 using eShop.Messaging;
+using eShop.Messaging.Models.Identity;
 using eShop.Messaging.Models.Telegram;
 
 namespace eShop.Accounts.Handlers
@@ -9,45 +10,46 @@ namespace eShop.Accounts.Handlers
     public class RegisterTelegramUserRequestHandler : IRequestHandler<RegisterTelegramUserRequest, RegisterTelegramUserResponse>
     {
         private readonly IAccountService _accountService;
+        private readonly IProducer _producer;
 
-        public RegisterTelegramUserRequestHandler(IAccountService accountService)
+        public RegisterTelegramUserRequestHandler(IAccountService accountService, IProducer producer)
         {
             _accountService = accountService;
+            _producer = producer;
         }
 
-        public async Task<RegisterTelegramUserResponse> HandleRequestAsync(RegisterTelegramUserRequest request)
+        public async Task<RegisterTelegramUserResponse?> HandleRequestAsync(RegisterTelegramUserRequest request)
         {
-            try
+            RegisterTelegramUserResponse? response = null;
+
+            var phoneNumber = request.PhoneNumber;
+            var telegramUserId = request.TelegramUserId;
+
+            var account = await _accountService.GetAccountByPhoneNumberAsync(phoneNumber);
+            if (account != null)
             {
-                var providerId = request.ProviderId;
-                var accountInfo = new Account
+                await _accountService.LinkTelegramUserAsync(account, telegramUserId);
+
+                response = new RegisterTelegramUserResponse
                 {
+                    TelegramUserId = telegramUserId,
+                    AccountId = account.Id,
+                };
+            }
+            else
+            {
+                var getIdentityUserRequest = new GetIdentityUserRequest
+                {
+                    PhoneNumber = phoneNumber,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
-                    PhoneNumber = request.PhoneNumber,
-                    TelegramUserId = request.TelegramUserId,
+                    ProviderId = request.ProviderId,
+                    TelegramUserId = telegramUserId,
                 };
-
-                var account = await _accountService.RegisterAccountByTelegramUserIdAsync(providerId, accountInfo);
-
-                var response = new RegisterTelegramUserResponse
-                {
-                    AccountId = account.Id,
-                    TelegramUserId = account.TelegramUserId!.Value,
-                };
-
-                return response;
-            }
-            catch (AccountAlreadyRegisteredException)
-            {
-                // Publish message with error
-            }
-            catch (ProviderNotExistsException)
-            {
-                // Publish message with error
+                _producer.Publish(getIdentityUserRequest);
             }
 
-            return null; // TODO: handle
+            return response;
         }
     }
 }

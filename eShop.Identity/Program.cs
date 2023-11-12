@@ -84,8 +84,7 @@ namespace eShop.Identity
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
 
-            builder.Services.AddMessageHandler<RegisterIdentityUserResponse, RegisterIdentityUserResponseHandler>();
-            builder.Services.AddRequestHandler<ConfirmPhoneNumberByViberRequest, ConfirmPhoneNumberByViberResponse, ConfirmPhoneNumberByViberRequestHandler>();
+            builder.Services.AddRequestHandler<GetIdentityUserRequest, GetIdentityUserResponse, GetIdentityUserRequestHandler>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { CheckConfirmationResponse, useCheckConfirmationMutation } from "../api/authSlice";
+import { CheckConfirmationRequest, CheckConfirmationResponse, useCheckConfirmationMutation } from "../api/authSlice";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Confirm: React.FC = () => {
-    
+
     const [searchParams] = useSearchParams();
     const returnUrl = useMemo(() => searchParams.get("returnUrl"), [searchParams]);
 
@@ -12,20 +12,30 @@ const Confirm: React.FC = () => {
     const [confirmationInfo, setConfirmationInfo] = useState<CheckConfirmationResponse>();
 
     const updateConfirmationInfo = useCallback(async () => {
-        const confirmationInfo = await checkConfirmation(undefined).unwrap();
+        const request: CheckConfirmationRequest = {
+            returnUrl: returnUrl ?? undefined,
+        };
+        const confirmationInfo = await checkConfirmation(request).unwrap();
         setConfirmationInfo(confirmationInfo);
-    }, [checkConfirmation]);
+    }, [checkConfirmation, returnUrl]);
 
     useEffect(() => {
         updateConfirmationInfo();
     }, [updateConfirmationInfo]);
 
-    const confirmed = confirmationInfo?.confirmed;
+    const navigate = useNavigate();
+
     useEffect(() => {
-        if (confirmed && returnUrl) {
-            window.location.assign(returnUrl);
-        } 
-    }, [confirmed]);
+        if (confirmationInfo) {
+            if (confirmationInfo.confirmed) {
+                if (confirmationInfo.validReturnUrl) {
+                    window.location.assign(confirmationInfo.validReturnUrl);
+                } else {
+                    navigate("/");
+                }
+            }
+        }
+    }, [confirmationInfo]);
 
     return (
         <div>

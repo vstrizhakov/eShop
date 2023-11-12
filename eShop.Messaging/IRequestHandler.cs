@@ -4,6 +4,6 @@
         where TRequest : notnull, IRequest<TResponse>
         where TResponse : notnull, IResponse
     {
-        Task<TResponse> HandleRequestAsync(TRequest request);
+        Task<TResponse?> HandleRequestAsync(TRequest request);
     }
 }

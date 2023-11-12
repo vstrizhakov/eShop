@@ -2,7 +2,7 @@
 import { Button, Form as BootstrapForm, Row, Col, Anchor } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 import { connect, ConnectedProps } from "react-redux";
-import { useHref, useNavigate, useSearchParams } from "react-router-dom";
+import { createSearchParams, useHref, useNavigate, useSearchParams } from "react-router-dom";
 import { RootState } from "../../app/store";
 import TextField from "../../components/TextField";
 import { useGetSignInInfoQuery, useSignInMutation } from "../api/authSlice";
@@ -59,7 +59,10 @@ const SignIn: React.FC<PropsFromRedux> = (props) => {
                 }
             } else {
                 if (response.confirmationRequired) {
-                    navigate(`/auth/confirm?returnUrl=${returnUrl}`);
+                    const searchParams = createSearchParams({
+                        returnUrl,
+                    });
+                    navigate(`/auth/confirm?${searchParams}`);
                 } else {
                     setIsError(true);
                 }

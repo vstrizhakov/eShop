@@ -76,7 +76,7 @@ namespace eShop.Viber
             builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
             builder.Services.AddRabbitMqProducer();
 
-            builder.Services.AddMessageListener<RegisterViberUserResponse>();
+            builder.Services.AddMessageHandler<RegisterViberUserResponse, RegisterViberUserResponseHandler>();
             builder.Services.AddMessageHandler<BroadcastCompositionToViberMessage, BroadcastCompositionToViberMessageHandler>();
             builder.Services.AddMessageListener<GetComissionSettingsResponse>();
             builder.Services.AddMessageListener<GetComissionAmountResponse>();
@@ -93,7 +93,6 @@ namespace eShop.Viber
             builder.Services.AddMessageListener<GetCurrenciesResponse>();
             builder.Services.AddMessageListener<SetShowSalesResponse>();
             builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
-            builder.Services.AddMessageHandler<ConfirmPhoneNumberByViberResponse, ConfirmPhoneNumberByViberResponseHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

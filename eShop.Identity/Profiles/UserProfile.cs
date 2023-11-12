@@ -1,11 +1,12 @@
 ﻿using eShop.Identity.Entities;
 using eShop.Identity.Models;
+using eShop.Messaging.Models.Identity;
 
 namespace eShop.Identity.Profiles
 {
-    public class AuthProfile : AutoMapper.Profile
+    public class UserProfile : AutoMapper.Profile
     {
-        public AuthProfile()
+        public UserProfile()
         {
             CreateMap<SignUpRequest, User>()
                 .ForMember(dest => dest.UserName, options => options.Ignore())

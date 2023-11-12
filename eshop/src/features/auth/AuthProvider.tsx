@@ -77,7 +77,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
 
             const state = (user?.state as any);
             if (state?.returnUrl) {
-                window.location.replace(state.returnUrl);
+                window.location.assign(state.returnUrl);
             }
         } catch (error) {
         }
@@ -88,7 +88,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
 
         const returnUrl = response.state?.returnUrl;
         if (returnUrl) {
-            window.location.replace(returnUrl);
+            window.location.assign(returnUrl);
         }
     }, []);
 

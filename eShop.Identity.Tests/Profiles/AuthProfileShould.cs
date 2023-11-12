@@ -12,7 +12,7 @@ namespace eShop.Identity.Tests.Profiles
 
             var configuration = new MapperConfiguration(config =>
             {
-                config.AddProfile<AuthProfile>();
+                config.AddProfile<UserProfile>();
             });
 
             // Act & Assert

@@ -1,7 +1,7 @@
 ﻿import React, { useCallback, useMemo } from "react";
 import { Button, Form as BootstrapForm, Row, Col, Anchor } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 import TextField from "../../components/TextField";
 import { useSignUpMutation } from "../api/authSlice";
 import { LinkContainer } from "react-router-bootstrap";
@@ -24,7 +24,10 @@ const SignUp: React.FC = () => {
             }).unwrap();
 
             if (response.succeeded) {
-                navigate(returnUrl);
+                const searchParams = createSearchParams({
+                    returnUrl,
+                });
+                navigate(`/auth/confirm?${searchParams}`);
             }
         }
     }, [signUp, navigate, returnUrl]);

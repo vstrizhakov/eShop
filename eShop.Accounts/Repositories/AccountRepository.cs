@@ -27,31 +27,10 @@ namespace eShop.Accounts.Repositories
             return account;
         }
 
-        public async Task<Account?> GetAccountByIdentityUserIdAsync(string identityUserId)
-        {
-            var account = await _context.Accounts
-                .FirstOrDefaultAsync(e => e.IdentityUserId == identityUserId);
-            return account;
-        }
-
         public async Task<Account?> GetAccountByPhoneNumberAsync(string phoneNumber)
         {
             var account = await _context.Accounts
                 .FirstOrDefaultAsync(e => e.PhoneNumber.Contains(phoneNumber));
-            return account;
-        }
-
-        public async Task<Account?> GetAccountByTelegramUserIdAsync(Guid telegramUserId)
-        {
-            var account = await _context.Accounts
-                .FirstOrDefaultAsync(e => e.TelegramUserId == telegramUserId);
-            return account;
-        }
-
-        public async Task<Account?> GetAccountByViberUserIdAsync(Guid viberUserId)
-        {
-            var account = await _context.Accounts
-                .FirstOrDefaultAsync(e => e.ViberUserId == viberUserId);
             return account;
         }
 

@@ -19,7 +19,7 @@ namespace eShop.ViberBot.Framework.Strategies
             _activeParameters = activeParameters;
         }
 
-        public object[] GetParameters(MethodInfo method, Callback callback)
+        public object?[] GetParameters(MethodInfo method, Callback callback)
         {
             var context = new ContactMessageContext(callback);
             var parameters = ReflectionUtilities.MatchParameters(method, context, _action != null ? _parameters : _activeParameters);

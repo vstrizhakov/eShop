@@ -20,7 +20,7 @@ namespace eShop.ViberBot.Framework.Strategies
             _parameters = parameters;
         }
 
-        public object[] GetParameters(MethodInfo method, Callback callback)
+        public object?[] GetParameters(MethodInfo method, Callback callback)
         {
             var context = new ConversationStartedContext(callback);
             var parameters = ReflectionUtilities.MatchParameters(method, context, _parameters);

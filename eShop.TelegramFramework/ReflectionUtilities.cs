@@ -24,7 +24,7 @@ namespace eShop.TelegramFramework
             return method;
         }
 
-        public static object[] MatchParameters(MethodInfo method, object context, params string[] inputParameters)
+        public static object?[] MatchParameters(MethodInfo method, object context, params string?[] inputParameters)
         {
             var parameters = method.GetParameters();
 
@@ -36,7 +36,7 @@ namespace eShop.TelegramFramework
                 throw new InvalidOperationException();
             }
 
-            var methodParams = new object[parametersCount];
+            var methodParams = new object?[parametersCount];
             methodParams[0] = context;
 
             for (int i = 0, j = 1; i < inputParametersCount; i++, j++)
@@ -49,28 +49,49 @@ namespace eShop.TelegramFramework
                 {
                     methodParams[j] = sourceParameterValue;
                 }
-                else if (targetParameterType == typeof(Guid))
+                else
                 {
-                    if (Guid.TryParse(sourceParameterValue, out var guid))
+                    var localTargetParameterType = targetParameterType;
+
+                    var isTargetParameterTypeNullable = targetParameterType.GetGenericTypeDefinition() == typeof(Nullable<>);
+                    if (isTargetParameterTypeNullable)
                     {
-                        methodParams[j] = guid;
+                        var genericArgument = targetParameterType.GetGenericArguments()[0];
+                        localTargetParameterType = genericArgument;
                     }
-                    else
+
+                    object? targetParameterValue = null;
+                    if (!string.IsNullOrEmpty(sourceParameterValue))
+                    {
+                        if (localTargetParameterType == typeof(Guid))
+                        {
+                            if (Guid.TryParse(sourceParameterValue, out var guid))
+                            {
+                                targetParameterValue = guid;
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException();
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                targetParameterValue = Convert.ChangeType(sourceParameterValue, localTargetParameterType);
+                            }
+                            catch (InvalidCastException)
+                            {
+                                throw;
+                            }
+                        }
+                    }
+                    else if (!isTargetParameterTypeNullable)
                     {
                         throw new InvalidOperationException();
                     }
-                }
-                else
-                {
-                    try
-                    {
-                        var targetParameterValue = Convert.ChangeType(sourceParameterValue, targetParameterType);
-                        methodParams[j] = targetParameterValue;
-                    }
-                    catch (InvalidCastException)
-                    {
-                        throw; // TODO: throw another exception maybe?
-                    }
+
+                    methodParams[j] = targetParameterValue;
                 }
             }
 

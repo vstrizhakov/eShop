@@ -17,7 +17,6 @@ namespace eShop.Telegram.Entities
 
         public long ExternalId { get; set; }
 
-        public Guid? RegistrationProviderId { get; set; }
         public string? ActiveContext { get; set; }
 
         public Guid? AccountId { get; set; }

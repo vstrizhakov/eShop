@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShop.Telegram.DbContexts;
 
@@ -11,9 +12,11 @@ using eShop.Telegram.DbContexts;
 namespace eShop.Telegram.Migrations
 {
     [DbContext(typeof(TelegramDbContext))]
-    partial class TelegramDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231112100052_TelegramUsersTableRegistrationProviderIdColumnRemoved")]
+    partial class TelegramUsersTableRegistrationProviderIdColumnRemoved
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

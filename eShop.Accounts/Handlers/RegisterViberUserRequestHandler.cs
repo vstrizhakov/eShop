@@ -1,6 +1,4 @@
-﻿using eShop.Accounts.Entities;
-using eShop.Accounts.Exceptions;
-using eShop.Accounts.Services;
+﻿using eShop.Accounts.Services;
 using eShop.Messaging;
 using eShop.Messaging.Models.Identity;
 using eShop.Messaging.Models.Viber;

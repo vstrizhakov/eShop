@@ -1,19 +1,13 @@
 ﻿using AutoMapper;
-using Azure;
 using Duende.IdentityServer.Services;
 using eShop.Bots.Links;
 using eShop.Identity.Entities;
 using eShop.Identity.Models;
 using eShop.Identity.Repositories;
-using eShop.Messaging;
-using eShop.Messaging.Models.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using System;
 using System.Security.Claims;
 
 namespace eShop.Identity.Controllers

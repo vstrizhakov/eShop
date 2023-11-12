@@ -21,5 +21,6 @@
         public const string ShopSettingsShops = "shsetshops";
         public const string SetShopSettingsShopState = "sssss";
         public const string SetShowSales = "setshsales";
+        public const string ConfirmPhoneNumber = "cpn";
     }
 }

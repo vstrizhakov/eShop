@@ -66,13 +66,7 @@ const SignUp: React.FC = () => {
                                 id="phoneNumber"
                                 name="phoneNumber"
                                 type="tel"
-                                placeholder="Номер телефону"
-                                className="mb-2"
-                                component={TextField} />
-                            <Field
-                                id="phoneNumber"
-                                name="phoneNumber"
-                                type="text"
+                                pattern="\+380[0-9]{9}"
                                 placeholder="Номер телефону"
                                 className="mb-2"
                                 component={TextField} />

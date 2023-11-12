@@ -2,7 +2,7 @@
 {
     public interface IBotContextConverter
     {
-        string Serialize(string action, params string[] args);
-        string[] Deserialize(string context);
+        string Serialize(string action, params string?[] args);
+        string?[] Deserialize(string context);
     }
 }

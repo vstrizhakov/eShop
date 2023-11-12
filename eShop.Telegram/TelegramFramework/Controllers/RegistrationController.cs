@@ -1,4 +1,6 @@
-﻿using eShop.Messaging;
+﻿using eShop.Bots.Common;
+using eShop.Messaging;
+using eShop.Telegram.Entities;
 using eShop.Telegram.Models;
 using eShop.Telegram.Repositories;
 using eShop.Telegram.Services;
@@ -19,31 +21,45 @@ namespace eShop.Telegram.TelegramFramework.Controllers
         private static readonly Regex PhoneNumberRegex = new Regex(@"^(\+?38)?(\s|-)?0(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])$");
 
         private readonly ITelegramService _telegramService;
-        private readonly ITelegramUserRepository _telegramUserRepository;
-        private readonly IRequestClient _requestClient;
         private readonly ITelegramBotClient _botClient;
+        private readonly IBotContextConverter _botContextConverter;
+        private readonly IProducer _producer;
 
         public RegistrationController(
             ITelegramService telegramService,
-            ITelegramUserRepository telegramUserRepository,
-            IRequestClient requestClient,
-            ITelegramBotClient botClient)
+            ITelegramBotClient botClient,
+            IBotContextConverter botContextConverter,
+            IProducer producer)
         {
             _telegramService = telegramService;
-            _telegramUserRepository = telegramUserRepository;
-            _requestClient = requestClient;
             _botClient = botClient;
+            _botContextConverter = botContextConverter;
+            _producer = producer;
+        }
+
+        [TextMessage(Command = "/start")]
+        public async Task<ITelegramView?> Start(TextMessageContext context)
+        {
+            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
+            if (user!.AccountId == null)
+            {
+                var activeContext = _botContextConverter.Serialize(TelegramAction.RegisterClient, default(string));
+                await _telegramService.SetActiveContextAsync(user, activeContext);
+
+                return new FinishRegistrationView(context.ChatId);
+            }
+
+            return null;
         }
 
         [TextMessage(Action = TelegramAction.RegisterClient, Command = "/start")]
         public async Task<ITelegramView?> ProcessAsync(TextMessageContext context, Guid providerId)
         {
-            var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(context.FromId);
-            if (telegramUser!.AccountId == null)
+            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
+            if (user!.AccountId == null)
             {
-                telegramUser.RegistrationProviderId = providerId;
-
-                await _telegramUserRepository.UpdateTelegramUserAsync(telegramUser);
+                var activeContext = _botContextConverter.Serialize(TelegramAction.RegisterClient, providerId.ToString());
+                await _telegramService.SetActiveContextAsync(user, activeContext);
 
                 return new FinishRegistrationView(context.ChatId);
             }
@@ -53,21 +69,16 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             }
         }
 
-        [ContactMessage]
-        public async Task<ITelegramView?> ProcessAsync(ContactMessageContext context)
+        [ContactMessage(Action = TelegramAction.RegisterClient)]
+        public async Task<ITelegramView?> ProcessAsync(ContactMessageContext context, Guid? providerId)
         {
-            var contact = context.Contact;
-
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
-            var providerId = user!.RegistrationProviderId;
-            if (providerId != null)
+            if (user!.AccountId == null)
             {
-                var phoneNumber = PhoneNumberRegex.Replace(contact.PhoneNumber, "+380$4$6$8$10$12$14$16$18$20");
+                await _telegramService.SetActiveContextAsync(user, null);
 
-                user.PhoneNumber = phoneNumber;
-                user.RegistrationProviderId = null;
-
-                await _telegramService.UpdateUserAsync(user);
+                var contact = context.Contact;
+                var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
 
                 var request = new Messaging.Models.Telegram.RegisterTelegramUserRequest
                 {
@@ -75,27 +86,69 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     PhoneNumber = phoneNumber,
-                    ProviderId = providerId.Value,
+                    ProviderId = providerId,
                 };
 
-                var response = await _requestClient.SendAsync(request);
-
-                await _telegramService.SetAccountIdAsync(user, response.AccountId);
-
-                var chatId = user.ExternalId;
-
-                {
-                    var replyMarkup = new ReplyKeyboardRemove();
-                    var replyText = $"Вас успішно зареєстровано\n\n{response.ProviderEmail} встановлений як Ваш постачальник анонсів.";
-
-                    await _botClient.SendTextMessageAsync(new ChatId(chatId), replyText, replyMarkup: replyMarkup);
-                }
-
-                var view = new WelcomeView(chatId, null);
-                return view;
+                _producer.Publish(request);
             }
 
             return null;
+        }
+
+        [TextMessage(Action = TelegramAction.ConfirmPhoneNumber, Command = "/start")]
+        public async Task<ITelegramView?> ConfirmPhoneNumber(TextMessageContext context)
+        {
+            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
+            if (user!.AccountId == null)
+            {
+                var activeContext = _botContextConverter.Serialize(TelegramAction.ConfirmPhoneNumber);
+                await _telegramService.SetActiveContextAsync(user, activeContext);
+
+                return new FinishRegistrationView(context.ChatId);
+            }
+            else
+            {
+                // TODO: return already confirmed account view
+            }
+
+            return null;
+        }
+
+        [ContactMessage(Action = TelegramAction.ConfirmPhoneNumber)]
+        public async Task<ITelegramView?> ConfirmPhoneNumber(ContactMessageContext context)
+        {
+            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
+            if (user!.AccountId == null)
+            {
+                await _telegramService.SetActiveContextAsync(user, null);
+
+                var contact = context.Contact;
+                var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
+
+                var request = new Messaging.Models.Telegram.RegisterTelegramUserRequest
+                {
+                    TelegramUserId = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = phoneNumber,
+                    IsConfirmationRequested = true,
+                };
+
+                _producer.Publish(request);
+            }
+
+            return null;
+        }
+
+        private async Task<string> SetPhoneNumberAsync(TelegramUser user, string phoneNumber)
+        {
+            phoneNumber = PhoneNumberRegex.Replace(phoneNumber, "+380$4$6$8$10$12$14$16$18$20");
+
+            user.PhoneNumber = phoneNumber;
+
+            await _telegramService.UpdateUserAsync(user);
+
+            return phoneNumber;
         }
     }
 }

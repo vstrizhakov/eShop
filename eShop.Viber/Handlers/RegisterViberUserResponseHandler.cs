@@ -33,7 +33,7 @@ namespace eShop.Viber.Handlers
                     }
                     else
                     {
-                        var view = new PhonNumberConfirmedView(user.ExternalId);
+                        var view = new PhoneNumberConfirmedView(user.ExternalId);
                         await _viewRunner.RunAsync(view);
                     }
                 }

@@ -1,10 +1,4 @@
-﻿using eShop.Bots.Common;
-using eShop.TelegramFramework.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using eShop.TelegramFramework.Builders;
 using Telegram.Bot;
 
 namespace eShop.TelegramFramework
@@ -20,9 +14,12 @@ namespace eShop.TelegramFramework
             _markupBuilder = markupBuilder;
         }
 
-        public async Task RunAsync(ITelegramView view)
+        public async Task RunAsync(params ITelegramView[] views)
         {
-            await view.ProcessAsync(_botClient, _markupBuilder);
+            foreach (var view in views)
+            {
+                await view.ProcessAsync(_botClient, _markupBuilder);
+            }
         }
     }
 }

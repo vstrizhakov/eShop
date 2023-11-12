@@ -3,6 +3,7 @@ using eShop.TelegramFramework.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace eShop.TelegramFramework
 {
@@ -64,7 +65,9 @@ namespace eShop.TelegramFramework
                     }
                     else if (message.Type == MessageType.Contact)
                     {
-                        await ProcessAsync(update, TelegramContext.ContactMessage);
+                        var data = await _contextStore.GetActiveContextAsync(update);
+
+                        await ProcessAsync(update, TelegramContext.ContactMessage, data: data);
                     }
                 }
             }
@@ -127,7 +130,7 @@ namespace eShop.TelegramFramework
             {
                 TelegramContext.CallbackQuery => new CallbackQueryStrategy(action, parameters),
                 TelegramContext.TextMessage => new TextMessageStrategy(command, action, parameters),
-                TelegramContext.ContactMessage => new ContactMessageStrategy(),
+                TelegramContext.ContactMessage => new ContactMessageStrategy(action, parameters),
                 _ => throw new InvalidOperationException(),
             };
         }

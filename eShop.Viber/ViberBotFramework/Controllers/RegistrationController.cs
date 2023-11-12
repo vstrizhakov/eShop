@@ -85,9 +85,10 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId == null)
             {
+                await _viberService.SetActiveContextAsync(user, null);
+
                 var contact = context.Contact;
-                var phoneNumber = contact.PhoneNumber;
-                phoneNumber = await SetPhoneNumberAsync(user, phoneNumber);
+                var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
 
                 var request = new Messaging.Models.Viber.RegisterViberUserRequest
                 {
@@ -128,9 +129,10 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId == null)
             {
+                await _viberService.SetActiveContextAsync(user, null);
+
                 var contact = context.Contact;
-                var phoneNumber = contact.PhoneNumber;
-                phoneNumber = await SetPhoneNumberAsync(user, phoneNumber);
+                var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
 
                 var request = new Messaging.Models.Viber.RegisterViberUserRequest
                 {

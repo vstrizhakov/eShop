@@ -5,5 +5,6 @@
         public Guid TelegramUserId { get; set; }
         public Guid AccountId { get; set; }
         public string ProviderEmail { get; set; }
+        public bool IsConfirmationRequested { get; set; }
     }
 }

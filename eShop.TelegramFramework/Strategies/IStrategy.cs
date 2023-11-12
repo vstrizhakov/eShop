@@ -5,7 +5,7 @@ namespace eShop.TelegramFramework.Strategies
 {
     internal interface IStrategy
     {
-        object[] GetParameters(MethodInfo method, Update update);
+        object?[] GetParameters(MethodInfo method, Update update);
         MethodInfo? PickControllerMethod();
     }
 }

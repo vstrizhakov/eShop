@@ -1,6 +1,5 @@
 ﻿using eShop.Identity.Entities;
 using eShop.Identity.Models;
-using eShop.Messaging.Models.Identity;
 
 namespace eShop.Identity.Profiles
 {
@@ -9,7 +8,7 @@ namespace eShop.Identity.Profiles
         public UserProfile()
         {
             CreateMap<SignUpRequest, User>()
-                .ForMember(dest => dest.UserName, options => options.Ignore())
+                .ForMember(dest => dest.UserName, options => options.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.NormalizedUserName, options => options.Ignore())
                 .ForMember(dest => dest.NormalizedEmail, options => options.Ignore())
                 .ForMember(dest => dest.EmailConfirmed, options => options.Ignore())

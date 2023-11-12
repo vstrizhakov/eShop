@@ -2,6 +2,6 @@
 {
     public interface ITelegramViewRunner
     {
-        Task RunAsync(ITelegramView view);
+        Task RunAsync(params ITelegramView[] views);
     }
 }

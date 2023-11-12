@@ -9,16 +9,16 @@ namespace eShop.TelegramFramework.Strategies
     {
         private readonly string _command;
         private readonly string _action;
-        private readonly string[] _parameters;
+        private readonly string?[] _parameters;
 
-        public TextMessageStrategy(string command, string action, string[] parameters)
+        public TextMessageStrategy(string command, string action, string?[] parameters)
         {
             _command = command;
             _action = action;
             _parameters = parameters;
         }
 
-        public object[] GetParameters(MethodInfo method, Update update)
+        public object?[] GetParameters(MethodInfo method, Update update)
         {
             var context = new TextMessageContext(update);
             var parameters = ReflectionUtilities.MatchParameters(method, context, _parameters);

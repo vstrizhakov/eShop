@@ -84,6 +84,7 @@ namespace eShop.Accounts.Handlers
                         {
                             TelegramUserId = telegramUserId.Value,
                             AccountId = account.Id,
+                            IsConfirmationRequested = response.IsConfirmationRequested,
                         };
 
                         _producer.Publish(responseMessage);

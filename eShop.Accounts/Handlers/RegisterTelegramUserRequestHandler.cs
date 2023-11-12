@@ -1,6 +1,4 @@
-﻿using eShop.Accounts.Entities;
-using eShop.Accounts.Exceptions;
-using eShop.Accounts.Services;
+﻿using eShop.Accounts.Services;
 using eShop.Messaging;
 using eShop.Messaging.Models.Identity;
 using eShop.Messaging.Models.Telegram;
@@ -45,6 +43,7 @@ namespace eShop.Accounts.Handlers
                     LastName = request.LastName,
                     ProviderId = request.ProviderId,
                     TelegramUserId = telegramUserId,
+                    IsConfirmationRequested = request.IsConfirmationRequested,
                 };
                 _producer.Publish(getIdentityUserRequest);
             }

@@ -4,11 +4,11 @@ using eShop.ViberBot.Framework;
 
 namespace eShop.Viber.ViberBotFramework.Views.Registration
 {
-    public class PhonNumberConfirmedView : IViberView
+    public class PhoneNumberConfirmedView : IViberView
     {
         private string _receiverId;
 
-        public PhonNumberConfirmedView(string receiverId)
+        public PhoneNumberConfirmedView(string receiverId)
         {
             _receiverId = receiverId;
         }

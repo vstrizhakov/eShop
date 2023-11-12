@@ -64,7 +64,7 @@ namespace eShop.Accounts.Migrations
                         .IsUnique()
                         .HasFilter("[ViberUserId] IS NOT NULL");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 #pragma warning restore 612, 618
         }

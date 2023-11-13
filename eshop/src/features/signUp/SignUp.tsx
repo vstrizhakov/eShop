@@ -62,6 +62,7 @@ const SignUp: React.FC = () => {
                                         component={TextField} />
                                 </Col>
                             </Row>
+
                             <Field
                                 id="phoneNumber"
                                 name="phoneNumber"
@@ -78,7 +79,6 @@ const SignUp: React.FC = () => {
                                 className="mb-2"
                                 component={TextField} />
 
-
                             <div className="d-flex flex-column mt-2">
                                 <Button
                                     type="submit"
@@ -90,14 +90,14 @@ const SignUp: React.FC = () => {
                                     pathname: "/auth/signIn",
                                     search: searchParams.toString(),
                                 }}>
-                                    <Anchor className="align-self-center text-decoration-none mt-1">
+                                    <Anchor className="text-muted align-self-center text-decoration-none mt-1">
                                         Увійти
                                     </Anchor>
                                 </LinkContainer>
                             </div>
                         </Col>
                     </Row>
-                </BootstrapForm >
+                </BootstrapForm>
             )}
         />
     );

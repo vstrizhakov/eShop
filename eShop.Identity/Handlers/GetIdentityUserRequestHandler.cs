@@ -34,7 +34,7 @@ namespace eShop.Identity.Handlers
                 IsConfirmationRequested = request.IsConfirmationRequested,
             };
 
-            var user = await _userRepository.GetByPhoneNumberAsync(phoneNumber);
+            var user = await _userRepository.GetUserByPhoneNumberAsync(phoneNumber);
             if (user != null)
             {
                 user.PhoneNumberConfirmed = true;

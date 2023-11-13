@@ -4,6 +4,7 @@ using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Models.Distribution.ResetPassword;
 using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.Messaging.Models.Telegram;
 using eShop.Telegram.DbContexts;
@@ -101,6 +102,7 @@ namespace eShop.Telegram
             builder.Services.AddMessageListener<SetShopSettingsShopStateResponse>();
             builder.Services.AddMessageListener<SetShowSalesResponse>();
             builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
+            builder.Services.AddMessageHandler<SendResetPasswordToTelegramMessage, SendResetPasswordToTelegramMessageHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

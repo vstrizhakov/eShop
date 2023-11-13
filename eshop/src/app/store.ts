@@ -3,6 +3,7 @@ import { apiSlice } from "../features/api/apiSlice";
 import authReducer from "../features/auth/authSlice";
 import signInReducer from "../features/signIn/signInSlice";
 import viewAnnounceReducer from "../features/announces/view/viewAnnounceSlice";
+import completePasswordResetReducer from "../features/forgotPassword/completePasswordResetSlice";
 
 const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
         auth: authReducer,
         signIn: signInReducer,
         viewAnnounce: viewAnnounceReducer,
+        completePasswordReset: completePasswordResetReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(apiSlice.middleware),

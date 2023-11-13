@@ -1,10 +1,12 @@
 ﻿using eShop.Bots.Links;
+using eShop.Common;
 using eShop.Identity.DbContexts;
 using eShop.Identity.Entities;
 using eShop.Identity.Handlers;
 using eShop.Identity.Repositories;
 using eShop.Identity.Services;
 using eShop.Messaging.Extensions;
+using eShop.Messaging.Models;
 using eShop.Messaging.Models.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +15,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using eShop.Common.Extensions;
 
 namespace eShop.Identity
 {
@@ -85,6 +88,7 @@ namespace eShop.Identity
             builder.Services.AddRabbitMqProducer();
 
             builder.Services.AddRequestHandler<GetIdentityUserRequest, GetIdentityUserResponse, GetIdentityUserRequestHandler>();
+            builder.Services.AddMessageHandler<AccountRegisteredEvent, AccountRegisteredEventHandler>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -97,6 +101,8 @@ namespace eShop.Identity
             {
                 options.ChatUrl = builder.Configuration["ViberBot:ChatUrl"];
             });
+
+            builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 
             var app = builder.Build();
 

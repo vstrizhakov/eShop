@@ -2,6 +2,6 @@
 {
     public interface IProducer
     {
-        void Publish<T>(T message) where T : notnull;
+        void Publish<T>(T message) where T : notnull, IMessage;
     }
 }

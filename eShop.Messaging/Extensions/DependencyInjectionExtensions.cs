@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using System.Reflection;
 
 namespace eShop.Messaging.Extensions
 {
@@ -27,8 +28,9 @@ namespace eShop.Messaging.Extensions
             services.AddSingleton<IConsumer, RabbitMqConsumer<TMessage>>();
             services.Configure<RabbitMqConsumerOptions<TMessage>>(options =>
             {
+                var assemblyName = Assembly.GetEntryAssembly().GetName().Name;
                 var name = typeof(TMessage).Name;
-                options.QueueName = name;
+                options.QueueName = $"{assemblyName}/{name}";
                 options.RoutingKey = name;
 
                 if (configure != null)

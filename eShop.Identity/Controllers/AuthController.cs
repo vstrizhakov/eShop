@@ -1,13 +1,18 @@
 ﻿using AutoMapper;
 using Duende.IdentityServer.Services;
 using eShop.Bots.Links;
+using eShop.Common;
 using eShop.Identity.Entities;
 using eShop.Identity.Models;
 using eShop.Identity.Repositories;
+using eShop.Messaging;
+using eShop.Messaging.Models.Distribution.ResetPassword;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace eShop.Identity.Controllers
@@ -27,7 +32,7 @@ namespace eShop.Identity.Controllers
 
             if (!User.Identity.IsAuthenticated)
             {
-                var user = await userRepository.GetByPhoneNumberAsync(request.PhoneNumber);
+                var user = await userRepository.GetUserByPhoneNumberAsync(request.PhoneNumber);
                 if (user == null)
                 {
                     user = mapper.Map<User>(request);
@@ -135,7 +140,7 @@ namespace eShop.Identity.Controllers
 
             if (!User.Identity.IsAuthenticated)
             {
-                var user = await userRepository.GetByPhoneNumberAsync(request.PhoneNumber);
+                var user = await userRepository.GetUserByPhoneNumberAsync(request.PhoneNumber);
                 if (user != null)
                 {
                     var password = request.Password;
@@ -221,6 +226,61 @@ namespace eShop.Identity.Controllers
                     RedirectUrl = logoutInfo?.PostLogoutRedirectUri,
                 },
             });
+        }
+
+        [HttpPost("requestPasswordReset")]
+        public async Task<ActionResult> RequestPasswordReset(
+            [FromBody] RequestPasswordResetRequest request,
+            [FromServices] IUserRepository userRepository,
+            [FromServices] UserManager<User> userManager,
+            [FromServices] IProducer producer,
+            [FromServices] IPublicUriBuilder publicUriBuilder)
+        {
+            var phoneNumber = request.PhoneNumber;
+            var user = await userRepository.GetUserByPhoneNumberAsync(phoneNumber);
+            if (user == null)
+            {
+                return BadRequest("Requested user not found"); // TODO: return certain error
+            }
+
+            if (!user.PhoneNumberConfirmed)
+            {
+                return BadRequest("Requested user didn't confirm his phone number"); // TODO: return certain error
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var message = new SendResetPasswordMessage
+            {
+                AccountId = user.AccountId!.Value,
+                ResetPasswordLink = publicUriBuilder.Path(QueryHelpers.AddQueryString("/auth/completePasswordReset", new Dictionary<string, string?>
+                {
+                    { "phoneNumber", phoneNumber },
+                    { "token", token },
+                })),
+            };
+            producer.Publish(message);
+
+            return Ok();
+        }
+
+        [HttpPost("completePasswordReset")]
+        public async Task<ActionResult> CompleteResetPassword(
+            [FromBody] CompleteResetPasswordRequest request,
+            [FromServices] IUserRepository userRepository,
+            [FromServices] UserManager<User> userManager)
+        {
+            var user = await userRepository.GetUserByPhoneNumberAsync(request.PhoneNumber);
+            if (user == null)
+            {
+                return BadRequest("Requested user not found"); // TODO: return certain error
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+            var response = new CompleteResetPasswordResponse
+            {
+                IsSuccess = result.Succeeded,
+            };
+            return Ok(response);
         }
 
         private ClaimsPrincipal BuildUserPrincipal(User user)

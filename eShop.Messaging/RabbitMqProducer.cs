@@ -22,7 +22,7 @@ namespace eShop.Messaging
                 arguments: null);
         }
 
-        public void Publish<T>(T message) where T : notnull
+        public void Publish<T>(T message) where T : notnull, IMessage
         {
             var data = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(data);

@@ -53,6 +53,20 @@ export interface CheckConfirmationResponse {
     validReturnUrl?: string,
 };
 
+export interface RequestPasswordResetRequest {
+    phoneNumber: string,
+};
+
+export interface CompletePasswordResetRequest {
+    phoneNumber: string,
+    token: string,
+    newPassword: string,
+};
+
+export interface CompletePasswordResetResponse {
+    isSuccess: boolean,
+};
+
 export const authSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
         signUp: builder.mutation<SignUpResponse, SignUpRequest>({
@@ -96,6 +110,21 @@ export const authSlice = apiSlice.injectEndpoints({
                 body: request,
             }),
         }),
+
+        requestPasswordReset: builder.mutation<unknown, RequestPasswordResetRequest>({
+            query: request => ({
+                url: "/auth/requestPasswordReset",
+                method: "POST",
+                body: request,
+            }),
+        }),
+        completePasswordReset: builder.mutation<CompletePasswordResetResponse, CompletePasswordResetRequest>({
+            query: request => ({
+                url: "/auth/completePasswordReset",
+                method: "POST",
+                body: request,
+            }),
+        }),
     }),
 });
 
@@ -106,4 +135,6 @@ export const {
     useSignInMutation,
     useTrySignOutQuery,
     useSignOutMutation,
+    useRequestPasswordResetMutation,
+    useCompletePasswordResetMutation,
 } = authSlice;

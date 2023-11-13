@@ -17,6 +17,8 @@ import SignUp from './features/signUp/SignUp';
 import Main from './features/main/Main';
 import AnnounceContainer from './features/announces/view/AnnounceContainer';
 import Confirm from './features/confirm/Confirm';
+import RequestPasswordReset from './features/forgotPassword/RequestPasswordReset';
+import CompletePasswordReset from './features/forgotPassword/CompletePasswordReset';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -51,6 +53,14 @@ const router = createBrowserRouter([
             {
                 path: "/auth/confirm",
                 element: <Confirm />,
+            },
+            {
+                path: "/auth/requestPasswordReset",
+                element: <RequestPasswordReset />,
+            },
+            {
+                path: "/auth/completePasswordReset",
+                element: <CompletePasswordReset />,
             },
             {
                 path: "/addAnnounce",

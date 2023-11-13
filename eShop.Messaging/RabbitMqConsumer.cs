@@ -34,17 +34,14 @@ namespace eShop.Messaging
                 autoDelete: false,
                 arguments: null);
 
-            //var queueName = _options.QueueName; // TODO: Personalize each queue name with project's name
+            _queueName = _options.QueueName;
 
-            //var result = _channel.QueueDeclare(
-            //    durable: true,
-            //    exclusive: false,
-            //    autoDelete: false,
-            //    arguments: null);
-
-            var result = _channel.QueueDeclare();
-
-            _queueName = result.QueueName;
+            _channel.QueueDeclare(
+                queue: _queueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
 
             _channel.QueueBind(
                 queue: _queueName,

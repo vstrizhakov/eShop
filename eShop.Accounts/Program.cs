@@ -3,6 +3,7 @@ using eShop.Accounts.Handlers;
 using eShop.Accounts.Repositories;
 using eShop.Accounts.Services;
 using eShop.Messaging.Extensions;
+using eShop.Messaging.Models.Distribution.ResetPassword;
 using eShop.Messaging.Models.Identity;
 using eShop.Messaging.Models.Telegram;
 using eShop.Messaging.Models.Viber;
@@ -41,6 +42,7 @@ namespace eShop.Accounts
             builder.Services.AddRequestHandler<RegisterTelegramUserRequest, RegisterTelegramUserResponse, RegisterTelegramUserRequestHandler>();
             builder.Services.AddRequestHandler<RegisterViberUserRequest, RegisterViberUserResponse, RegisterViberUserRequestHandler>();
             builder.Services.AddMessageHandler<GetIdentityUserResponse, GetIdentityUserResponseHandler>();
+            builder.Services.AddMessageHandler<SendResetPasswordMessage, SendResetPasswordMessageHandler>();
 
             if (builder.Environment.IsDevelopment())
             {

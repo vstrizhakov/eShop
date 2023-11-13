@@ -4,6 +4,7 @@ using eShop.Messaging.Extensions;
 using eShop.Messaging.Models;
 using eShop.Messaging.Models.Catalog;
 using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Models.Distribution.ResetPassword;
 using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.Messaging.Models.Identity;
 using eShop.Messaging.Models.Viber;
@@ -93,6 +94,7 @@ namespace eShop.Viber
             builder.Services.AddMessageListener<GetCurrenciesResponse>();
             builder.Services.AddMessageListener<SetShowSalesResponse>();
             builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
+            builder.Services.AddMessageHandler<SendResetPasswordToViberMessage, SendResetPasswordToViberMessageHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

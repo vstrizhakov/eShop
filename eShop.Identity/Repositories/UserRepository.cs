@@ -13,7 +13,14 @@ namespace eShop.Identity.Repositories
             _context = context;
         }
 
-        public async Task<User?> GetByPhoneNumberAsync(string phoneNumber)
+        public async Task<User?> GetUserByIdAsync(string id)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(e => e.Id == id);
+            return user;
+        }
+
+        public async Task<User?> GetUserByPhoneNumberAsync(string phoneNumber)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(e => e.PhoneNumber == phoneNumber);

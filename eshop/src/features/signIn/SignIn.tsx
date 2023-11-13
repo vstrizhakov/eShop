@@ -84,34 +84,29 @@ const SignIn: React.FC<PropsFromRedux> = (props) => {
                         <Col xs={4}>
                             <h3 className="mb-3">Вхід</h3>
 
-                            <BootstrapForm.Group>
-                                <BootstrapForm.Label>Номер телефону</BootstrapForm.Label>
-                                <Field
-                                    id="phoneNumber"
-                                    name="phoneNumber"
-                                    type="tel"
-                                    pattern="\+380[0-9]{9}"
-                                    placeholder="+380123456789"
-                                    className="mb-2"
-                                    component={TextField} />
-                            </BootstrapForm.Group>
+                            <Field
+                                id="phoneNumber"
+                                name="phoneNumber"
+                                type="tel"
+                                pattern="\+380[0-9]{9}"
+                                placeholder="Номер телефону"
+                                className="mb-2"
+                                component={TextField} />
 
-                            <BootstrapForm.Group>
-                                <BootstrapForm.Label>Пароль</BootstrapForm.Label>
-                                <Field
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder="Пароль"
-                                    className="mb-2"
-                                    component={TextField} />
-                            </BootstrapForm.Group>
+                            <Field
+                                id="password"
+                                name="password"
+                                type="password"
+                                placeholder="Пароль"
+                                className="mb-2"
+                                component={TextField} />
 
                             {isError && (
                                 <center>
                                     <span className="text-danger">Неправильний логін або пароль</span>
                                 </center>
                             )}
+                            
                             <div className="d-flex flex-column mt-2">
                                 <Button
                                     className="fw-semibold"
@@ -119,14 +114,25 @@ const SignIn: React.FC<PropsFromRedux> = (props) => {
                                     variant="primary">
                                     Увійти
                                 </Button>
-                                <LinkContainer to={{
-                                    pathname: "/auth/signUp",
-                                    search: searchParams.toString(),
-                                }}>
-                                    <Anchor className="align-self-center text-decoration-none mt-1">
-                                        Зареєструватися
-                                    </Anchor>
-                                </LinkContainer>
+                                <div className="d-flex justify-content-between">
+                                    <LinkContainer to={{
+                                        pathname: "/auth/signUp",
+                                        search: searchParams.toString(),
+                                    }}>
+                                        <Anchor className="text-muted text-decoration-none mt-1">
+                                            Зареєструватись
+                                        </Anchor>
+                                    </LinkContainer>
+
+                                    <LinkContainer to={{
+                                        pathname: "/auth/requestPasswordReset",
+                                        search: searchParams.toString(),
+                                    }}>
+                                        <Anchor className="text-muted text-decoration-none mt-1">
+                                            Забули пароль?
+                                        </Anchor>
+                                    </LinkContainer>
+                                </div>
                             </div>
                         </Col>
                     </Row>

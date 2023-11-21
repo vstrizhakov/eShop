@@ -16,6 +16,6 @@ namespace eShop.Identity.Models
         public bool Remember { get; set; }
 
         [MaxLength(2000)]
-        public string ReturnUrl { get; set; }
+        public string? ReturnUrl { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace eShop.Identity.Models
 {
-    public class CompleteResetPasswordResponse
+    public class RequestPasswordResetResponse
     {
-        public bool IsSuccess { get; set; }
+        public bool Succeeded { get; set; }
         public ErrorCode? ErrorCode { get; set; }
     }
 }

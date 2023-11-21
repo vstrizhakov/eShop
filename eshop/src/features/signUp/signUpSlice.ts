@@ -1,22 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../../app/store";
 
-interface SignInState {
-    isError?: boolean,
+interface SignUpState {
+    error?: string,
 };
 
-const sliceName = "signIn";
+const sliceName = "signUp";
 
-const initialState: SignInState = {
+const initialState: SignUpState = {
 };
 
 const slice = createSlice({
     name: sliceName,
     initialState,
     reducers: {
-        setIsError: (state: SignInState, action: PayloadAction<boolean>) => {
-            state.isError = action.payload;
+        setError: (state: SignUpState, action: PayloadAction<string>) => {
+            state.error = action.payload;
         },
+        reset: () => initialState,
     },
 });
 
@@ -25,7 +26,8 @@ export const savePhoneNumberForConfirmation = (phoneNumber: string): AppThunk =>
 };
 
 export const {
-    setIsError,
+    setError,
+    reset,
 } = slice.actions;
 
 export default slice.reducer;

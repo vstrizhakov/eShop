@@ -1,13 +1,14 @@
 ﻿import React, { useCallback, useEffect, useMemo } from "react";
-import { Button, Form as BootstrapForm, Row, Col, Anchor } from "react-bootstrap";
+import { Button, Form as BootstrapForm, Row, Col, Anchor, Spinner } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 import { connect, ConnectedProps } from "react-redux";
 import { createSearchParams, useHref, useNavigate, useSearchParams } from "react-router-dom";
 import { RootState } from "../../app/store";
 import TextField from "../../components/TextField";
 import { useGetSignInInfoQuery, useSignInMutation } from "../api/authSlice";
-import { setIsError } from "./signInSlice";
+import { setIsError, savePhoneNumberForConfirmation } from "./signInSlice";
 import { LinkContainer } from "react-router-bootstrap";
+import LoadingButton from "../../components/LoadingButton";
 
 const mapStateToProps = (state: RootState) => ({
     isError: state.signIn.isError,
@@ -15,15 +16,17 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
     setIsError,
+    savePhoneNumberForConfirmation,
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-const SignIn: React.FC<PropsFromRedux> = (props) => {
+const SignIn: React.FC<PropsFromRedux> = props => {
     const {
         isError,
         setIsError,
+        savePhoneNumberForConfirmation,
     } = props;
 
     const [searchParams] = useSearchParams();
@@ -36,42 +39,44 @@ const SignIn: React.FC<PropsFromRedux> = (props) => {
     useEffect(() => {
         if (signInInfo) {
             if (signInInfo.waitingForConfirmation) {
-                navigate(`/auth/confirm?returnUrl=${returnUrl}`);
+                navigate(`/auth/confirm?${searchParams}`);
             }
         }
-    }, [signInInfo, returnUrl]);
+    }, [signInInfo]);
 
-    const [signIn] = useSignInMutation();
+    const [signIn, {
+        isLoading,
+    }] = useSignInMutation();
 
     const navigate = useNavigate();
 
     const onSubmit = useCallback(async (values: Record<string, any>) => {
-        if (returnUrl) {
-            const response = await signIn({
-                phoneNumber: values.phoneNumber,
-                password: values.password,
-                returnUrl: returnUrl,
-            }).unwrap();
+        const response = await signIn({
+            phoneNumber: values.phoneNumber,
+            password: values.password,
+            returnUrl: returnUrl ?? undefined,
+        }).unwrap();
 
-            if (response.succeeded) {
-                if (response.validReturnUrl) {
-                    window.location.assign(response.validReturnUrl);
-                }
+        if (response.succeeded) {
+            if (response.validReturnUrl) {
+                window.location.assign(response.validReturnUrl);
+            }
+        } else {
+            if (response.confirmationRequired) {
+                savePhoneNumberForConfirmation(values.phoneNumber);
+                navigate(`/auth/confirm?${searchParams}`);
             } else {
-                if (response.confirmationRequired) {
-                    const searchParams = createSearchParams({
-                        returnUrl,
-                    });
-                    navigate(`/auth/confirm?${searchParams}`);
-                } else {
-                    setIsError(true);
-                }
+                setIsError(true);
             }
         }
     }, [signIn, returnUrl, setIsError]);
 
     if (!signInInfo || signInInfo.waitingForConfirmation) {
-        return <>"Loading..."</>;
+        return (
+            <div className="d-flex justify-content-center">
+                <Spinner />
+            </div>
+        );
     }
 
     return (
@@ -91,7 +96,9 @@ const SignIn: React.FC<PropsFromRedux> = (props) => {
                                 pattern="\+380[0-9]{9}"
                                 placeholder="Номер телефону"
                                 className="mb-2"
-                                component={TextField} />
+                                component={TextField}
+                                required={true}
+                            />
 
                             <Field
                                 id="password"
@@ -99,21 +106,24 @@ const SignIn: React.FC<PropsFromRedux> = (props) => {
                                 type="password"
                                 placeholder="Пароль"
                                 className="mb-2"
-                                component={TextField} />
+                                component={TextField}
+                                required={true}
+                            />
 
                             {isError && (
                                 <center>
                                     <span className="text-danger">Неправильний логін або пароль</span>
                                 </center>
                             )}
-                            
+
                             <div className="d-flex flex-column mt-2">
-                                <Button
+                                <LoadingButton
                                     className="fw-semibold"
                                     type="submit"
-                                    variant="primary">
+                                    variant="primary"
+                                    isLoading={isLoading}>
                                     Увійти
-                                </Button>
+                                </LoadingButton>
                                 <div className="d-flex justify-content-between">
                                     <LinkContainer to={{
                                         pathname: "/auth/signUp",

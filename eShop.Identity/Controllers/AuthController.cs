@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace eShop.Identity.Controllers
@@ -21,6 +20,8 @@ namespace eShop.Identity.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private const string PhoneNumberConfirmationCookie = nameof(PhoneNumberConfirmationCookie);
+        
         [HttpPost("signUp")]
         public async Task<ActionResult<SignUpResponse>> SignUp(
             [FromBody] SignUpRequest request,
@@ -28,7 +29,7 @@ namespace eShop.Identity.Controllers
             [FromServices] UserManager<User> userManager,
             [FromServices] IMapper mapper)
         {
-            var succeeded = false;
+            var response = new SignUpResponse();
 
             if (!User.Identity.IsAuthenticated)
             {
@@ -38,24 +39,28 @@ namespace eShop.Identity.Controllers
                     user = mapper.Map<User>(request);
                     var result = await userManager.CreateAsync(user, request.Password);
 
-                    succeeded = result.Succeeded;
+                    response.Succeeded = result.Succeeded;
+                    if (!response.Succeeded)
+                    {
+                        response.ErrorCode = ErrorCode.InvalidPassword;
+                    }
+                }
+                else
+                {
+                    response.ErrorCode = ErrorCode.UserAlreadyExists;
                 }
 
-                if (succeeded)
+                if (response.Succeeded)
                 {
-                    await HttpContext.SignInAsync("PhoneNumberConfirmationCookie", BuildUserPrincipal(user));
+                    await HttpContext.SignInAsync(PhoneNumberConfirmationCookie, BuildUserPrincipal(user));
                 }
             }
 
-            var response = new SignUpResponse
-            {
-                Succeeded = succeeded,
-            };
             return Ok(response);
         }
 
         [HttpPost("checkConfirmation")]
-        public async Task<ActionResult<CheckConfirmationResponse>> GetSignUpConfirmation(
+        public async Task<ActionResult<CheckConfirmationResponse>> CheckConfirmation(
             [FromBody] CheckConfirmationRequest request,
             [FromServices] UserManager<User> userManager,
             [FromServices] SignInManager<User> signInManager,
@@ -64,7 +69,7 @@ namespace eShop.Identity.Controllers
             [FromServices] IIdentityServerInteractionService interaction,
             [FromServices] IServerUrls serverUrls)
         {
-            var result = await HttpContext.AuthenticateAsync("PhoneNumberConfirmationCookie");
+            var result = await HttpContext.AuthenticateAsync(PhoneNumberConfirmationCookie);
             if (!result.Succeeded)
             {
                 return BadRequest();
@@ -76,38 +81,55 @@ namespace eShop.Identity.Controllers
             };
 
             var principal = result.Principal;
-            if (principal != null)
+            if (principal == null)
             {
-                var userId = principal.FindFirstValue("user_id")!;
-                if (userId != null)
+                await HttpContext.SignOutAsync(PhoneNumberConfirmationCookie);
+                return BadRequest();
+            }
+
+            var userId = principal.FindFirstValue("user_id");
+            if (userId == null)
+            {
+                await HttpContext.SignOutAsync(PhoneNumberConfirmationCookie);
+                return BadRequest();
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                await HttpContext.SignOutAsync(PhoneNumberConfirmationCookie);
+                return BadRequest();
+            }
+
+            response.Confirmed = user.PhoneNumberConfirmed;
+
+            if (!response.Confirmed)
+            {
+                response.Links = new ConfirmationLinks
                 {
-                    var user = await userManager.FindByIdAsync(userId);
-                    if (user != null)
-                    {
-                        response.Confirmed = user.PhoneNumberConfirmed;
+                    Telegram = telegramLinkGenerator.Generate("cpn"),
+                    Viber = viberLinkGenerator.Generate("cpn"),
+                };
+            }
+            else
+            {
+                // TODO: implement persistent
+                await signInManager.SignInAsync(user, false);
 
-                        if (!response.Confirmed)
-                        {
-                            response.Links = new ConfirmationLinks
-                            {
-                                Telegram = telegramLinkGenerator.Generate("cpn"),
-                                Viber = viberLinkGenerator.Generate("cpn"),
-                            };
-                        }
-                        else
-                        {
-                            // TODO: implement persistent
-                            await signInManager.SignInAsync(user, false);
+                await HttpContext.SignOutAsync(PhoneNumberConfirmationCookie);
 
-                            await HttpContext.SignOutAsync("PhoneNumberConfirmationCookie");
-
-                            response.ValidReturnUrl = await GetValidReturnUrlAsync(interaction, serverUrls, request.ReturnUrl);
-                        }
-                    }
-                }
+                response.ValidReturnUrl = await GetValidReturnUrlAsync(interaction, serverUrls, request.ReturnUrl);
             }
 
             return Ok(response);
+        }
+
+        [HttpPost("cancelConfirmation")]
+        public async Task<ActionResult> CancelConfirmation()
+        {
+            await HttpContext.SignOutAsync(PhoneNumberConfirmationCookie);
+
+            return Ok();
         }
 
         [HttpGet("signIn")]
@@ -117,7 +139,7 @@ namespace eShop.Identity.Controllers
 
             if (!User.Identity.IsAuthenticated)
             {
-                var result = await HttpContext.AuthenticateAsync("PhoneNumberConfirmationCookie");
+                var result = await HttpContext.AuthenticateAsync(PhoneNumberConfirmationCookie);
                 if (result.Succeeded)
                 {
                     response.WaitingForConfirmation = true;
@@ -156,7 +178,7 @@ namespace eShop.Identity.Controllers
                         {
                             response.ConfirmationRequired = true;
 
-                            await HttpContext.SignInAsync("PhoneNumberConfirmationCookie", BuildUserPrincipal(user));
+                            await HttpContext.SignInAsync(PhoneNumberConfirmationCookie, BuildUserPrincipal(user));
                         }
                     }
                 }
@@ -174,8 +196,8 @@ namespace eShop.Identity.Controllers
             return Ok(response);
         }
 
-        [HttpGet("signOut")]
         [Authorize]
+        [HttpGet("signOut")]
         public async Task<ActionResult<SignOutInfo>> SignOut(
             [FromQuery] string logoutId,
             [FromServices] IIdentityServerInteractionService interaction,
@@ -207,8 +229,8 @@ namespace eShop.Identity.Controllers
             });
         }
 
-        [HttpPost("signOut")]
         [Authorize]
+        [HttpPost("signOut")]
         public async Task<ActionResult<SignOutInfo>> PostSignOut(
             [FromQuery] string logoutId,
             [FromServices] IIdentityServerInteractionService interaction,
@@ -236,16 +258,14 @@ namespace eShop.Identity.Controllers
             [FromServices] IProducer producer,
             [FromServices] IPublicUriBuilder publicUriBuilder)
         {
+            var response = new RequestPasswordResetResponse();
+
             var phoneNumber = request.PhoneNumber;
             var user = await userRepository.GetUserByPhoneNumberAsync(phoneNumber);
             if (user == null)
             {
-                return BadRequest("Requested user not found"); // TODO: return certain error
-            }
-
-            if (!user.PhoneNumberConfirmed)
-            {
-                return BadRequest("Requested user didn't confirm his phone number"); // TODO: return certain error
+                response.ErrorCode = ErrorCode.UserNotFound;
+                return Ok(response);
             }
 
             var token = await userManager.GeneratePasswordResetTokenAsync(user);
@@ -260,7 +280,9 @@ namespace eShop.Identity.Controllers
             };
             producer.Publish(message);
 
-            return Ok();
+            response.Succeeded = true;
+
+            return Ok(response);
         }
 
         [HttpPost("completePasswordReset")]
@@ -269,23 +291,29 @@ namespace eShop.Identity.Controllers
             [FromServices] IUserRepository userRepository,
             [FromServices] UserManager<User> userManager)
         {
+            var response = new CompleteResetPasswordResponse();
+
             var user = await userRepository.GetUserByPhoneNumberAsync(request.PhoneNumber);
             if (user == null)
             {
-                return BadRequest("Requested user not found"); // TODO: return certain error
+                response.ErrorCode = ErrorCode.UserNotFound;
+                return Ok(response);
             }
 
             var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
-            var response = new CompleteResetPasswordResponse
+            if (!result.Succeeded)
             {
-                IsSuccess = result.Succeeded,
-            };
+                response.ErrorCode = ErrorCode.InvalidPassword;
+            }
+
+            response.IsSuccess = result.Succeeded;
+
             return Ok(response);
         }
 
         private ClaimsPrincipal BuildUserPrincipal(User user)
         {
-            var identity = new ClaimsIdentity("PhoneNumberConfirmationCookie");
+            var identity = new ClaimsIdentity(PhoneNumberConfirmationCookie);
             identity.AddClaim(new Claim("user_id", user.Id));
 
             return new ClaimsPrincipal(identity);

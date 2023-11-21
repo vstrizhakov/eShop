@@ -1,36 +1,72 @@
-﻿import React, { useCallback, useMemo } from "react";
-import { Button, Form as BootstrapForm, Row, Col, Anchor } from "react-bootstrap";
+﻿import React, { useCallback, useEffect } from "react";
+import { Form as BootstrapForm, Row, Col, Anchor } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import TextField from "../../components/TextField";
 import { useSignUpMutation } from "../api/authSlice";
 import { LinkContainer } from "react-router-bootstrap";
+import { RootState } from "../../app/store";
+import { setError, reset, savePhoneNumberForConfirmation } from "./signUpSlice";
+import { ConnectedProps, connect } from "react-redux";
+import { ErrorCode } from "../api/apiSlice";
+import LoadingButton from "../../components/LoadingButton";
 
-const SignUp: React.FC = () => {
+const mapStateToProps = (state: RootState) => ({
+    error: state.signUp.error,
+});
+
+const mapDispatchToProps = {
+    setError,
+    reset,
+    savePhoneNumberForConfirmation,
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+const SignUp: React.FC<PropsFromRedux> = props => {
+    const {
+        error,
+        setError,
+        reset,
+        savePhoneNumberForConfirmation,
+    } = props;
+
+    useEffect(() => {
+        return () => {
+            reset();
+        };
+    }, []);
+
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    const returnUrl = useMemo(() => searchParams.get("returnUrl"), [searchParams]);
-
-    const [signUp] = useSignUpMutation();
+    const [signUp, {
+        isLoading,
+    }] = useSignUpMutation();
 
     const onSubmit = useCallback(async (values: Record<string, any>) => {
-        if (returnUrl) {
-            const response = await signUp({
-                firstName: values.firstName,
-                lastName: values.lastName,
-                phoneNumber: values.phoneNumber,
-                password: values.password,
-            }).unwrap();
+        const response = await signUp({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            phoneNumber: values.phoneNumber,
+            password: values.password,
+        }).unwrap();
 
-            if (response.succeeded) {
-                const searchParams = createSearchParams({
-                    returnUrl,
-                });
-                navigate(`/auth/confirm?${searchParams}`);
+        if (response.succeeded) {
+            savePhoneNumberForConfirmation(values.phoneNumber);
+            navigate(`/auth/confirm?${searchParams}`);
+        } else {
+            switch (response.errorCode) {
+                case ErrorCode.UserAlreadyExists:
+                    setError("Користувач із вказаним номером вже зареєстрований.");
+                    break;
+                case ErrorCode.InvalidPassword:
+                    setError("Введений пароль не відповідає вимогам.");
+                    break;
             }
         }
-    }, [signUp, navigate, returnUrl]);
+    }, [signUp, navigate, setError]);
 
     return (
         <Form
@@ -42,14 +78,14 @@ const SignUp: React.FC = () => {
                         <Col xs={4}>
                             <h2 className="mb-3">Реєстрація</h2>
 
-                            <Row>
+                            <Row className="mb-2">
                                 <Col>
                                     <Field
                                         id="firstName"
                                         name="firstName"
                                         type="text"
                                         placeholder="Ім'я"
-                                        className="mb-2"
+                                        required={true}
                                         component={TextField} />
                                 </Col>
                                 <Col>
@@ -58,7 +94,7 @@ const SignUp: React.FC = () => {
                                         name="lastName"
                                         type="text"
                                         placeholder="Прізвище"
-                                        className="mb-2"
+                                        required={true}
                                         component={TextField} />
                                 </Col>
                             </Row>
@@ -70,22 +106,35 @@ const SignUp: React.FC = () => {
                                 pattern="\+380[0-9]{9}"
                                 placeholder="Номер телефону"
                                 className="mb-2"
+                                required={true}
                                 component={TextField} />
-                            <Field
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="Пароль"
-                                className="mb-2"
-                                component={TextField} />
+                            <BootstrapForm.Group className="mb-2">
+                                <Field
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Пароль"
+                                    required={true}
+                                    component={TextField} />
+                                <div className="form-text">
+                                    Пароль має відповідати наступним вимогам:
+                                    <ul className="m-0">
+                                        <li>Бути не менш ніж 6 символів</li>
+                                        <li>Містити хоча б одну маленьку букву</li>
+                                        <li>Містити хоча б одну велику букву</li>
+                                        <li>Містити хоча б одну цифру</li>
+                                    </ul>
+                                </div>
+                            </BootstrapForm.Group>
 
                             <div className="d-flex flex-column mt-2">
-                                <Button
+                                <LoadingButton
                                     type="submit"
                                     className="mt-2 fw-semibold"
-                                    variant="primary">
+                                    variant="primary"
+                                    isLoading={isLoading}>
                                     Зареєструватися
-                                </Button>
+                                </LoadingButton>
                                 <LinkContainer to={{
                                     pathname: "/auth/signIn",
                                     search: searchParams.toString(),
@@ -95,6 +144,10 @@ const SignUp: React.FC = () => {
                                     </Anchor>
                                 </LinkContainer>
                             </div>
+
+                            {error && (
+                                <BootstrapForm.Text className="d-block text-danger text-center">{error}</BootstrapForm.Text>
+                            )}
                         </Col>
                     </Row>
                 </BootstrapForm>
@@ -103,4 +156,4 @@ const SignUp: React.FC = () => {
     );
 };
 
-export default SignUp;
+export default connector(SignUp);

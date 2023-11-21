@@ -15,6 +15,12 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
+export const enum ErrorCode {
+    UserAlreadyExists = "userAlreadyExists",
+    InvalidPassword = "invalidPassword",
+    UserNotFound = "userNotFound",
+};
+
 export const apiSlice = createApi({
     baseQuery,
     tagTypes: [

@@ -31,7 +31,7 @@ namespace eShop.Distribution
                 {
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
                 });
 
             builder.Services.AddSignalR()
@@ -39,7 +39,7 @@ namespace eShop.Distribution
                 {
                     options.PayloadSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.PayloadSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                    options.PayloadSerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.PayloadSerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
                 });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

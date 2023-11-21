@@ -86,10 +86,8 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
     const processSignOutCallback = useCallback(async () => {
         const response = await manager.signoutRedirectCallback();
 
-        const returnUrl = response.state?.returnUrl;
-        if (returnUrl) {
-            window.location.assign(returnUrl);
-        }
+        const returnUrl = response.state?.returnUrl ?? "/";
+        window.location.assign(returnUrl);
     }, []);
 
     useEffect(() => {

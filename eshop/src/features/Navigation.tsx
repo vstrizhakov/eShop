@@ -16,8 +16,6 @@ const Navigation: React.FC<AuthContextProps> = props => {
 
     const location = useLocation();
 
-    console.log(claims);
-
     return (
         <Navbar>
             <Container>

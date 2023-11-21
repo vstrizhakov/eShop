@@ -4,6 +4,7 @@ using Duende.IdentityServer.Services;
 using eShop.Identity.Controllers;
 using eShop.Identity.Entities;
 using eShop.Identity.Models;
+using eShop.Identity.Repositories;
 using eShop.Messaging;
 using eShop.Messaging.Models.Identity;
 using Microsoft.AspNetCore.Http;
@@ -36,8 +37,7 @@ namespace eShop.Identity.Tests.Controllers
 
             var request = new SignUpRequest();
 
-            var producer = new Mock<IProducer>();
-
+            var userRepository = new Mock<IUserRepository>();
             var mapper = new Mock<IMapper>();
 
             var sut = new AuthController
@@ -47,7 +47,7 @@ namespace eShop.Identity.Tests.Controllers
 
             // Act
 
-            var result = await sut.SignUp(request, _userManager.Object, producer.Object, mapper.Object);
+            var result = await sut.SignUp(request, userRepository.Object, _userManager.Object, mapper.Object);
 
             // Assert
 

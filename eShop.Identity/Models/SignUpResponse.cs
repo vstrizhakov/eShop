@@ -4,7 +4,7 @@ namespace eShop.Identity.Models
 {
     public class SignUpResponse
     {
-        [JsonProperty("succeeded")]
         public bool Succeeded { get; set; }
+        public ErrorCode? ErrorCode { get; set; }
     }
 }

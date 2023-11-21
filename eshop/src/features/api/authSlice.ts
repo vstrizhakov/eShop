@@ -1,4 +1,4 @@
-import { apiSlice } from "./apiSlice";
+import { ErrorCode, apiSlice } from "./apiSlice";
 
 interface SignUpRequest {
     firstName: string,
@@ -9,6 +9,7 @@ interface SignUpRequest {
 
 interface SignUpResponse {
     succeeded: boolean,
+    errorCode?: ErrorCode,
 };
 
 interface SignInInfo {
@@ -19,7 +20,7 @@ interface SignInRequest {
     phoneNumber: string,
     password: string,
     remember?: boolean,
-    returnUrl: string,
+    returnUrl?: string,
 };
 
 interface SignInResponse {
@@ -38,7 +39,7 @@ interface SignOutInfo {
     postInfo?: PostSignOutInfo,
 };
 
-interface ConfirmationLinks {
+export interface ConfirmationLinks {
     telegram: string,
     viber: string,
 };
@@ -57,6 +58,11 @@ export interface RequestPasswordResetRequest {
     phoneNumber: string,
 };
 
+interface RequestPasswordResetResponse {
+    succeeded: boolean,
+    errorCode?: ErrorCode,
+};
+
 export interface CompletePasswordResetRequest {
     phoneNumber: string,
     token: string,
@@ -65,6 +71,7 @@ export interface CompletePasswordResetRequest {
 
 export interface CompletePasswordResetResponse {
     isSuccess: boolean,
+    errorCode?: ErrorCode,
 };
 
 export const authSlice = apiSlice.injectEndpoints({
@@ -103,6 +110,7 @@ export const authSlice = apiSlice.injectEndpoints({
                 },
             }),
         }),
+
         checkConfirmation: builder.mutation<CheckConfirmationResponse, CheckConfirmationRequest>({
             query: request => ({
                 url: "/auth/checkConfirmation",
@@ -110,8 +118,14 @@ export const authSlice = apiSlice.injectEndpoints({
                 body: request,
             }),
         }),
+        cancelConfirmation: builder.mutation<unknown, unknown>({
+            query: () => ({
+                url: "/auth/cancelConfirmation",
+                method: "POST",
+            }),
+        }),
 
-        requestPasswordReset: builder.mutation<unknown, RequestPasswordResetRequest>({
+        requestPasswordReset: builder.mutation<RequestPasswordResetResponse, RequestPasswordResetRequest>({
             query: request => ({
                 url: "/auth/requestPasswordReset",
                 method: "POST",
@@ -131,6 +145,7 @@ export const authSlice = apiSlice.injectEndpoints({
 export const {
     useSignUpMutation,
     useCheckConfirmationMutation,
+    useCancelConfirmationMutation,
     useGetSignInInfoQuery,
     useSignInMutation,
     useTrySignOutQuery,

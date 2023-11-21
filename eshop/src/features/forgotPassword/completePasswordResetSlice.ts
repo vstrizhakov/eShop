@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ErrorCode } from "../api/apiSlice";
 
 interface CompletePasswordResetState {
-    isError?: boolean,
+    error?: ErrorCode,
 };
 
 const sliceName = "completePasswordReset";
@@ -13,14 +14,14 @@ const slice = createSlice({
     name: sliceName,
     initialState,
     reducers: {
-        setIsError: (state: CompletePasswordResetState, action: PayloadAction<boolean>) => {
-            state.isError = action.payload;
+        setError: (state: CompletePasswordResetState, action: PayloadAction<ErrorCode>) => {
+            state.error = action.payload;
         },
     },
 });
 
 export const {
-    setIsError,
+    setError,
 } = slice.actions;
 
 export default slice.reducer;

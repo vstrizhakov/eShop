@@ -1,5 +1,7 @@
-﻿using eShop.Bots.Links;
-using eShop.Viber.Models;
+﻿using AutoMapper;
+using eShop.Bots.Links;
+using eShop.Distribution.Models;
+using eShop.Distribution.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eShop.Distribution.Controllers
@@ -12,15 +14,25 @@ namespace eShop.Distribution.Controllers
         public async Task<ActionResult<GetAnnouncerInvitationResponse>> GetAnnouncerInvitation(
             [FromRoute] Guid announcerId,
             [FromServices] ITelegramLinkGenerator telegramLinkGenerator,
-            [FromServices] IViberLinkGenerator viberLinkGenerator)
+            [FromServices] IViberLinkGenerator viberLinkGenerator,
+            [FromServices] IAccountService accountService,
+            [FromServices] IMapper mapper)
         {
-            // TODO: Add check for providerId if it exists
+            var announcer = await accountService.GetAccountAsync(announcerId);
+            if (announcer == null)
+            {
+                return NotFound();
+            }
 
             var announcerIdArg = announcerId.ToString();
             var response = new GetAnnouncerInvitationResponse
             {
-                Telegram = telegramLinkGenerator.Generate("rc", announcerIdArg),
-                Viber = viberLinkGenerator.Generate("rc", announcerIdArg)
+                Announcer = mapper.Map<Account>(announcer),
+                Links = new InvitationLinks
+                {
+                    Telegram = telegramLinkGenerator.Generate("rc", announcerIdArg),
+                    Viber = viberLinkGenerator.Generate("rc", announcerIdArg),
+                },
             };
             return response;
         }

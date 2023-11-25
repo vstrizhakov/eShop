@@ -38,9 +38,19 @@ export interface Distribution {
     recipients: DistributionRecipient[],
 };
 
-interface GetAnnouncerInvitationResponse {
+interface Account {
+    firstName: string,
+    lastName: string,
+};
+
+interface InvitationLinks {
     telegram: string,
     viber: string,
+};
+
+interface GetAnnouncerInvitationResponse {
+    announcer: Account,
+    links: InvitationLinks,
 };
 
 const distributionSlice = apiSlice.injectEndpoints({

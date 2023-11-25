@@ -1,6 +1,6 @@
-﻿namespace eShop.Viber.Models
+﻿namespace eShop.Distribution.Models
 {
-    public class GetAnnouncerInvitationResponse
+    public class InvitationLinks
     {
         public string Telegram { get; set; }
         public string Viber { get; set; }

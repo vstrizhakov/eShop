@@ -1,4 +1,6 @@
-﻿namespace eShop.Distribution.Services
+﻿using eShop.Distribution.Entities;
+
+namespace eShop.Distribution.Services
 {
     public interface IAccountService
     {
@@ -6,5 +8,6 @@
         Task UpdateViberChatAsync(Guid accountId, Guid viberChatId, bool isEnabled);
         Task CreateAccountAsync(Guid accountId, string firstName, string lastName, Guid? providerId);
         Task UpdateAccountAsync(Guid accountId, string firstName, string lastName, Guid? providerId);
+        Task<Account?> GetAccountAsync(Guid accountId);
     }
 }

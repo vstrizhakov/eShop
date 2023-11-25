@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using eShop.Distribution.Entities;
-using eShop.Distribution.Models;
 
 namespace eShop.Distribution.Profiles
 {
@@ -8,10 +6,10 @@ namespace eShop.Distribution.Profiles
     {
         public ClientProfile()
         {
-            CreateMap<Account, Client>();
-            CreateMap<TelegramChat, Chat>()
+            CreateMap<Entities.Account, Models.Client>();
+            CreateMap<Entities.TelegramChat, Models.Chat>()
                 .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id));
-            CreateMap<ViberChat, Chat>()
+            CreateMap<Entities.ViberChat, Models.Chat>()
                 .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id));
         }
     }

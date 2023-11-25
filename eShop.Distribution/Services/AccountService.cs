@@ -77,5 +77,11 @@ namespace eShop.Distribution.Services
 
             await _accountRepository.UpdateAccountAsync(account);
         }
+
+        public async Task<Account?> GetAccountAsync(Guid accountId)
+        {
+            var account = await _accountRepository.GetAccountByIdAsync(accountId);
+            return account;
+        }
     }
 }

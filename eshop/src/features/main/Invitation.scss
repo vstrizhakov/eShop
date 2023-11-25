@@ -1,0 +1,11 @@
+@import '../../App.scss';
+
+.invitation-card {
+    width: 320px;
+}
+
+@include media-breakpoint-up(sm) {
+    .invitation-card {
+        width: 420px;
+    }
+}

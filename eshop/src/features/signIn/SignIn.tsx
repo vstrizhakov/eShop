@@ -85,8 +85,7 @@ const SignIn: React.FC<PropsFromRedux> = props => {
             render={({ handleSubmit }) => (
                 <BootstrapForm onSubmit={handleSubmit}>
                     <Row>
-                        <Col xs={4}></Col>
-                        <Col xs={4}>
+                        <Col md={{offset: 2, span: 8}} lg={{offset: 3, span: 6}} xxl={{offset: 4, span: 4}}>
                             <h3 className="mb-3">Вхід</h3>
 
                             <Field

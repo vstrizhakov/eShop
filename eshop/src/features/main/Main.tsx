@@ -4,6 +4,7 @@ import { AuthContextProps } from "../auth/authContext";
 import { Button, Col, Row } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import Feature, { IFeatureProps } from "./Feature";
+import AnnounceList from "./AnnounceList";
 
 const Main: React.FC<AuthContextProps> = props => {
     const {
@@ -107,6 +108,8 @@ const Main: React.FC<AuthContextProps> = props => {
                             </Button>
                         </LinkContainer>
                     </div>
+                    <hr />
+                    <AnnounceList />
                 </>
             ) : (
                 <>

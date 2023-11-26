@@ -25,7 +25,7 @@ namespace eShop.Distribution.Handlers
             var composition = message.Announce;
 
             // TODO: Handle provider is absent
-            var distribution = await _distributionService.CreateDistributionAsync(message.ProviderId, composition);
+            var distribution = await _distributionService.CreateDistributionAsync(message.AnnouncerId, composition);
 
             var distributionId = distribution.Id;
             var update = new BroadcastAnnounceUpdateEvent

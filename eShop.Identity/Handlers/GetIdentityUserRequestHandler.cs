@@ -28,7 +28,7 @@ namespace eShop.Identity.Handlers
                 PhoneNumber = phoneNumber,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                ProviderId = request.ProviderId,
+                AnnouncerId = request.AnnouncerId,
                 TelegramUserId = request.TelegramUserId,
                 ViberUserId = request.ViberUserId,
                 IsConfirmationRequested = request.IsConfirmationRequested,

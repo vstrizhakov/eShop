@@ -19,7 +19,7 @@ namespace eShop.Distribution.Handlers
             try
             {
                 var account = @event.Account;
-                await _accountService.CreateAccountAsync(account.Id, account.FirstName, account.LastName, @event.ProviderId);
+                await _accountService.CreateAccountAsync(account.Id, account.FirstName, account.LastName, @event.AnnouncerId);
             }
             catch (AccountAlreadyExistsException)
             {

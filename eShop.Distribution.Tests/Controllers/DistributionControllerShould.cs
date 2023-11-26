@@ -38,7 +38,7 @@ namespace eShop.Distribution.Tests.Controllers
 
             var distribution = new Entities.Distribution
             {
-                ProviderId = _accountId,
+                AnnouncerId = _accountId,
             };
             var distributionId = distribution.Id;
 

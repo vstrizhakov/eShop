@@ -18,7 +18,7 @@ namespace eShop.Accounts.Tests.MessageHandlers
             {
                 Name = "John",
                 PhoneNumber = "+380000000000",
-                ProviderId = Guid.NewGuid(),
+                AnnouncerId = Guid.NewGuid(),
                 ViberUserId = Guid.NewGuid(),
             };
 

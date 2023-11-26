@@ -42,7 +42,7 @@ namespace eShop.Accounts.Handlers
                 {
                     PhoneNumber = phoneNumber,
                     FirstName = request.Name,
-                    ProviderId = request.ProviderId,
+                    AnnouncerId = request.AnnouncerId,
                     ViberUserId = viberUserId,
                     IsConfirmationRequested = request.IsConfirmationRequested,
                 };

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShop.Distribution.DbContexts;
 
@@ -11,9 +12,11 @@ using eShop.Distribution.DbContexts;
 namespace eShop.Distribution.Migrations
 {
     [DbContext(typeof(DistributionDbContext))]
-    partial class DistributionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231125213305_AccountsTableProviderIdColumnRenamedToAnnouncerId")]
+    partial class AccountsTableProviderIdColumnRenamedToAnnouncerId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,7 +213,7 @@ namespace eShop.Distribution.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AnnouncerId")
+                    b.Property<Guid>("ProviderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -324,7 +327,7 @@ namespace eShop.Distribution.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("PreferredCurrencyId")
+                    b.Property<Guid>("PreferredCurrencyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("ShowSales")
@@ -581,7 +584,8 @@ namespace eShop.Distribution.Migrations
                     b.HasOne("eShop.Distribution.Entities.Currency", "PreferredCurrency")
                         .WithMany()
                         .HasForeignKey("PreferredCurrencyId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("PreferredCurrency");
                 });

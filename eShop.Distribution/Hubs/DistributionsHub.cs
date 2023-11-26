@@ -25,7 +25,7 @@ namespace eShop.Distribution.Hubs
 
             var userId = Context.User.GetAccountId();
             var distribution = await _distributionService.GetDistributionAsync(distributionId);
-            if (distribution == null || distribution.ProviderId != userId)
+            if (distribution == null || distribution.AnnouncerId != userId)
             {
                 throw new InvalidOperationException("The specified distribution doesn't exist.");
             }
@@ -45,7 +45,7 @@ namespace eShop.Distribution.Hubs
 
             var userId = Context.User.GetAccountId();
             var distribution = await _distributionService.GetDistributionAsync(distributionId);
-            if (distribution == null || distribution.ProviderId != userId)
+            if (distribution == null || distribution.AnnouncerId != userId)
             {
                 throw new InvalidOperationException("The specified distribution doesn't exist.");
             }

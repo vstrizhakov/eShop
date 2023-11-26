@@ -19,7 +19,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
             };
             var message = new BroadcastAnnounceMessage
             {
-                ProviderId = Guid.NewGuid(),
+                AnnouncerId = Guid.NewGuid(),
                 Announce = composition,
             };
 
@@ -59,7 +59,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
             };
             var distributionService = new Mock<IDistributionService>();
             distributionService
-                .Setup(e => e.CreateDistributionFromProviderIdAsync(message.ProviderId))
+                .Setup(e => e.CreateDistributionFromProviderIdAsync(message.AnnouncerId))
                 .ReturnsAsync(distribution);
 
             var messageFromComposition = new Message();

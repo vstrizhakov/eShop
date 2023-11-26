@@ -213,7 +213,7 @@ namespace eShop.Accounts.Tests.Services
             Assert.Equal(accountInfo.PhoneNumber, result.PhoneNumber);
             Assert.Equal(accountInfo.TelegramUserId, result.TelegramUserId);
 
-            Assert.Equal(providerId, @event!.ProviderId);
+            Assert.Equal(providerId, @event!.AnnouncerId);
         }
 
         [Fact]

@@ -18,13 +18,13 @@ const Feature: React.FC<IFeatureProps> = props => {
     } = props;
 
     return (
-        <Card className="bg-body-tertiary border-0 w-100">
-            <Card.Body className="d-flex gap-3 position-relative">
+        <Card className="bg-body-tertiary border-0 w-100 rounded-5 shadow">
+            <Card.Body className="d-flex gap-3 position-relative flex-column p-4">
                 {icon !== "bi-viber" && (
-                    <i className={`text-primary bi ${icon} fs-2`}></i>
+                    <i className={`text-primary bi ${icon} fs-3`}></i>
                 )}
                 {icon === "bi-viber" && (
-                    <ViberIcon className="text-primary align-self-start mt-2" fill="currentColor" width="84px" />
+                    <ViberIcon className="text-primary align-self-start mt-2" fill="currentColor" width="30px" />
                 )}
                 <div>
                     <h3 className="fs-5 text-body-emphasis">{title}</h3>

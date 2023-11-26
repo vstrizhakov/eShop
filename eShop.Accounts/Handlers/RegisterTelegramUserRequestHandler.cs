@@ -41,7 +41,7 @@ namespace eShop.Accounts.Handlers
                     PhoneNumber = phoneNumber,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
-                    ProviderId = request.ProviderId,
+                    AnnouncerId = request.AnnouncerId,
                     TelegramUserId = telegramUserId,
                     IsConfirmationRequested = request.IsConfirmationRequested,
                 };

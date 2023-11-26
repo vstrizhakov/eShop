@@ -66,21 +66,21 @@ namespace eShop.Viber.ViberBotFramework.Controllers
         }
 
         [ConversationStarted(Action = ViberContext.RegisterClient)]
-        public async Task<IViberView?> RegisterClient(ConversationStartedContext context, Guid providerId)
+        public async Task<IViberView?> RegisterClient(ConversationStartedContext context, Guid announcerId)
         {
-            var result = await ProcessRegisterClientAsync(context.UserId, providerId);
+            var result = await ProcessRegisterClientAsync(context.UserId, announcerId);
             return result;
         }
 
         [TextMessage(Action = ViberContext.RegisterClient)]
-        public async Task<IViberView?> RegisterClient(TextMessageContext context, Guid providerId)
+        public async Task<IViberView?> RegisterClient(TextMessageContext context, Guid announcerId)
         {
-            var result = await ProcessRegisterClientAsync(context.UserId, providerId);
+            var result = await ProcessRegisterClientAsync(context.UserId, announcerId);
             return result;
         }
 
         [ContactMessage(ActiveAction = ViberContext.RegisterClient)]
-        public async Task<IViberView?> CompleteClientRegistration(ContactMessageContext context, Guid providerId)
+        public async Task<IViberView?> CompleteClientRegistration(ContactMessageContext context, Guid announcerId)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId == null)
@@ -93,7 +93,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
                 var request = new Messaging.Models.Viber.RegisterViberUserRequest
                 {
                     ViberUserId = user.Id,
-                    ProviderId = providerId,
+                    AnnouncerId = announcerId,
                     Name = user.Name,
                     PhoneNumber = phoneNumber,
                 };
@@ -160,12 +160,12 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             return phoneNumber;
         }
 
-        private async Task<IViberView?> ProcessRegisterClientAsync(string contextUserId, Guid providerId)
+        private async Task<IViberView?> ProcessRegisterClientAsync(string contextUserId, Guid announcerId)
         {
             var user = await _viberService.GetUserByIdAsync(contextUserId);
             if (user!.AccountId == null)
             {
-                var activeContext = _botContextConverter.Serialize(ViberContext.RegisterClient, providerId.ToString());
+                var activeContext = _botContextConverter.Serialize(ViberContext.RegisterClient, announcerId.ToString());
                 await _viberService.SetActiveContextAsync(user, activeContext);
 
                 return new FinishRegistrationView(contextUserId);

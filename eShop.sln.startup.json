@@ -54,7 +54,7 @@
   "MultiProjectConfigurations": {
     "eShop": {
       "Projects": {
-        "eShop": {},
+        //"eShop": {},
         "eShop.Accounts": {},
         "eShop.Catalog": {},
         "eShop.Distribution": {},

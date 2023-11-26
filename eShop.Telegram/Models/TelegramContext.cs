@@ -2,7 +2,8 @@
 {
     public static class TelegramAction
     {
-        public const string RegisterClient = "rc";
+        public const string Register = "rc";
+        public const string SubscribeToAnnouncer = "sca";
         public const string SetUpGroup = "sug";
         public const string Refresh = "rh";
         public const string SetGroupEnabled = "sge";

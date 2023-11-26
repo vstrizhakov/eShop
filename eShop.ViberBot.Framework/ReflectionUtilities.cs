@@ -53,7 +53,7 @@ namespace eShop.ViberBot.Framework
                 {
                     var localTargetParameterType = targetParameterType;
 
-                    var isTargetParameterTypeNullable = targetParameterType.GetGenericTypeDefinition() == typeof(Nullable<>);
+                    var isTargetParameterTypeNullable = targetParameterType.IsGenericType && targetParameterType.GetGenericTypeDefinition() == typeof(Nullable<>);
                     if (isTargetParameterTypeNullable)
                     {
                         var genericArgument = targetParameterType.GetGenericArguments()[0];

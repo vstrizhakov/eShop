@@ -4,8 +4,8 @@ namespace eShop.Distribution.Repositories
 {
     public interface IAccountRepository
     {
-        Task<Account?> GetAccountByIdAsync(Guid id, Guid? providerId = null);
-        Task<IEnumerable<Account>> GetAccountsByProviderIdAsync(Guid providerId, bool? isActivated = null, bool includeDistributionSettings = false);
+        Task<Account?> GetAccountByIdAsync(Guid id, Guid? announcerId = null);
+        Task<IEnumerable<Account>> GetAccountsByAnnouncerIdAsync(Guid announcerId, bool? isActivated = null, bool includeDistributionSettings = false);
         Task CreateAccountAsync(Account account);
         Task UpdateAccountAsync(Account account);
         Task UpdateTelegramChatAsync(Account account, Guid telegramChatId, bool isEnabled);

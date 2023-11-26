@@ -19,8 +19,8 @@ namespace eShop.Distribution.Controllers
         {
             var distribution = await distributionRepository.GetDistributionByIdAsync(id);
 
-            var providerId = User.GetAccountId().Value;
-            if (distribution == null || distribution.ProviderId != providerId)
+            var announcerId = User.GetAccountId().Value;
+            if (distribution == null || distribution.AnnouncerId != announcerId)
             {
                 return NotFound();
             }

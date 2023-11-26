@@ -35,7 +35,7 @@ namespace eShop.Distribution.Services
             await _accountRepository.UpdateViberChatAsync(account, viberChatId, isEnabled);
         }
 
-        public async Task CreateAccountAsync(Guid accountId, string firstName, string lastName, Guid? providerId)
+        public async Task CreateAccountAsync(Guid accountId, string firstName, string lastName, Guid? announcerId)
         {
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             if (account != null)
@@ -48,7 +48,7 @@ namespace eShop.Distribution.Services
                 Id = accountId,
                 FirstName = firstName,
                 LastName = lastName,
-                ProviderId = providerId,
+                AnnouncerId = announcerId,
                 DistributionSettings = new DistributionSettings
                 {
                     AccountId = accountId,
@@ -60,7 +60,7 @@ namespace eShop.Distribution.Services
             await _accountRepository.CreateAccountAsync(account);
         }
 
-        public async Task UpdateAccountAsync(Guid accountId, string firstName, string lastName, Guid? providerId)
+        public async Task UpdateAccountAsync(Guid accountId, string firstName, string lastName, Guid? announcerId)
         {
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             if (account == null)
@@ -68,9 +68,9 @@ namespace eShop.Distribution.Services
                 throw new InvalidOperationException(); // TODO: custom error
             }
 
-            if (providerId.HasValue) // TODO: handle this case some another way
+            if (announcerId.HasValue) // TODO: handle this case some another way because we want to be able to set announcer to null
             {
-                account.ProviderId = providerId;
+                account.AnnouncerId = announcerId;
             }
             account.FirstName = firstName;
             account.LastName = lastName;
@@ -82,6 +82,13 @@ namespace eShop.Distribution.Services
         {
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             return account;
+        }
+
+        public async Task SubscribeToAnnouncerAsync(Account account, Account announcer)
+        {
+            account.AnnouncerId = announcer.Id;
+
+            await _accountRepository.UpdateAccountAsync(account);
         }
     }
 }

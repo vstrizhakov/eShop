@@ -103,6 +103,7 @@ namespace eShop.Telegram
             builder.Services.AddMessageListener<SetShowSalesResponse>();
             builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
             builder.Services.AddMessageHandler<SendResetPasswordToTelegramMessage, SendResetPasswordToTelegramMessageHandler>();
+            builder.Services.AddMessageHandler<SubscribeToAnnouncerResponse, SubscribeToAnnouncerResponseHandler>();
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -67,7 +67,7 @@ namespace eShop.Catalog.Services
 
             var broadcastMessage = new Messaging.Models.BroadcastAnnounceMessage
             {
-                ProviderId = announce.OwnerId,
+                AnnouncerId = announce.OwnerId,
                 Announce = new Messaging.Models.Announce
                 {
                     Id = announce.Id,

@@ -56,7 +56,7 @@ namespace eShop.Distribution.Tests.Services
 
             var accountRepository = new Mock<IAccountRepository>();
             accountRepository
-                .Setup(e => e.GetAccountsByProviderIdAsync(providerId, true, true))
+                .Setup(e => e.GetAccountsByAnnouncerIdAsync(providerId, true, true))
                 .ReturnsAsync(accounts);
 
             Entities.Distribution? result = null;
@@ -75,7 +75,7 @@ namespace eShop.Distribution.Tests.Services
             // Assert
 
             Assert.NotNull(result);
-            Assert.Equal(providerId, result.ProviderId);
+            Assert.Equal(providerId, result.AnnouncerId);
             Assert.Contains(result.Items, item => item.ViberChatId == accounts[0].ViberChat.Id);
             Assert.Contains(result.Items, item => item.TelegramChatId == accounts[0].TelegramChats.ElementAt(0).Id);
             Assert.DoesNotContain(result.Items, item => item.ViberChatId == accounts[1].ViberChat.Id);

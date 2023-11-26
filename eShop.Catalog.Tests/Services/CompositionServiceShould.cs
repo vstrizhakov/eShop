@@ -142,7 +142,7 @@ namespace eShop.Catalog.Tests.Services
 
             Assert.NotEmpty(composition.Images);
             Assert.NotNull(result);
-            Assert.Equal(composition.OwnerId, result.ProviderId);
+            Assert.Equal(composition.OwnerId, result.AnnouncerId);
             Assert.NotNull(result.Announce);
         }
 

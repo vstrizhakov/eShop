@@ -94,6 +94,7 @@ namespace eShop.Distribution
             builder.Services.AddRequestHandler<SetShopSettingsShopStateRequest, SetShopSettingsShopStateResponse, SetShopSettingsShopStateRequestHandler>();
             builder.Services.AddRequestHandler<GetDistributionSettingsRequest, GetDistributionSettingsResponse, GetDistributionSettingsRequestHandler>();
             builder.Services.AddRequestHandler<SetShowSalesRequest, SetShowSalesResponse, SetShowSalesRequestHandler>();
+            builder.Services.AddRequestHandler<SubscribeToAnnouncerRequest, SubscribeToAnnouncerResponse, SubscribeToAnnouncerRequestHandler>();
 
             builder.Services.AddMessageHandler<SyncShopsMessage, SyncShopsMessageHandler>();
 

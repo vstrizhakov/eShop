@@ -25,14 +25,14 @@ namespace eShop.Distribution.Services
             _distributionHubServer = distributionHubServer;
         }
 
-        public async Task<Entities.Distribution> CreateDistributionAsync(Guid providerId, Announce composition)
+        public async Task<Entities.Distribution> CreateDistributionAsync(Guid announcerId, Announce composition)
         {
             var distribution = new Entities.Distribution
             {
-                ProviderId = providerId,
+                AnnouncerId = announcerId,
             };
 
-            var accounts = await _accountRepository.GetAccountsByProviderIdAsync(providerId, true, true);
+            var accounts = await _accountRepository.GetAccountsByAnnouncerIdAsync(announcerId, true, true);
 
             var shopId = composition.ShopId;
             foreach (var account in accounts)

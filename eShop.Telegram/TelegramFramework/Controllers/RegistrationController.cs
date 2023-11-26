@@ -43,34 +43,43 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId == null)
             {
-                var activeContext = _botContextConverter.Serialize(TelegramAction.RegisterClient, default(string));
-                await _telegramService.SetActiveContextAsync(user, activeContext);
-
-                return new FinishRegistrationView(context.ChatId);
-            }
-
-            return null;
-        }
-
-        [TextMessage(Action = TelegramAction.RegisterClient, Command = "/start")]
-        public async Task<ITelegramView?> ProcessAsync(TextMessageContext context, Guid providerId)
-        {
-            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
-            if (user!.AccountId == null)
-            {
-                var activeContext = _botContextConverter.Serialize(TelegramAction.RegisterClient, providerId.ToString());
+                var activeContext = _botContextConverter.Serialize(TelegramAction.Register, default(string));
                 await _telegramService.SetActiveContextAsync(user, activeContext);
 
                 return new FinishRegistrationView(context.ChatId);
             }
             else
             {
-                return new AlreadyRegisteredView(context.ChatId);
+                return new WelcomeView(context.ChatId, null);
             }
         }
 
-        [ContactMessage(Action = TelegramAction.RegisterClient)]
-        public async Task<ITelegramView?> ProcessAsync(ContactMessageContext context, Guid? providerId)
+        [TextMessage(Action = TelegramAction.SubscribeToAnnouncer, Command = "/start")]
+        public async Task<ITelegramView?> SubscribeToAnnouncer(TextMessageContext context, Guid announcerId)
+        {
+            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
+            if (user!.AccountId == null)
+            {
+                var activeContext = _botContextConverter.Serialize(TelegramAction.Register, announcerId.ToString());
+                await _telegramService.SetActiveContextAsync(user, activeContext);
+
+                return new FinishRegistrationView(context.ChatId);
+            }
+            else
+            {
+                var request = new Messaging.Models.Distribution.SubscribeToAnnouncerRequest
+                {
+                    AccountId = user.AccountId.Value,
+                    AnnouncerId = announcerId,
+                };
+                _producer.Publish(request);
+            }
+
+            return null;
+        }
+
+        [ContactMessage(Action = TelegramAction.Register)]
+        public async Task<ITelegramView?> ProcessAsync(ContactMessageContext context, Guid? announcerId)
         {
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId == null)
@@ -86,7 +95,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     PhoneNumber = phoneNumber,
-                    ProviderId = providerId,
+                    AnnouncerId = announcerId,
                 };
 
                 _producer.Publish(request);

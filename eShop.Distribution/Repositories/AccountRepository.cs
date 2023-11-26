@@ -20,28 +20,28 @@ namespace eShop.Distribution.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Account?> GetAccountByIdAsync(Guid id, Guid? providerId = null)
+        public async Task<Account?> GetAccountByIdAsync(Guid id, Guid? announcerId = null)
         {
             var query = _context.Accounts
                 .Include(e => e.TelegramChats)
                 .Include(e => e.ViberChat)
                 .Where(e => e.Id == id);
 
-            if (providerId.HasValue)
+            if (announcerId.HasValue)
             {
-                query = query.Where(e => e.ProviderId == providerId.Value);
+                query = query.Where(e => e.AnnouncerId == announcerId.Value);
             }
 
             var account = await query.FirstOrDefaultAsync();
             return account;
         }
 
-        public async Task<IEnumerable<Account>> GetAccountsByProviderIdAsync(Guid providerId, bool? isActivated = null, bool includeDistributionSettings = false)
+        public async Task<IEnumerable<Account>> GetAccountsByAnnouncerIdAsync(Guid announcerId, bool? isActivated = null, bool includeDistributionSettings = false)
         {
             var query = _context.Accounts
                 .Include(e => e.TelegramChats)
                 .Include(e => e.ViberChat)
-                .Where(e => e.ProviderId == providerId);
+                .Where(e => e.AnnouncerId == announcerId);
 
             if (includeDistributionSettings)
             {

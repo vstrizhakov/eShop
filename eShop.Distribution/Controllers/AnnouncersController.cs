@@ -30,8 +30,8 @@ namespace eShop.Distribution.Controllers
                 Announcer = mapper.Map<Account>(announcer),
                 Links = new InvitationLinks
                 {
-                    Telegram = telegramLinkGenerator.Generate("rc", announcerIdArg),
-                    Viber = viberLinkGenerator.Generate("rc", announcerIdArg),
+                    Telegram = telegramLinkGenerator.Generate("sca", announcerIdArg),
+                    Viber = viberLinkGenerator.Generate("sca", announcerIdArg),
                 },
             };
             return response;

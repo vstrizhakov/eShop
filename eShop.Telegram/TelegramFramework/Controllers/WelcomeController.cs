@@ -17,18 +17,6 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             _telegramService = telegramService;
         }
 
-        [TextMessage(Command = "/start")]
-        public async Task<ITelegramView?> ProcessAsync(TextMessageContext context)
-        {
-            var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
-            if (user!.AccountId != null)
-            {
-                return new WelcomeView(context.ChatId, null);
-            }
-
-            return null;
-        }
-
         [CallbackQuery(TelegramAction.Home)]
         public async Task<ITelegramView?> ProcessAsync(CallbackQueryContext context)
         {

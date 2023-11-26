@@ -20,7 +20,7 @@ namespace eShop.Accounts.Tests.MessageHandlers
                 LastName = "Smith",
                 PhoneNumber = "+380000000000",
                 TelegramUserId = Guid.NewGuid(),
-                ProviderId = Guid.NewGuid(),
+                AnnouncerId = Guid.NewGuid(),
             };
 
             var accountRepository = new Mock<IAccountService>();

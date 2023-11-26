@@ -152,7 +152,7 @@ namespace eShop.Distribution.Tests.Services
             accountRepository.VerifyAll();
 
             Assert.NotNull(result);
-            Assert.Equal(providerId, result.ProviderId);
+            Assert.Equal(providerId, result.AnnouncerId);
             Assert.NotNull(result.ActiveDistributionSettings);
         }
 

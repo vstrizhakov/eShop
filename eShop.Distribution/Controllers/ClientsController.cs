@@ -25,7 +25,7 @@ namespace eShop.Distribution.Controllers
         public async Task<ActionResult<IEnumerable<Client>>> GetClients()
         {
             var accountId = User.GetAccountId().Value;
-            var clientAccounts = await _accountRepository.GetAccountsByProviderIdAsync(accountId);
+            var clientAccounts = await _accountRepository.GetAccountsByAnnouncerIdAsync(accountId);
             var clients = _mapper.Map<IEnumerable<Client>>(clientAccounts);
             return Ok(clients);
         }

@@ -2,7 +2,7 @@
 using eShop.Distribution.Entities.History;
 using eShop.Distribution.Exceptions;
 using eShop.Distribution.Repositories;
-using eShop.Messaging.Models;
+using eShop.Messaging.Contracts;
 
 namespace eShop.Distribution.Services
 {

@@ -27,13 +27,13 @@ namespace eShop.Viber.ViberBotFramework.Views
                     {
                         Rows = 1,
                         Text = $"Розмір комісії ({_amount}%)",
-                        ActionBody = botContextConverter.Serialize(ViberContext.SetComissionAmount),
+                        ActionBody = botContextConverter.Serialize(ViberAction.SetComissionAmount),
                     },
                     new Button
                     {
                         Rows = 1,
                         Text = "Назад",
-                        ActionBody = botContextConverter.Serialize(ViberContext.Settings),
+                        ActionBody = botContextConverter.Serialize(ViberAction.Settings),
                     },
                 },
             };

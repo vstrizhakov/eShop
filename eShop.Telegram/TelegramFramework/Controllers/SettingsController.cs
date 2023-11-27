@@ -1,11 +1,11 @@
-﻿using eShop.Messaging;
-using eShop.Messaging.Models.Distribution;
+﻿using eShop.Messaging.Contracts.Distribution;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using MassTransit;
 
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
@@ -13,12 +13,17 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     public class SettingsController
     {
         private readonly ITelegramService _telegramService;
-        private readonly IRequestClient _requestClient;
+        private readonly IRequestClient<GetDistributionSettingsRequest> _getDistributionSettingsRequestClient;
+        private readonly IRequestClient<SetShowSalesRequest> _setShowSalesRequestClient;
 
-        public SettingsController(ITelegramService telegramService, IRequestClient requestClient)
+        public SettingsController(
+            ITelegramService telegramService,
+            IRequestClient<GetDistributionSettingsRequest> getDistributionSettingsRequestClient,
+            IRequestClient<SetShowSalesRequest> setShowSalesRequestClient)
         {
             _telegramService = telegramService;
-            _requestClient = requestClient;
+            _getDistributionSettingsRequestClient = getDistributionSettingsRequestClient;
+            _setShowSalesRequestClient = setShowSalesRequestClient;
         }
 
         [CallbackQuery(TelegramAction.Settings)]
@@ -28,7 +33,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetDistributionSettingsRequest(user.AccountId.Value);
-                var response = await _requestClient.SendAsync(request);
+                var result = await _getDistributionSettingsRequestClient.GetResponse<GetDistributionSettingsResponse>(request);
+                var response = result.Message;
 
                 return new SettingsView(context.ChatId, context.MessageId, response.DistributionSettings);
             }
@@ -43,7 +49,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new SetShowSalesRequest(user.AccountId.Value, showSales);
-                var response = await _requestClient.SendAsync(request);
+                var result = await _setShowSalesRequestClient.GetResponse<SetShowSalesResponse>(request);
+                var response = result.Message;
 
                 return new SettingsView(context.ChatId, context.MessageId, response.DistributionSettings);
             }

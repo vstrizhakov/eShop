@@ -1,5 +1,5 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Contracts.Distribution;
 using eShop.Viber.Models;
 using eShop.ViberBot;
 using eShop.ViberBot.Framework;
@@ -31,31 +31,31 @@ namespace eShop.Viber.ViberBotFramework.Views
                     {
                         Rows = 1,
                         Text = _isEnabled ? "Ввимкнути анонси" : "Увікмнути анонси",
-                        ActionBody = botContextConverter.Serialize(ViberContext.SetIsChatEnalbed, (!_isEnabled).ToString()),
+                        ActionBody = botContextConverter.Serialize(ViberAction.SetIsChatEnalbed, (!_isEnabled).ToString()),
                     },
                     new Button
                     {
                         Rows = 1,
                         Text = showSales ? "Не відображати знижки" : "Відображати знижки",
-                        ActionBody = botContextConverter.Serialize(ViberContext.SetShowSales, (!showSales).ToString()),
+                        ActionBody = botContextConverter.Serialize(ViberAction.SetShowSales, (!showSales).ToString()),
                     },
                     new Button
                     {
                         Rows = 1,
                         Text = "Моя комісія",
-                        ActionBody = botContextConverter.Serialize(ViberContext.ComissionSettings),
+                        ActionBody = botContextConverter.Serialize(ViberAction.ComissionSettings),
                     },
                     new Button
                     {
                         Rows = 1,
                         Text = "Мої валюти",
-                        ActionBody = botContextConverter.Serialize(ViberContext.CurrencySettings),
+                        ActionBody = botContextConverter.Serialize(ViberAction.CurrencySettings),
                     },
                     new Button
                     {
                         Rows = 1,
                         Text = "Мої магазини",
-                        ActionBody = botContextConverter.Serialize(ViberContext.ShopSettings),
+                        ActionBody = botContextConverter.Serialize(ViberAction.ShopSettings),
                     },
                 },
             };

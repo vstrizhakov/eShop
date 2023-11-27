@@ -1,7 +1,7 @@
 ﻿using eShop.Distribution.Exceptions;
 using eShop.Distribution.MessageHandlers;
 using eShop.Distribution.Services;
-using eShop.Messaging.Models;
+using eShop.Messaging.Contracts;
 
 namespace eShop.Distribution.Tests.MessageHandlers
 {

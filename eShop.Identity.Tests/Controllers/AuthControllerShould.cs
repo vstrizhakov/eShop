@@ -6,7 +6,7 @@ using eShop.Identity.Entities;
 using eShop.Identity.Models;
 using eShop.Identity.Repositories;
 using eShop.Messaging;
-using eShop.Messaging.Models.Identity;
+using eShop.Messaging.Contracts.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

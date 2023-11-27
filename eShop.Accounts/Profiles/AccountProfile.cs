@@ -1,10 +1,12 @@
-﻿namespace eShop.Accounts.Profiles
+﻿using eShop.Messaging.Contracts;
+
+namespace eShop.Accounts.Profiles
 {
     public class AccountProfile : AutoMapper.Profile
     {
         public AccountProfile()
         {
-            CreateMap<Entities.Account, Messaging.Models.Account>();
+            CreateMap<Entities.Account, Account>();
         }
     }
 }

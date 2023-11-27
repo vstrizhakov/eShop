@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eShop.Messaging.Contracts.Catalog;
 
 namespace eShop.Catalog.Profiles
 {
@@ -7,7 +8,7 @@ namespace eShop.Catalog.Profiles
         public ShopProfile()
         {
             CreateMap<Entities.Shop, Models.Shops.Shop>();
-            CreateMap<Entities.Shop, Messaging.Models.Catalog.Shop>();
+            CreateMap<Entities.Shop, Shop>();
         }
     }
 }

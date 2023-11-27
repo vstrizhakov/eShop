@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eShop.Messaging.Contracts.Distribution;
 
 namespace eShop.Distribution.Profiles
 {
@@ -13,9 +14,9 @@ namespace eShop.Distribution.Profiles
                     options.Condition(src => src.Currency != null);
                     options.MapFrom(src => src.Currency!.PreferredCurrencyId);
                 });
-            CreateMap<Entities.CurrencyRate, Messaging.Models.Distribution.CurrencyRate>()
+            CreateMap<Entities.CurrencyRate, CurrencyRate>()
                 .ForMember(dest => dest.Currency, options => options.MapFrom(src => src.SourceCurrency));
-            CreateMap<Entities.DistributionSettings, Messaging.Models.Distribution.DistributionSettings>();
+            CreateMap<Entities.DistributionSettings, DistributionSettings>();
         }
     }
 }

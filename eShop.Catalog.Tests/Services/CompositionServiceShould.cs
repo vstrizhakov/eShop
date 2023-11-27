@@ -3,6 +3,7 @@ using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common;
 using eShop.Messaging;
+using eShop.Messaging.Contracts;
 using Microsoft.AspNetCore.Http;
 
 namespace eShop.Catalog.Tests.Services
@@ -84,7 +85,7 @@ namespace eShop.Catalog.Tests.Services
         public async Task CreateComposition()
         {
             // Arrange
-            Messaging.Models.BroadcastAnnounceMessage? result = null;
+            BroadcastAnnounceMessage? result = null;
 
             var composition = new Announce
             {
@@ -123,8 +124,8 @@ namespace eShop.Catalog.Tests.Services
 
             var producer = new Mock<IProducer>();
             producer
-                .Setup(e => e.Publish(It.IsAny<Messaging.Models.BroadcastAnnounceMessage>()))
-                .Callback<Messaging.Models.BroadcastAnnounceMessage>(message => result = message);
+                .Setup(e => e.Publish(It.IsAny<BroadcastAnnounceMessage>()))
+                .Callback<BroadcastAnnounceMessage>(message => result = message);
 
             var service = new CompositionService(fileManager.Object, compositionRepository.Object, publicUriBuilder.Object, producer.Object);
 

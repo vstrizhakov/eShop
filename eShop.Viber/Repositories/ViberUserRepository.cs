@@ -20,6 +20,14 @@ namespace eShop.Viber.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<ViberUser?> GetViberUserByAccountIdAsync(Guid accountId)
+        {
+            var viberUser = await _context.ViberUsers
+                .Include(e => e.ChatSettings)
+                .FirstOrDefaultAsync(e => e.AccountId == accountId);
+            return viberUser;
+        }
+
         public async Task<ViberUser?> GetViberUserByExternalIdAsync(string externalId)
         {
             var viberUser = await _context.ViberUsers

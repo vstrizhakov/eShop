@@ -1,5 +1,5 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging.Models.Distribution.ShopSettings;
+using eShop.Messaging.Contracts.Distribution.ShopSettings;
 using eShop.Viber.Models;
 using eShop.ViberBot;
 using eShop.ViberBot.Framework;
@@ -29,7 +29,7 @@ namespace eShop.Viber.ViberBotFramework.Views
                 {
                     Rows = 1,
                     Text = filter ? "Ввимкнути фільтрування" : "Увімкнути фільтрування",
-                    ActionBody = botContextConverter.Serialize(ViberContext.SetShopSettingsFilter, (!filter).ToString()),
+                    ActionBody = botContextConverter.Serialize(ViberAction.SetShopSettingsFilter, (!filter).ToString()),
                 }
             };
 
@@ -39,7 +39,7 @@ namespace eShop.Viber.ViberBotFramework.Views
                 {
                     Rows = 1,
                     Text = "Магазини",
-                    ActionBody = botContextConverter.Serialize(ViberContext.ShopSettingsShops),
+                    ActionBody = botContextConverter.Serialize(ViberAction.ShopSettingsShops),
                 });
             }
 
@@ -47,7 +47,7 @@ namespace eShop.Viber.ViberBotFramework.Views
             {
                 Rows = 1,
                 Text = "Назад",
-                ActionBody = botContextConverter.Serialize(ViberContext.Settings),
+                ActionBody = botContextConverter.Serialize(ViberAction.Settings),
             });
 
             var keyboard = new Keyboard

@@ -1,15 +1,14 @@
 using eShop.Catalog.DbContexts;
-using eShop.Catalog.Handlers;
 using eShop.Catalog.Hubs;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common.Extensions;
 using eShop.Configuration;
-using eShop.Messaging.Extensions;
-using eShop.Messaging.Models;
-using eShop.Messaging.Models.Catalog;
+using eShop.Messaging;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -90,11 +89,21 @@ namespace eShop.Catalog
 
             builder.Services.Configure<FilesConfiguration>(options => builder.Configuration.Bind("Files", options));
 
-            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
-            builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<BroadcastAnnounceUpdateEvent, BroadcastAnnounceUpdateEventHandler>();
-            builder.Services.AddRequestHandler<GetCurrenciesRequest, GetCurrenciesResponse, GetCurrenciesRequestHandler>();
+            builder.Services.Configure<RabbitMqOptions>(options => builder.Configuration.Bind("RabbitMq", options));
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumers(Assembly.GetExecutingAssembly());
 
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                    cfg.Host(options.HostName);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

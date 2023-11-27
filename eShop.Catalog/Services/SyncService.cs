@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using eShop.Catalog.Repositories;
-using eShop.Messaging;
-using eShop.Messaging.Models;
-using eShop.Messaging.Models.Catalog;
+using eShop.Messaging.Contracts;
+using eShop.Messaging.Contracts.Catalog;
+using eShop.Messaging.Contracts.Catalog;
+using MassTransit;
 
 namespace eShop.Catalog.Services
 {
@@ -11,13 +12,13 @@ namespace eShop.Catalog.Services
         private readonly ICurrencyRepository _currencyRepository;
         private readonly IShopRepository _shopRepository;
         private readonly IMapper _mapper;
-        private readonly IProducer _producer;
+        private readonly IBus _producer;
 
         public SyncService(
             ICurrencyRepository currencyRepository,
             IShopRepository shopRepository,
             IMapper mapper,
-            IProducer producer)
+            IBus producer)
         {
             _currencyRepository = currencyRepository;
             _shopRepository = shopRepository;
@@ -34,7 +35,7 @@ namespace eShop.Catalog.Services
                 {
                     Currencies = _mapper.Map<IEnumerable<Currency>>(currencies),
                 };
-                _producer.Publish(message);
+                await _producer.Publish(message);
             }
 
             var shops = await _shopRepository.GetShopsAsync();
@@ -44,7 +45,7 @@ namespace eShop.Catalog.Services
                 {
                     Shops = _mapper.Map<IEnumerable<Shop>>(shops),
                 };
-                _producer.Publish(message);
+                await _producer.Publish(message);
             }
         }
     }

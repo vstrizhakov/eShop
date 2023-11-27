@@ -1,4 +1,4 @@
-﻿using eShop.Messaging.Models;
+﻿using eShop.Messaging.Contracts;
 using eShop.Telegram.Models;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Builders;

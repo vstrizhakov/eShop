@@ -1,11 +1,13 @@
-﻿namespace eShop.Distribution.Profiles
+﻿using eShop.Messaging.Contracts.Distribution.ShopSettings;
+
+namespace eShop.Distribution.Profiles
 {
     public class ShopSettingsProfile : AutoMapper.Profile
     {
         public ShopSettingsProfile()
         {
-            CreateMap<Entities.ShopSettings, Messaging.Models.Distribution.ShopSettings.ShopSettings>();
-            CreateMap<Aggregates.ShopFilter, Messaging.Models.Distribution.ShopSettings.Shop>()
+            CreateMap<Entities.ShopSettings, ShopSettings>();
+            CreateMap<Aggregates.ShopFilter, Shop>()
                 .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Shop.Id))
                 .ForMember(dest => dest.Name, options => options.MapFrom(src => src.Shop.Name));
         }

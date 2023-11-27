@@ -27,7 +27,7 @@ namespace eShop.Viber.ViberBotFramework.Views
                     {
                         Rows = 1,
                         Text = "Назад",
-                        ActionBody = botContextConverter.Serialize(ViberContext.ComissionSettings),
+                        ActionBody = botContextConverter.Serialize(ViberAction.ComissionSettings),
                     }
                 },
             };

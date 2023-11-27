@@ -4,6 +4,7 @@ using eShop.Accounts.Exceptions;
 using eShop.Accounts.Repositories;
 using eShop.Accounts.Services;
 using eShop.Messaging;
+using eShop.Messaging.Contracts;
 
 namespace eShop.Accounts.Tests.Services
 {
@@ -158,7 +159,7 @@ namespace eShop.Accounts.Tests.Services
         {
             // Arrange
 
-            Messaging.Models.AccountRegisteredEvent? @event = null;
+            AccountRegisteredEvent? @event = null;
 
             var providerId = Guid.NewGuid();
             var telegramUserId = Guid.NewGuid();
@@ -184,16 +185,16 @@ namespace eShop.Accounts.Tests.Services
                 .Setup(e => e.CreateAccountAsync(It.IsAny<Account>()))
                 .Returns(Task.CompletedTask);
 
-            var mappedAccount = new Messaging.Models.Account();
+            var mappedAccount = new Messaging.Contracts.Account();
             var mapper = new Mock<IMapper>();
             mapper
-                .Setup(e => e.Map<Messaging.Models.Account>(It.IsAny<Account>()))
+                .Setup(e => e.Map<Messaging.Contracts.Account>(It.IsAny<Account>()))
                 .Returns(mappedAccount);
 
             var producer = new Mock<IProducer>();
             producer
-                .Setup(e => e.Publish(It.IsAny<Messaging.Models.AccountRegisteredEvent>()))
-                .Callback<Messaging.Models.AccountRegisteredEvent>(message => @event = message);
+                .Setup(e => e.Publish(It.IsAny<AccountRegisteredEvent>()))
+                .Callback<AccountRegisteredEvent>(message => @event = message);
 
             var sut = new AccountService(accountRepository.Object, mapper.Object, producer.Object);
 
@@ -213,7 +214,7 @@ namespace eShop.Accounts.Tests.Services
             Assert.Equal(accountInfo.PhoneNumber, result.PhoneNumber);
             Assert.Equal(accountInfo.TelegramUserId, result.TelegramUserId);
 
-            Assert.Equal(providerId, @event!.AnnouncerId);
+            Assert.Equal(providerId, @event!.ProviderId);
         }
 
         [Fact]
@@ -253,15 +254,15 @@ namespace eShop.Accounts.Tests.Services
                 .Setup(e => e.UpdateAccountAsync(existingAccount))
                 .Returns(Task.CompletedTask);
 
-            var mappedAccount = new Messaging.Models.Account();
+            var mappedAccount = new Messaging.Contracts.Account();
             var mapper = new Mock<IMapper>();
             mapper
-                .Setup(e => e.Map<Messaging.Models.Account>(existingAccount))
+                .Setup(e => e.Map<Messaging.Contracts.Account>(existingAccount))
                 .Returns(mappedAccount);
 
             var producer = new Mock<IProducer>();
             producer
-                .Setup(e => e.Publish(It.IsAny<Messaging.Models.AccountUpdatedEvent>()));
+                .Setup(e => e.Publish(It.IsAny<AccountUpdatedEvent>()));
 
             var sut = new AccountService(accountRepository.Object, mapper.Object, producer.Object);
 

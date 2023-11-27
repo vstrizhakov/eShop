@@ -1,10 +1,12 @@
-﻿namespace eShop.Distribution.Profiles
+﻿using eShop.Messaging.Contracts.Catalog;
+
+namespace eShop.Distribution.Profiles
 {
     public class ShopProfile : AutoMapper.Profile
     {
         public ShopProfile()
         {
-            CreateMap<Messaging.Models.Catalog.Shop, Entities.Shop>();
+            CreateMap<Shop, Entities.Shop>();
         }
     }
 }

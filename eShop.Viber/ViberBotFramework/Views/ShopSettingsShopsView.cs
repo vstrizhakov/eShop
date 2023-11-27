@@ -1,5 +1,5 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging.Models.Distribution.ShopSettings;
+using eShop.Messaging.Contracts.Distribution.ShopSettings;
 using eShop.Viber.Models;
 using eShop.ViberBot;
 using eShop.ViberBot.Framework;
@@ -30,7 +30,7 @@ namespace eShop.Viber.ViberBotFramework.Views
                 {
                     Rows = 1,
                     Text = shopEnabled ? $"+ {shop.Name}" : $"- {shop.Name}",
-                    ActionBody = botContextConverter.Serialize(ViberContext.SetShopSettingsShopState, shop.Id.ToString(), (!shopEnabled).ToString()),
+                    ActionBody = botContextConverter.Serialize(ViberAction.SetShopSettingsShopState, shop.Id.ToString(), (!shopEnabled).ToString()),
                 };
 
                 buttons.Add(button);
@@ -40,7 +40,7 @@ namespace eShop.Viber.ViberBotFramework.Views
             {
                 Rows = 1,
                 Text = "Назад",
-                ActionBody = botContextConverter.Serialize(ViberContext.ShopSettings),
+                ActionBody = botContextConverter.Serialize(ViberAction.ShopSettings),
             });
 
             var keyboard = new Keyboard

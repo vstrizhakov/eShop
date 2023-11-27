@@ -1,5 +1,5 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Contracts.Distribution;
 using eShop.Viber.Models;
 using eShop.ViberBot;
 using eShop.ViberBot.Framework;
@@ -9,10 +9,10 @@ namespace eShop.Viber.ViberBotFramework.Views
     public class CurrencyRateSettingsView : IViberView
     {
         private readonly string _receiverId;
-        private readonly Messaging.Models.Currency _preferredCurrency;
+        private readonly Messaging.Contracts.Currency _preferredCurrency;
         private readonly IEnumerable<CurrencyRate> _currencyRates;
 
-        public CurrencyRateSettingsView(string receiverId, Messaging.Models.Currency preferredCurrency, IEnumerable<CurrencyRate> currencyRates)
+        public CurrencyRateSettingsView(string receiverId, Messaging.Contracts.Currency preferredCurrency, IEnumerable<CurrencyRate> currencyRates)
         {
             _receiverId = receiverId;
             _preferredCurrency = preferredCurrency;
@@ -31,7 +31,7 @@ namespace eShop.Viber.ViberBotFramework.Views
                 {
                     Rows = 1,
                     Text = $"{currency.Name}: {currencyRate.Rate}",
-                    ActionBody = botContextConverter.Serialize(ViberContext.SetCurrencyRate, currency.Id.ToString()),
+                    ActionBody = botContextConverter.Serialize(ViberAction.SetCurrencyRate, currency.Id.ToString()),
                 };
 
                 buttons.Add(button);
@@ -41,7 +41,7 @@ namespace eShop.Viber.ViberBotFramework.Views
             {
                 Rows = 1,
                 Text = "Назад",
-                ActionBody = botContextConverter.Serialize(ViberContext.CurrencySettings),
+                ActionBody = botContextConverter.Serialize(ViberAction.CurrencySettings),
             });
 
             var keyboard = new Keyboard

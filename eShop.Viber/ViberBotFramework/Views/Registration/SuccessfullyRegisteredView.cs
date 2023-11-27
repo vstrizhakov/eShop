@@ -27,7 +27,7 @@ namespace eShop.Viber.ViberBotFramework.Views.Registration
                     {
                         Rows = 1,
                         Text = "Налаштування анонсів",
-                        ActionBody = botContextConverter.Serialize(ViberContext.Settings),
+                        ActionBody = botContextConverter.Serialize(ViberAction.Settings),
                     },
                 },
             };

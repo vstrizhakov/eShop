@@ -1,14 +1,11 @@
 using eShop.Accounts.DbContexts;
-using eShop.Accounts.Handlers;
 using eShop.Accounts.Repositories;
 using eShop.Accounts.Services;
-using eShop.Messaging.Extensions;
-using eShop.Messaging.Models.Distribution.ResetPassword;
-using eShop.Messaging.Models.Identity;
-using eShop.Messaging.Models.Telegram;
-using eShop.Messaging.Models.Viber;
+using eShop.Messaging;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -36,13 +33,21 @@ namespace eShop.Accounts
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
-            builder.Services.AddRabbitMqProducer();
+            builder.Services.Configure<RabbitMqOptions>(options => builder.Configuration.Bind("RabbitMq", options));
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumers(Assembly.GetExecutingAssembly());
 
-            builder.Services.AddRequestHandler<RegisterTelegramUserRequest, RegisterTelegramUserResponse, RegisterTelegramUserRequestHandler>();
-            builder.Services.AddRequestHandler<RegisterViberUserRequest, RegisterViberUserResponse, RegisterViberUserRequestHandler>();
-            builder.Services.AddMessageHandler<GetIdentityUserResponse, GetIdentityUserResponseHandler>();
-            builder.Services.AddMessageHandler<SendResetPasswordMessage, SendResetPasswordMessageHandler>();
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                    cfg.Host(options.HostName);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             if (builder.Environment.IsDevelopment())
             {

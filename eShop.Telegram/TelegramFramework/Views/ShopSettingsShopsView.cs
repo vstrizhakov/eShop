@@ -1,10 +1,10 @@
 ﻿using eShop.TelegramFramework;
 using eShop.TelegramFramework.Builders;
 using Telegram.Bot;
-using eShop.Messaging.Models.Distribution.ShopSettings;
 using eShop.TelegramFramework.UI;
 using eShop.Telegram.Models;
 using Telegram.Bot.Types;
+using eShop.Messaging.Contracts.Distribution.ShopSettings;
 
 namespace eShop.Telegram.TelegramFramework.Views
 {

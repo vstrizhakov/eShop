@@ -1,20 +1,17 @@
+using eShop.Bots.Links;
 using eShop.Distribution.DbContexts;
-using eShop.Distribution.Handlers;
 using eShop.Distribution.Hubs;
 using eShop.Distribution.Repositories;
 using eShop.Distribution.Services;
-using eShop.Messaging.Extensions;
-using eShop.Messaging.Models;
-using eShop.Messaging.Models.Catalog;
-using eShop.Messaging.Models.Distribution;
-using eShop.Messaging.Models.Distribution.ShopSettings;
+using eShop.Messaging;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using eShop.Bots.Links;
 
 namespace eShop.Distribution
 {
@@ -71,32 +68,21 @@ namespace eShop.Distribution
             builder.Services.AddScoped<IShopService, ShopService>();
             builder.Services.AddScoped<IDistributionsHubServer, DistributionsHubServer>();
 
-            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
-            builder.Services.AddRabbitMqProducer();
-            builder.Services.AddMessageHandler<AccountRegisteredEvent, AccountRegisteredEventHandler>();
-            builder.Services.AddMessageHandler<AccountUpdatedEvent, AccountUpdatedEventHandler>();
-            builder.Services.AddMessageHandler<TelegramChatUpdatedEvent, TelegramChatUpdatedEventHandler>();
-            builder.Services.AddMessageHandler<ViberChatUpdatedEvent, ViberChatUpdatedEventHandler>();
-            builder.Services.AddMessageHandler<BroadcastAnnounceMessage, BroadcastCompositionMessageHandler>();
-            builder.Services.AddMessageHandler<BroadcastMessageUpdateEvent, BroadcastMessageUpdateEventHandler>();
-            builder.Services.AddMessageHandler<SyncCurrenciesMessage, SyncCurrenciesMessageHandler>();
-            builder.Services.AddRequestHandler<GetPreferredCurrencyRequest, GetPreferredCurrencyResponse, GetPreferredCurrencyRequestHandler>();
-            builder.Services.AddRequestHandler<SetPreferredCurrencyRequest, SetPreferredCurrencyResponse, SetPreferredCurrencyRequestHandler>();
-            builder.Services.AddRequestHandler<GetCurrencyRatesRequest, GetCurrencyRatesResponse, GetCurrencyRatesRequestHandler>();
-            builder.Services.AddRequestHandler<SetCurrencyRateRequest, SetCurrencyRateResponse, SetCurrencyRateRequestHandler>();
-            builder.Services.AddRequestHandler<GetCurrencyRateRequest, GetCurrencyRateResponse, GetCurrencyRateRequestHandler>();
-            builder.Services.AddRequestHandler<GetComissionSettingsRequest, GetComissionSettingsResponse, GetComissionSettingsRequestHandler>();
-            builder.Services.AddRequestHandler<SetComissionAmountRequest, SetComissionAmountResponse, SetComissionAmountRequestHandler>();
-            builder.Services.AddRequestHandler<GetComissionAmountRequest, GetComissionAmountResponse, GetComissionAmountRequestHandler>();
-            builder.Services.AddRequestHandler<GetShopSettingsRequest, GetShopSettingsResponse, GetShopSettingsRequestHandler>();
-            builder.Services.AddRequestHandler<SetShopSettingsFilterRequest, SetShopSettingsFilterResponse, SetShopSettingsFilterRequestHandler>();
-            builder.Services.AddRequestHandler<GetShopSettingsShopsRequest, GetShopSettingsShopsResponse, GetShopSettingsShopsRequestHandler>();
-            builder.Services.AddRequestHandler<SetShopSettingsShopStateRequest, SetShopSettingsShopStateResponse, SetShopSettingsShopStateRequestHandler>();
-            builder.Services.AddRequestHandler<GetDistributionSettingsRequest, GetDistributionSettingsResponse, GetDistributionSettingsRequestHandler>();
-            builder.Services.AddRequestHandler<SetShowSalesRequest, SetShowSalesResponse, SetShowSalesRequestHandler>();
-            builder.Services.AddRequestHandler<SubscribeToAnnouncerRequest, SubscribeToAnnouncerResponse, SubscribeToAnnouncerRequestHandler>();
+            builder.Services.Configure<RabbitMqOptions>(options => builder.Configuration.Bind("RabbitMq", options));
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumers(Assembly.GetExecutingAssembly());
 
-            builder.Services.AddMessageHandler<SyncShopsMessage, SyncShopsMessageHandler>();
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                    cfg.Host(options.HostName);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

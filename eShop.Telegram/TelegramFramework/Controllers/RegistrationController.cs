@@ -1,17 +1,14 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging;
 using eShop.Telegram.Entities;
 using eShop.Telegram.Models;
-using eShop.Telegram.Repositories;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using MassTransit;
 using System.Text.RegularExpressions;
 using Telegram.Bot;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
@@ -21,18 +18,15 @@ namespace eShop.Telegram.TelegramFramework.Controllers
         private static readonly Regex PhoneNumberRegex = new Regex(@"^(\+?38)?(\s|-)?0(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])(\s|-)?([0-9])$");
 
         private readonly ITelegramService _telegramService;
-        private readonly ITelegramBotClient _botClient;
         private readonly IBotContextConverter _botContextConverter;
-        private readonly IProducer _producer;
+        private readonly IBus _producer;
 
         public RegistrationController(
             ITelegramService telegramService,
-            ITelegramBotClient botClient,
             IBotContextConverter botContextConverter,
-            IProducer producer)
+            IBus producer)
         {
             _telegramService = telegramService;
-            _botClient = botClient;
             _botContextConverter = botContextConverter;
             _producer = producer;
         }
@@ -67,19 +61,20 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             }
             else
             {
-                var request = new Messaging.Models.Distribution.SubscribeToAnnouncerRequest
+                var request = new Messaging.Contracts.Distribution.SubscribeToAnnouncerRequest
                 {
                     AccountId = user.AccountId.Value,
                     AnnouncerId = announcerId,
                 };
-                _producer.Publish(request);
+
+                await _producer.Publish(request);
             }
 
             return null;
         }
 
         [ContactMessage(Action = TelegramAction.Register)]
-        public async Task<ITelegramView?> ProcessAsync(ContactMessageContext context, Guid? announcerId)
+        public async Task<ITelegramView?> CompleteRegistration(ContactMessageContext context, Guid? announcerId)
         {
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId == null)
@@ -89,7 +84,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var contact = context.Contact;
                 var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
 
-                var request = new Messaging.Models.Telegram.RegisterTelegramUserRequest
+                var request = new Messaging.Contracts.Telegram.RegisterTelegramUserRequest
                 {
                     TelegramUserId = user.Id,
                     FirstName = user.FirstName,
@@ -98,7 +93,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     AnnouncerId = announcerId,
                 };
 
-                _producer.Publish(request);
+                await _producer.Publish(request);
             }
 
             return null;
@@ -134,7 +129,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 var contact = context.Contact;
                 var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
 
-                var request = new Messaging.Models.Telegram.RegisterTelegramUserRequest
+                var request = new Messaging.Contracts.Telegram.RegisterTelegramUserRequest
                 {
                     TelegramUserId = user.Id,
                     FirstName = user.FirstName,
@@ -143,7 +138,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                     IsConfirmationRequested = true,
                 };
 
-                _producer.Publish(request);
+                await _producer.Publish(request);
             }
 
             return null;

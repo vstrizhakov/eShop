@@ -1,7 +1,7 @@
 ﻿using eShop.Catalog.Entities;
 using eShop.Catalog.Repositories;
 using eShop.Common;
-using eShop.Messaging;
+using MassTransit;
 
 namespace eShop.Catalog.Services
 {
@@ -10,14 +10,14 @@ namespace eShop.Catalog.Services
         private readonly IFileManager _fileManager;
         private readonly IAnnounceRepository _announceRepository;
         private readonly IPublicUriBuilder _publicUriBuilder;
-        private readonly IProducer _producer;
+        private readonly IBus _producer;
         private readonly IAnnouncesHubServer _announcesHubServer;
 
         public AnnounceService(
             IFileManager fileManager,
             IAnnounceRepository announceRepository,
             IPublicUriBuilder publicUriBuilder,
-            IProducer producer,
+            IBus producer,
             IAnnouncesHubServer announcesHubServer)
         {
             _fileManager = fileManager;
@@ -65,10 +65,10 @@ namespace eShop.Catalog.Services
 
             await _announceRepository.CreateAnnounceAsync(announce);
 
-            var broadcastMessage = new Messaging.Models.BroadcastAnnounceMessage
+            var broadcastMessage = new Messaging.Contracts.BroadcastAnnounceMessage
             {
                 AnnouncerId = announce.OwnerId,
-                Announce = new Messaging.Models.Announce
+                Announce = new Messaging.Contracts.Announce
                 {
                     Id = announce.Id,
                     ShopId = announce.ShopId,
@@ -77,16 +77,16 @@ namespace eShop.Catalog.Services
                     {
                         var price = e.Prices.FirstOrDefault();
                         var currency = price.Currency;
-                        var product = new Messaging.Models.Product
+                        var product = new Messaging.Contracts.Product
                         {
                             Name = e.Name,
                             Description = e.Description,
                             Url = e.Url,
-                            Price = new Messaging.Models.ProductPrice
+                            Price = new Messaging.Contracts.ProductPrice
                             {
                                 Price = price.Value,
                                 DiscountedPrice = price.DiscountedValue,
-                                Currency = new Messaging.Models.Currency
+                                Currency = new Messaging.Contracts.Currency
                                 {
                                     Id = currency.Id,
                                     Name = currency.Name,
@@ -98,7 +98,8 @@ namespace eShop.Catalog.Services
                     }).ToList(),
                 },
             };
-            _producer.Publish(broadcastMessage);
+
+            await _producer.Publish(broadcastMessage);
         }
 
         public async Task DeleteAnnounceAsync(Announce announce)

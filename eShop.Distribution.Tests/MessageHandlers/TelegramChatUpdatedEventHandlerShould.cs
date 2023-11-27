@@ -13,7 +13,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new Messaging.Models.TelegramChatUpdatedEvent
+            var message = new Messaging.Contracts.TelegramChatUpdatedEvent
             {
                 AccountId = Guid.NewGuid(),
                 TelegramChatId = Guid.NewGuid(),
@@ -41,7 +41,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new Messaging.Models.TelegramChatUpdatedEvent
+            var message = new Messaging.Contracts.TelegramChatUpdatedEvent
             {
                 AccountId = Guid.NewGuid(),
                 TelegramChatId = Guid.NewGuid(),

@@ -1,11 +1,12 @@
 ﻿using eShop.Messaging;
-using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Contracts.Distribution;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using MassTransit;
 
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
@@ -13,12 +14,12 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     public class CurrencySettingsController
     {
         private readonly ITelegramService _telegramService;
-        private readonly IRequestClient _requestClient;
+        private readonly IRequestClient<GetPreferredCurrencyRequest> _getPreferredCurrencyRequestClient;
 
-        public CurrencySettingsController(ITelegramService telegramService, IRequestClient requestClient)
+        public CurrencySettingsController(ITelegramService telegramService, IRequestClient<GetPreferredCurrencyRequest> getPreferredCurrencyRequestClient)
         {
             _telegramService = telegramService;
-            _requestClient = requestClient;
+            _getPreferredCurrencyRequestClient = getPreferredCurrencyRequestClient;
         }
 
         [CallbackQuery(TelegramAction.CurrencySettings)]
@@ -28,7 +29,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetPreferredCurrencyRequest(user.AccountId.Value);
-                var response = await _requestClient.SendAsync(request);
+                var result = await _getPreferredCurrencyRequestClient.GetResponse<GetPreferredCurrencyResponse>(request);
+                var response = result.Message;
 
                 var view = new CurrencySettingsView(user.ExternalId, context.MessageId, response.PreferredCurrency);
                 return view;

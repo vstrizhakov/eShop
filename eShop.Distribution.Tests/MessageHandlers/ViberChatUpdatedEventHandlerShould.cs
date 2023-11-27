@@ -20,7 +20,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new Messaging.Models.ViberChatUpdatedEvent
+            var message = new Messaging.Contracts.ViberChatUpdatedEvent
             {
                 AccountId = Guid.NewGuid(),
                 ViberUserId = Guid.NewGuid(),
@@ -48,7 +48,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
         {
             // Arrange
 
-            var message = new Messaging.Models.ViberChatUpdatedEvent
+            var message = new Messaging.Contracts.ViberChatUpdatedEvent
             {
                 AccountId = Guid.NewGuid(),
                 ViberUserId = Guid.NewGuid(),

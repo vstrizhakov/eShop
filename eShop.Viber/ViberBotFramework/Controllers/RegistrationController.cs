@@ -1,5 +1,4 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging.Models.Identity;
 using eShop.Viber.Entities;
 using eShop.Viber.Models;
 using eShop.Viber.Services;
@@ -7,6 +6,7 @@ using eShop.Viber.ViberBotFramework.Views.Registration;
 using eShop.ViberBot.Framework;
 using eShop.ViberBot.Framework.Attributes;
 using eShop.ViberBot.Framework.Contexts;
+using MassTransit;
 using System.Text.RegularExpressions;
 
 namespace eShop.Viber.ViberBotFramework.Controllers
@@ -18,12 +18,12 @@ namespace eShop.Viber.ViberBotFramework.Controllers
 
         private readonly IViberService _viberService;
         private readonly IBotContextConverter _botContextConverter;
-        private readonly Messaging.IProducer _producer;
+        private readonly IBus _producer;
 
         public RegistrationController(
             IViberService viberService,
             IBotContextConverter botContextConverter,
-            Messaging.IProducer producer)
+            IBus producer)
         {
             _viberService = viberService;
             _botContextConverter = botContextConverter;
@@ -36,51 +36,42 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId == null)
             {
+                var activeContext = _botContextConverter.Serialize(ViberAction.Register, default(string));
+                await _viberService.SetActiveContextAsync(user, activeContext);
+
                 return new FinishRegistrationView(context.UserId);
             }
 
             return null;
         }
 
-        [ContactMessage]
-        public async Task<IViberView?> CompleteRegistration(ContactMessageContext context)
+        [ConversationStarted(Action = ViberAction.SubscribeToAnnouncer)]
+        public async Task<IViberView?> RegisterClient(ConversationStartedContext context, Guid announcerId)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId == null)
             {
-                var contact = context.Contact;
-                var phoneNumber = contact.PhoneNumber;
-                phoneNumber = await SetPhoneNumberAsync(user, phoneNumber);
+                var activeContext = _botContextConverter.Serialize(ViberAction.Register, announcerId.ToString());
+                await _viberService.SetActiveContextAsync(user, activeContext);
 
-                var request = new Messaging.Models.Viber.RegisterViberUserRequest
+                return new FinishRegistrationView(context.UserId);
+            }
+            else
+            {
+                var request = new Messaging.Contracts.Distribution.SubscribeToAnnouncerRequest
                 {
-                    ViberUserId = user.Id,
-                    Name = user.Name,
-                    PhoneNumber = phoneNumber,
+                    AccountId = user.AccountId.Value,
+                    AnnouncerId = announcerId,
                 };
 
-                _producer.Publish(request);
+                await _producer.Publish(request);
             }
 
             return null;
         }
 
-        [ConversationStarted(Action = ViberContext.RegisterClient)]
-        public async Task<IViberView?> RegisterClient(ConversationStartedContext context, Guid announcerId)
-        {
-            var result = await ProcessRegisterClientAsync(context.UserId, announcerId);
-            return result;
-        }
-
-        [TextMessage(Action = ViberContext.RegisterClient)]
-        public async Task<IViberView?> RegisterClient(TextMessageContext context, Guid announcerId)
-        {
-            var result = await ProcessRegisterClientAsync(context.UserId, announcerId);
-            return result;
-        }
-
-        [ContactMessage(ActiveAction = ViberContext.RegisterClient)]
-        public async Task<IViberView?> CompleteClientRegistration(ContactMessageContext context, Guid announcerId)
+        [ContactMessage(ActiveAction = ViberAction.Register)]
+        public async Task<IViberView?> CompleteRegistration(ContactMessageContext context, Guid? announcerId)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId == null)
@@ -90,7 +81,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
                 var contact = context.Contact;
                 var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
 
-                var request = new Messaging.Models.Viber.RegisterViberUserRequest
+                var request = new Messaging.Contracts.Viber.RegisterViberUserRequest
                 {
                     ViberUserId = user.Id,
                     AnnouncerId = announcerId,
@@ -98,19 +89,19 @@ namespace eShop.Viber.ViberBotFramework.Controllers
                     PhoneNumber = phoneNumber,
                 };
 
-                _producer.Publish(request);
+                await _producer.Publish(request);
             }
 
             return null;
         }
 
-        [ConversationStarted(Action = ViberContext.ConfirmPhoneNumber)]
+        [ConversationStarted(Action = ViberAction.ConfirmPhoneNumber)]
         public async Task<IViberView?> ConfirmPhoneNumber(ConversationStartedContext context)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId == null)
             {
-                var activeContext = _botContextConverter.Serialize(ViberContext.ConfirmPhoneNumber);
+                var activeContext = _botContextConverter.Serialize(ViberAction.ConfirmPhoneNumber);
                 await _viberService.SetActiveContextAsync(user, activeContext);
 
                 return new FinishRegistrationView(context.UserId);
@@ -123,7 +114,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             return null;
         }
 
-        [ContactMessage(ActiveAction = ViberContext.ConfirmPhoneNumber)]
+        [ContactMessage(ActiveAction = ViberAction.ConfirmPhoneNumber)]
         public async Task<IViberView?> ConfirmPhoneNumber(ContactMessageContext context)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
@@ -134,7 +125,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
                 var contact = context.Contact;
                 var phoneNumber = await SetPhoneNumberAsync(user, contact.PhoneNumber);
 
-                var request = new Messaging.Models.Viber.RegisterViberUserRequest
+                var request = new Messaging.Contracts.Viber.RegisterViberUserRequest
                 {
                     ViberUserId = user.Id,
                     Name = user.Name,
@@ -142,7 +133,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
                     IsConfirmationRequested = true,
                 };
 
-                _producer.Publish(request);
+                await _producer.Publish(request);
             }
 
             return null;
@@ -158,22 +149,6 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             await _viberService.UpdateUserAsync(user);
 
             return phoneNumber;
-        }
-
-        private async Task<IViberView?> ProcessRegisterClientAsync(string contextUserId, Guid announcerId)
-        {
-            var user = await _viberService.GetUserByIdAsync(contextUserId);
-            if (user!.AccountId == null)
-            {
-                var activeContext = _botContextConverter.Serialize(ViberContext.RegisterClient, announcerId.ToString());
-                await _viberService.SetActiveContextAsync(user, activeContext);
-
-                return new FinishRegistrationView(contextUserId);
-            }
-            else
-            {
-                return new AlreadyRegisteredView();
-            }
         }
     }
 }

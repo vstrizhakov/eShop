@@ -1,11 +1,11 @@
-﻿using eShop.Messaging;
-using eShop.Messaging.Models.Distribution.ShopSettings;
+﻿using eShop.Messaging.Contracts.Distribution.ShopSettings;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using MassTransit;
 
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
@@ -13,12 +13,23 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     public class ShopSettingsController
     {
         private readonly ITelegramService _telegramService;
-        private readonly IRequestClient _requestClient;
+        private readonly IRequestClient<GetShopSettingsRequest> _getShopSettingsRequestClient;
+        private readonly IRequestClient<SetShopSettingsFilterRequest> _setShopSettingsFilterRequestClient;
+        private readonly IRequestClient<GetShopSettingsShopsRequest> _getShopSettingsShopsRequestClient;
+        private readonly IRequestClient<SetShopSettingsShopStateRequest> _setShopSettingsShopStateRequestClient;
 
-        public ShopSettingsController(ITelegramService telegramService, IRequestClient requestClient)
+        public ShopSettingsController(
+            ITelegramService telegramService,
+            IRequestClient<GetShopSettingsRequest> getShopSettingsRequestClient,
+            IRequestClient<SetShopSettingsFilterRequest> setShopSettingsFilterRequestClient,
+            IRequestClient<GetShopSettingsShopsRequest> getShopSettingsShopsRequestClient,
+            IRequestClient<SetShopSettingsShopStateRequest> setShopSettingsShopStateRequestClient)
         {
             _telegramService = telegramService;
-            _requestClient = requestClient;
+            _getShopSettingsRequestClient = getShopSettingsRequestClient;
+            _setShopSettingsFilterRequestClient = setShopSettingsFilterRequestClient;
+            _getShopSettingsShopsRequestClient = getShopSettingsShopsRequestClient;
+            _setShopSettingsShopStateRequestClient = setShopSettingsShopStateRequestClient;
         }
 
         [CallbackQuery(TelegramAction.ShopSettings)]
@@ -28,7 +39,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetShopSettingsRequest(user.AccountId.Value);
-                var response = await _requestClient.SendAsync(request);
+                var result = await _getShopSettingsRequestClient.GetResponse<GetShopSettingsResponse>(request);
+                var response = result.Message;
 
                 var view = new ShopSettingsView(user.ExternalId, context.MessageId, response.ShopSettings);
                 return view;
@@ -44,7 +56,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new SetShopSettingsFilterRequest(user.AccountId.Value, filter);
-                var response = await _requestClient.SendAsync(request);
+                var result = await _setShopSettingsFilterRequestClient.GetResponse<SetShopSettingsFilterResponse>(request);
+                var response = result.Message;
 
                 var view = new ShopSettingsView(user.ExternalId, context.MessageId, response.ShopSettings);
                 return view;
@@ -60,7 +73,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetShopSettingsShopsRequest(user.AccountId.Value);
-                var response = await _requestClient.SendAsync(request);
+                var result = await _getShopSettingsShopsRequestClient.GetResponse<GetShopSettingsShopsResponse>(request);
+                var response = result.Message;
 
                 var view = new ShopSettingsShopsView(user.ExternalId, context.MessageId, response.Shops, page);
                 return view;
@@ -76,7 +90,8 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new SetShopSettingsShopStateRequest(user.AccountId.Value, shopId, isEnabled);
-                var response = await _requestClient.SendAsync(request);
+                var result = await _setShopSettingsShopStateRequestClient.GetResponse<SetShopSettingsShopStateResponse>(request);
+                var response = result.Message;
 
                 var view = new ShopSettingsShopsView(user.ExternalId, context.MessageId, response.Shops);
                 return view;

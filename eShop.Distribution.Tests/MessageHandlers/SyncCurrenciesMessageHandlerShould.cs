@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using eShop.Distribution.MessageHandlers;
 using eShop.Distribution.Services;
-using eShop.Messaging.Models;
-using eShop.Messaging.Models.Catalog;
+using eShop.Messaging.Contracts;
+using eShop.Messaging.Contracts.Catalog;
 
 namespace eShop.Distribution.Tests.MessageHandlers
 {

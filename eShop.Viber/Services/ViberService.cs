@@ -1,18 +1,25 @@
 ﻿using eShop.Messaging;
 using eShop.Viber.Entities;
 using eShop.Viber.Repositories;
+using MassTransit;
 
 namespace eShop.Viber.Services
 {
     public class ViberService : IViberService
     {
         private readonly IViberUserRepository _viberUserRepository;
-        private readonly IProducer _producer;
+        private readonly IBus _producer;
 
-        public ViberService(IViberUserRepository viberUserRepository, IProducer producer)
+        public ViberService(IViberUserRepository viberUserRepository, IBus producer)
         {
             _viberUserRepository = viberUserRepository;
             _producer = producer;
+        }
+
+        public async Task<ViberUser?> GetUserByAccountIdAsync(Guid accountId)
+        {
+            var user = await _viberUserRepository.GetViberUserByAccountIdAsync(accountId);
+            return user;
         }
 
         public async Task<ViberUser?> GetUserByIdAsync(string userId)
@@ -43,14 +50,14 @@ namespace eShop.Viber.Services
         {
             await _viberUserRepository.UpdateChatSettingsAsync(user, isEnabled);
 
-            var internalMessage = new Messaging.Models.ViberChatUpdatedEvent
+            var internalMessage = new Messaging.Contracts.ViberChatUpdatedEvent
             {
                 AccountId = user.AccountId.Value,
                 ViberUserId = user.Id,
                 IsEnabled = isEnabled,
             };
 
-            _producer.Publish(internalMessage);
+            await _producer.Publish(internalMessage);
         }
 
         public async Task UpdateUserAsync(ViberUser user)

@@ -1,6 +1,6 @@
 ﻿using eShop.Identity.Entities;
 using eShop.Identity.MessageHandlers;
-using eShop.Messaging.Models;
+using eShop.Messaging.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;

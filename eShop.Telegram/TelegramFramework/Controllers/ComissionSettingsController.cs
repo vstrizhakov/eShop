@@ -1,12 +1,12 @@
 ﻿using eShop.Bots.Common;
-using eShop.Messaging;
-using eShop.Messaging.Models.Distribution;
+using eShop.Messaging.Contracts.Distribution;
 using eShop.Telegram.Models;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using MassTransit;
 
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
@@ -14,14 +14,23 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     public class ComissionSettingsController
     {
         private readonly ITelegramService _telegramService;
-        private readonly IRequestClient _requestClient;
+        private readonly IRequestClient<GetComissionSettingsRequest> _getComissionSettingsRequestClient;
+        private readonly IRequestClient<GetComissionAmountRequest> _getComissionAmountRequestClient;
+        private readonly IRequestClient<SetComissionAmountRequest> _setComissionAmounRequestClient;
         private readonly IBotContextConverter _botContextConverter;
 
-        public ComissionSettingsController(ITelegramService telegramService, IRequestClient requestClient, IBotContextConverter botContextConverter)
+        public ComissionSettingsController(
+            ITelegramService telegramService,
+            IRequestClient<GetComissionSettingsRequest> getComissionSettingsRequestClient,
+            IBotContextConverter botContextConverter,
+            IRequestClient<GetComissionAmountRequest> getComissionAmountRequestClient,
+            IRequestClient<SetComissionAmountRequest> setComissionAmounRequestClient)
         {
             _telegramService = telegramService;
-            _requestClient = requestClient;
+            _getComissionSettingsRequestClient = getComissionSettingsRequestClient;
             _botContextConverter = botContextConverter;
+            _getComissionAmountRequestClient = getComissionAmountRequestClient;
+            _setComissionAmounRequestClient = setComissionAmounRequestClient;
         }
 
         [CallbackQuery(TelegramAction.ComissionSettings)]
@@ -31,9 +40,9 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             if (user!.AccountId != null)
             {
                 var request = new GetComissionSettingsRequest(user.AccountId.Value);
-                var response = await _requestClient.SendAsync(request);
+                var response = await _getComissionSettingsRequestClient.GetResponse<GetComissionSettingsResponse>(request);
 
-                var view = new ComissionSettingsView(user.ExternalId, context.MessageId, response.Amount);
+                var view = new ComissionSettingsView(user.ExternalId, context.MessageId, response.Message.Amount);
                 return view;
             }
 
@@ -50,9 +59,9 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 await _telegramService.SetActiveContextAsync(user, activeContext);
 
                 var request = new GetComissionAmountRequest(user.AccountId.Value);
-                var response = await _requestClient.SendAsync(request);
+                var response = await _getComissionAmountRequestClient.GetResponse<GetComissionAmountResponse>(request);
 
-                var view = new SetComissionAmountView(user.ExternalId, response.Amount);
+                var view = new SetComissionAmountView(user.ExternalId, response.Message.Amount);
                 return view;
             }
 
@@ -68,11 +77,11 @@ namespace eShop.Telegram.TelegramFramework.Controllers
                 if (double.TryParse(context.Text.Replace(',', '.'), out var amount))
                 {
                     var request = new SetComissionAmountRequest(user.AccountId.Value, amount);
-                    var response = await _requestClient.SendAsync(request);
+                    var response = await _setComissionAmounRequestClient.GetResponse<SetComissionAmountResponse>(request);
 
                     await _telegramService.SetActiveContextAsync(user, null);
 
-                    var view = new ComissionSettingsView(user.ExternalId, null, response.Amount);
+                    var view = new ComissionSettingsView(user.ExternalId, null, response.Message.Amount);
                     return view;
                 }
                 else

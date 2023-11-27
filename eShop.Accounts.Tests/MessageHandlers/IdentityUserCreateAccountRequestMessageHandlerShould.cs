@@ -1,7 +1,7 @@
 ﻿using eShop.Accounts.Entities;
 using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Repositories;
-using eShop.Messaging.Models.Identity;
+using eShop.Messaging.Contracts.Identity;
 
 namespace eShop.Accounts.Tests.MessageHandlers
 {

@@ -1,21 +1,19 @@
 ﻿using eShop.Bots.Links;
-using eShop.Common;
+using eShop.Common.Extensions;
 using eShop.Identity.DbContexts;
 using eShop.Identity.Entities;
-using eShop.Identity.Handlers;
 using eShop.Identity.Repositories;
 using eShop.Identity.Services;
-using eShop.Messaging.Extensions;
-using eShop.Messaging.Models;
-using eShop.Messaging.Models.Identity;
+using eShop.Messaging;
+using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using eShop.Common.Extensions;
 
 namespace eShop.Identity
 {
@@ -84,11 +82,21 @@ namespace eShop.Identity
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
-            builder.Services.AddRabbitMqProducer();
+            builder.Services.Configure<RabbitMqOptions>(options => builder.Configuration.Bind("RabbitMq", options));
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumers(Assembly.GetExecutingAssembly());
 
-            builder.Services.AddRequestHandler<GetIdentityUserRequest, GetIdentityUserResponse, GetIdentityUserRequestHandler>();
-            builder.Services.AddMessageHandler<AccountRegisteredEvent, AccountRegisteredEventHandler>();
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                    cfg.Host(options.HostName);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 

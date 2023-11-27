@@ -6,7 +6,8 @@ using eShop.Identity.Entities;
 using eShop.Identity.Models;
 using eShop.Identity.Repositories;
 using eShop.Messaging;
-using eShop.Messaging.Models.Distribution.ResetPassword;
+using eShop.Messaging.Contracts.Distribution.ResetPassword;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -255,7 +256,7 @@ namespace eShop.Identity.Controllers
             [FromBody] RequestPasswordResetRequest request,
             [FromServices] IUserRepository userRepository,
             [FromServices] UserManager<User> userManager,
-            [FromServices] IProducer producer,
+            [FromServices] IBus producer,
             [FromServices] IPublicUriBuilder publicUriBuilder)
         {
             var response = new RequestPasswordResetResponse();
@@ -278,7 +279,7 @@ namespace eShop.Identity.Controllers
                     { "token", token },
                 })),
             };
-            producer.Publish(message);
+            await producer.Publish(message);
 
             response.Succeeded = true;
 

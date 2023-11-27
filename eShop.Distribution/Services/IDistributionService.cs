@@ -1,5 +1,5 @@
 ﻿using eShop.Distribution.Entities;
-using eShop.Messaging.Models;
+using eShop.Messaging.Contracts;
 
 namespace eShop.Distribution.Services
 {

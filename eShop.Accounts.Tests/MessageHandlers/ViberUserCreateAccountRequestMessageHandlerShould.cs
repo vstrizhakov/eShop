@@ -1,7 +1,8 @@
 ﻿using eShop.Accounts.Entities;
 using eShop.Accounts.MessageHandlers;
 using eShop.Accounts.Services;
-using eShop.Messaging.Models.Viber;
+using eShop.Messaging.Contracts.Viber;
+using eShop.Messaging.Contracts.Viber;
 
 namespace eShop.Accounts.Tests.MessageHandlers
 {

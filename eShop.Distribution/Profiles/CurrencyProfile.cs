@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using eShop.Messaging.Models;
+using eShop.Messaging.Contracts;
 
 namespace eShop.Distribution.Profiles
 {

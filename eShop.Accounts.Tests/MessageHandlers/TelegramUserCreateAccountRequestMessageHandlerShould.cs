@@ -1,7 +1,8 @@
 using eShop.Accounts.Entities;
-using eShop.Accounts.Handlers;
+using eShop.Accounts.Consumers;
 using eShop.Accounts.Services;
-using eShop.Messaging.Models.Telegram;
+using eShop.Messaging.Contracts.Telegram;
+using eShop.Messaging.Contracts.Telegram;
 
 namespace eShop.Accounts.Tests.MessageHandlers
 {

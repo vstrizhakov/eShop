@@ -1,15 +1,7 @@
 using eShop.Bots.Common.Extensions;
 using eShop.Common.Extensions;
-using eShop.Messaging.Extensions;
-using eShop.Messaging.Models;
-using eShop.Messaging.Models.Catalog;
-using eShop.Messaging.Models.Distribution;
-using eShop.Messaging.Models.Distribution.ResetPassword;
-using eShop.Messaging.Models.Distribution.ShopSettings;
-using eShop.Messaging.Models.Identity;
-using eShop.Messaging.Models.Viber;
+using eShop.Messaging;
 using eShop.Viber.DbContexts;
-using eShop.Viber.Handlers;
 using eShop.Viber.Repositories;
 using eShop.Viber.Services;
 using eShop.Viber.ViberBotFramework;
@@ -17,6 +9,7 @@ using eShop.Viber.ViberBotFramework.Middlewares;
 using eShop.ViberBot;
 using eShop.ViberBot.Framework;
 using eShop.ViberBot.Framework.Extensions;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -74,27 +67,21 @@ namespace eShop.Viber
 
             builder.Services.AddScoped<IViberUserRepository, ViberUserRepository>();
 
-            builder.Services.AddRabbitMq(options => builder.Configuration.Bind("RabbitMq", options));
-            builder.Services.AddRabbitMqProducer();
+            builder.Services.Configure<RabbitMqOptions>(options => builder.Configuration.Bind("RabbitMq", options));
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumers(Assembly.GetExecutingAssembly());
 
-            builder.Services.AddMessageHandler<RegisterViberUserResponse, RegisterViberUserResponseHandler>();
-            builder.Services.AddMessageHandler<BroadcastCompositionToViberMessage, BroadcastCompositionToViberMessageHandler>();
-            builder.Services.AddMessageListener<GetComissionSettingsResponse>();
-            builder.Services.AddMessageListener<GetComissionAmountResponse>();
-            builder.Services.AddMessageListener<SetComissionAmountResponse>();
-            builder.Services.AddMessageListener<GetShopSettingsResponse>();
-            builder.Services.AddMessageListener<SetShopSettingsFilterResponse>();
-            builder.Services.AddMessageListener<GetShopSettingsShopsResponse>();
-            builder.Services.AddMessageListener<SetShopSettingsShopStateResponse>();
-            builder.Services.AddMessageListener<GetPreferredCurrencyResponse>();
-            builder.Services.AddMessageListener<SetPreferredCurrencyResponse>();
-            builder.Services.AddMessageListener<GetCurrencyRatesResponse>();
-            builder.Services.AddMessageListener<GetCurrencyRateResponse>();
-            builder.Services.AddMessageListener<SetCurrencyRateResponse>();
-            builder.Services.AddMessageListener<GetCurrenciesResponse>();
-            builder.Services.AddMessageListener<SetShowSalesResponse>();
-            builder.Services.AddMessageListener<GetDistributionSettingsResponse>();
-            builder.Services.AddMessageHandler<SendResetPasswordToViberMessage, SendResetPasswordToViberMessageHandler>();
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                    cfg.Host(options.HostName);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             builder.Services.AddPublicUriBuilder(options => builder.Configuration.Bind("PublicUri", options));
 

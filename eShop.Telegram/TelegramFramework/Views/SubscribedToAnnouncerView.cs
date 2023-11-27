@@ -1,4 +1,4 @@
-﻿using eShop.Messaging.Models.Distribution;
+﻿using eShop.Messaging.Contracts.Distribution;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Builders;
 using Telegram.Bot;

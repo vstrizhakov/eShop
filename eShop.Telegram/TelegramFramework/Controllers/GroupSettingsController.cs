@@ -1,10 +1,10 @@
-﻿using eShop.Messaging;
-using eShop.Telegram.Models;
+﻿using eShop.Telegram.Models;
 using eShop.Telegram.Repositories;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
 using eShop.TelegramFramework.Attributes;
 using eShop.TelegramFramework.Contexts;
+using MassTransit;
 
 namespace eShop.Telegram.TelegramFramework.Controllers
 {
@@ -13,9 +13,9 @@ namespace eShop.Telegram.TelegramFramework.Controllers
     {
         private readonly ITelegramUserRepository _telegramUserRepository;
         private readonly ITelegramChatRepository _telegramChatRepository;
-        private readonly IProducer _producer;
+        private readonly IBus _producer;
 
-        public GroupSettingsController(ITelegramUserRepository telegramUserRepository, ITelegramChatRepository telegramChatRepository, IProducer producer)
+        public GroupSettingsController(ITelegramUserRepository telegramUserRepository, ITelegramChatRepository telegramChatRepository, IBus producer)
         {
             _telegramUserRepository = telegramUserRepository;
             _telegramChatRepository = telegramChatRepository;
@@ -23,7 +23,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
         }
 
         [CallbackQuery(TelegramAction.SetGroupEnabled)]
-        public async Task<ITelegramView?> DisableChat(CallbackQueryContext context, Guid telegramChatId, bool isEnabled)
+        public async Task<ITelegramView?> SetGroupEnabled(CallbackQueryContext context, Guid telegramChatId, bool isEnabled)
         {
             var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(context.FromId);
             if (telegramUser!.AccountId != null)
@@ -36,13 +36,13 @@ namespace eShop.Telegram.TelegramFramework.Controllers
 
                     await _telegramChatRepository.UpdateTelegramChatAsync(telegramChat);
 
-                    var internalEvent = new Messaging.Models.TelegramChatUpdatedEvent
+                    var internalEvent = new Messaging.Contracts.TelegramChatUpdatedEvent
                     {
                         AccountId = telegramUser.AccountId.Value,
                         TelegramChatId = telegramChatId,
                         IsEnabled = telegramChatSettings.IsEnabled,
                     };
-                    _producer.Publish(internalEvent);
+                    await _producer.Publish(internalEvent);
 
                     return new GroupSettingsView(context.ChatId, context.MessageId, telegramChat);
                 }

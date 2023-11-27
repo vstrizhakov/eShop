@@ -2,8 +2,8 @@
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Messaging;
-using eShop.Messaging.Models;
-using eShop.Messaging.Models.Catalog;
+using eShop.Messaging.Contracts;
+using eShop.Messaging.Contracts.Catalog;
 
 namespace eShop.Catalog.Tests.Services
 {

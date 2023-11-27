@@ -1,6 +1,6 @@
 ﻿using eShop.Catalog.MessageHandlers;
 using eShop.Catalog.Repositories;
-using eShop.Messaging.Models;
+using eShop.Messaging.Contracts;
 
 namespace eShop.Catalog.Tests.MessageHandlers
 {

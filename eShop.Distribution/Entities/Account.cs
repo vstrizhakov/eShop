@@ -3,6 +3,8 @@
     public class Account
     {
         public Guid Id { get; set; }
+        public Guid? TelegramUserId { get; set; }
+        public Guid? ViberUserId { get; set; }
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         public bool IsActivated { get; set; }

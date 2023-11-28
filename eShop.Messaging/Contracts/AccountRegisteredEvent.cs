@@ -3,6 +3,6 @@
     public class AccountRegisteredEvent
     {
         public Account Account { get; set; }
-        public Guid? ProviderId { get; set; }
+        public Guid? AnnouncerId { get; set; }
     }
 }

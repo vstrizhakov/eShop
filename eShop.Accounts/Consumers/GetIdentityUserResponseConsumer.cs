@@ -46,13 +46,13 @@ namespace eShop.Accounts.Consumers
                 {
                     account = await _accountService.RegisterAccountAsync(phoneNumber, account);
 
-                    var providerId = response.ProviderId;
-                    if (providerId.HasValue)
+                    var announcerId = response.AnnouncerId;
+                    if (announcerId.HasValue)
                     {
-                        var provider = await _accountService.GetAccountByIdAsync(providerId.Value);
-                        if (provider == null)
+                        var announcer = await _accountService.GetAccountByIdAsync(announcerId.Value);
+                        if (announcer == null)
                         {
-                            providerId = null;
+                            announcerId = null;
                             // TODO: provide feedback
                             //throw new ProviderNotExistsException();
                         }
@@ -61,7 +61,7 @@ namespace eShop.Accounts.Consumers
                     var @event = new Messaging.Contracts.AccountRegisteredEvent
                     {
                         Account = _mapper.Map<Messaging.Contracts.Account>(account),
-                        ProviderId = providerId,
+                        AnnouncerId = announcerId,
                     };
                     await context.Publish(@event);
 

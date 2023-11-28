@@ -63,7 +63,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             {
                 var request = new Messaging.Contracts.Distribution.SubscribeToAnnouncerRequest
                 {
-                    AccountId = user.AccountId.Value,
+                    TelegramUserId = user.Id,
                     AnnouncerId = announcerId,
                 };
 

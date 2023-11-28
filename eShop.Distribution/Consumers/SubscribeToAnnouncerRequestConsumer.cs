@@ -1,16 +1,17 @@
 ﻿using AutoMapper;
+using eShop.Distribution.Entities;
 using eShop.Distribution.Services;
 using eShop.Messaging.Contracts.Distribution;
 using MassTransit;
 
 namespace eShop.Distribution.Consumers
 {
-    public class SubscribeToAnnouncerRequestHandler : IConsumer<SubscribeToAnnouncerRequest>
+    public class SubscribeToAnnouncerRequestConsumer : IConsumer<SubscribeToAnnouncerRequest>
     {
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public SubscribeToAnnouncerRequestHandler(IAccountService accountService, IMapper mapper)
+        public SubscribeToAnnouncerRequestConsumer(IAccountService accountService, IMapper mapper)
         {
             _accountService = accountService;
             _mapper = mapper;
@@ -20,16 +21,33 @@ namespace eShop.Distribution.Consumers
         {
             var request = context.Message;
             var accountId = request.AccountId;
-            var account = await _accountService.GetAccountAsync(accountId);
+            var telegramUserId = request.TelegramUserId;
+            var viberUserId = request.ViberUserId;
+
+            Account? account = null;
+            if (accountId.HasValue)
+            {
+                account = await _accountService.GetAccountByIdAsync(accountId.Value);
+            }
+            else if (telegramUserId.HasValue)
+            {
+                account = await _accountService.GetAccountByTelegramUserIdAsync(telegramUserId.Value);
+            }
+            else if (viberUserId.HasValue)
+            {
+                account = await _accountService.GetAccountByViberUserIdAsync(viberUserId.Value);
+            }
+
             if (account != null)
             {
                 var response = new SubscribeToAnnouncerResponse
                 {
-                    CorrelationId = request.CorrelationId,
                     AccountId = accountId,
+                    TelegramUserId = telegramUserId,
+                    ViberUserId = viberUserId,
                 };
 
-                var announcer = await _accountService.GetAccountAsync(request.AccountId);
+                var announcer = await _accountService.GetAccountByIdAsync(request.AnnouncerId);
                 if (announcer != null)
                 {
                     await _accountService.SubscribeToAnnouncerAsync(account, announcer);

@@ -35,7 +35,7 @@ namespace eShop.Distribution.Services
             await _accountRepository.UpdateViberChatAsync(account, viberChatId, isEnabled);
         }
 
-        public async Task CreateAccountAsync(Guid accountId, string firstName, string lastName, Guid? announcerId)
+        public async Task CreateAccountAsync(Guid accountId, Guid? telegramUserId, Guid? viberUserId, string firstName, string lastName, Guid? announcerId)
         {
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             if (account != null)
@@ -46,6 +46,8 @@ namespace eShop.Distribution.Services
             account = new Account
             {
                 Id = accountId,
+                TelegramUserId = telegramUserId,
+                ViberUserId = viberUserId,
                 FirstName = firstName,
                 LastName = lastName,
                 AnnouncerId = announcerId,
@@ -60,7 +62,7 @@ namespace eShop.Distribution.Services
             await _accountRepository.CreateAccountAsync(account);
         }
 
-        public async Task UpdateAccountAsync(Guid accountId, string firstName, string lastName, Guid? announcerId)
+        public async Task UpdateAccountAsync(Guid accountId, Guid? telegramUserId, Guid? viberUserId, string firstName, string lastName)
         {
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             if (account == null)
@@ -68,20 +70,12 @@ namespace eShop.Distribution.Services
                 throw new InvalidOperationException(); // TODO: custom error
             }
 
-            if (announcerId.HasValue) // TODO: handle this case some another way because we want to be able to set announcer to null
-            {
-                account.AnnouncerId = announcerId;
-            }
+            account.TelegramUserId = telegramUserId;
+            account.ViberUserId = viberUserId;
             account.FirstName = firstName;
             account.LastName = lastName;
 
             await _accountRepository.UpdateAccountAsync(account);
-        }
-
-        public async Task<Account?> GetAccountAsync(Guid accountId)
-        {
-            var account = await _accountRepository.GetAccountByIdAsync(accountId);
-            return account;
         }
 
         public async Task SubscribeToAnnouncerAsync(Account account, Account announcer)
@@ -89,6 +83,24 @@ namespace eShop.Distribution.Services
             account.AnnouncerId = announcer.Id;
 
             await _accountRepository.UpdateAccountAsync(account);
+        }
+
+        public async Task<Account?> GetAccountByIdAsync(Guid accountId)
+        {
+            var account = await _accountRepository.GetAccountByIdAsync(accountId);
+            return account;
+        }
+
+        public async Task<Account?> GetAccountByTelegramUserIdAsync(Guid accountId)
+        {
+            var account = await _accountRepository.GetAccountByTelegramUserIdAsync(accountId);
+            return account;
+        }
+
+        public async Task<Account?> GetAccountByViberUserIdAsync(Guid accountId)
+        {
+            var account = await _accountRepository.GetViberByTelegramUserIdAsync(accountId);
+            return account;
         }
     }
 }

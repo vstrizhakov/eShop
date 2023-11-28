@@ -5,11 +5,11 @@ using MassTransit;
 
 namespace eShop.Distribution.Consumers
 {
-    public class AccountRegisteredEventHandler : IConsumer<AccountRegisteredEvent>
+    public class AccountRegisteredEventConsumer : IConsumer<AccountRegisteredEvent>
     {
         private readonly IAccountService _accountService;
 
-        public AccountRegisteredEventHandler(IAccountService accountService)
+        public AccountRegisteredEventConsumer(IAccountService accountService)
         {
             _accountService = accountService;
         }
@@ -20,7 +20,7 @@ namespace eShop.Distribution.Consumers
             try
             {
                 var account = @event.Account;
-                await _accountService.CreateAccountAsync(account.Id, account.FirstName, account.LastName, @event.ProviderId);
+                await _accountService.CreateAccountAsync(account.Id, account.TelegramUserId, account.ViberUserId, account.FirstName, account.LastName, @event.AnnouncerId);
             }
             catch (AccountAlreadyExistsException)
             {

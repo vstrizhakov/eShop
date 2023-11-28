@@ -18,7 +18,7 @@ namespace eShop.Distribution.Controllers
             [FromServices] IAccountService accountService,
             [FromServices] IMapper mapper)
         {
-            var announcer = await accountService.GetAccountAsync(announcerId);
+            var announcer = await accountService.GetAccountByIdAsync(announcerId);
             if (announcer == null)
             {
                 return NotFound();

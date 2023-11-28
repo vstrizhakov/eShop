@@ -5,6 +5,8 @@ namespace eShop.Distribution.Repositories
     public interface IAccountRepository
     {
         Task<Account?> GetAccountByIdAsync(Guid id, Guid? announcerId = null);
+        Task<Account?> GetAccountByTelegramUserIdAsync(Guid telegramUserId);
+        Task<Account?> GetViberByTelegramUserIdAsync(Guid viberUserId);
         Task<IEnumerable<Account>> GetAccountsByAnnouncerIdAsync(Guid announcerId, bool? isActivated = null, bool includeDistributionSettings = false);
         Task CreateAccountAsync(Account account);
         Task UpdateAccountAsync(Account account);

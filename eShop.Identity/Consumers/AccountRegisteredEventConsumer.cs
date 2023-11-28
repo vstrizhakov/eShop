@@ -4,11 +4,11 @@ using MassTransit;
 
 namespace eShop.Identity.Consumers
 {
-    public class AccountRegisteredEventHandler : IConsumer<AccountRegisteredEvent>
+    public class AccountRegisteredEventConsumer : IConsumer<AccountRegisteredEvent>
     {
         private readonly IUserRepository _userRepository;
 
-        public AccountRegisteredEventHandler(IUserRepository userRepository)
+        public AccountRegisteredEventConsumer(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }

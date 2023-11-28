@@ -36,6 +36,28 @@ namespace eShop.Distribution.Repositories
             return account;
         }
 
+        public async Task<Account?> GetAccountByTelegramUserIdAsync(Guid telegramUserId)
+        {
+            var account = await _context.Accounts
+                .Include(e => e.TelegramChats)
+                .Include(e => e.ViberChat)
+                .Where(e => e.TelegramUserId == telegramUserId)
+                .FirstOrDefaultAsync();
+
+            return account;
+        }
+
+        public async Task<Account?> GetViberByTelegramUserIdAsync(Guid viberUserId)
+        {
+            var account = await _context.Accounts
+                .Include(e => e.TelegramChats)
+                .Include(e => e.ViberChat)
+                .Where(e => e.ViberUserId == viberUserId)
+                .FirstOrDefaultAsync();
+
+            return account;
+        }
+
         public async Task<IEnumerable<Account>> GetAccountsByAnnouncerIdAsync(Guid announcerId, bool? isActivated = null, bool includeDistributionSettings = false)
         {
             var query = _context.Accounts

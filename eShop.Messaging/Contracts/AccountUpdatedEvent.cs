@@ -3,6 +3,5 @@
     public class AccountUpdatedEvent
     {
         public Account Account { get; set; }
-        public Guid? AnnouncerId { get; set; }
     }
 }

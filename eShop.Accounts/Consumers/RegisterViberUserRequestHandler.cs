@@ -3,16 +3,20 @@ using eShop.Messaging.Contracts.Viber;
 using eShop.Messaging.Contracts.Identity;
 using MassTransit;
 using eShop.Messaging.Contracts.Distribution;
+using eShop.Messaging.Contracts;
+using AutoMapper;
 
 namespace eShop.Accounts.Consumers
 {
     public class RegisterViberUserRequestHandler : IConsumer<RegisterViberUserRequest>
     {
         private readonly IAccountService _accountService;
+        private readonly IMapper _mapper;
 
-        public RegisterViberUserRequestHandler(IAccountService accountService)
+        public RegisterViberUserRequestHandler(IAccountService accountService, IMapper mapper)
         {
             _accountService = accountService;
+            _mapper = mapper;
         }
 
         public async Task Consume(ConsumeContext<RegisterViberUserRequest> context)
@@ -27,15 +31,11 @@ namespace eShop.Accounts.Consumers
             {
                 await _accountService.LinkViberUserAsync(account, viberUserId);
 
-                var response = new RegisterViberUserResponse
+                var @event = new AccountUpdatedEvent
                 {
-                    IsSuccess = true,
-                    AccountId = account.Id,
-                    ViberUserId = viberUserId,
-                    IsConfirmationRequested = request.IsConfirmationRequested,
+                    Account = _mapper.Map<Account>(account),
                 };
-
-                await context.Publish(response);
+                await context.Publish(@event);
 
                 var announcerId = request.AnnouncerId;
                 if (announcerId.HasValue)
@@ -45,9 +45,17 @@ namespace eShop.Accounts.Consumers
                         AccountId = account.Id,
                         AnnouncerId = announcerId.Value,
                     };
-
                     await context.Publish(command);
                 }
+
+                var response = new RegisterViberUserResponse
+                {
+                    IsSuccess = true,
+                    AccountId = account.Id,
+                    ViberUserId = viberUserId,
+                    IsConfirmationRequested = request.IsConfirmationRequested,
+                };
+                await context.Publish(response);
             }
             else
             {
@@ -59,7 +67,6 @@ namespace eShop.Accounts.Consumers
                     ViberUserId = viberUserId,
                     IsConfirmationRequested = request.IsConfirmationRequested,
                 };
-
                 await context.Publish(getIdentityUserRequest);
             }
         }

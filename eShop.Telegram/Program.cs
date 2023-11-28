@@ -86,7 +86,7 @@ namespace eShop.Telegram
                 {
                     var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
                     cfg.Host(options.HostName);
-
+                    
                     cfg.ConfigureEndpoints(context);
                 });
             });

@@ -60,7 +60,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             {
                 var request = new Messaging.Contracts.Distribution.SubscribeToAnnouncerRequest
                 {
-                    AccountId = user.AccountId.Value,
+                    ViberUserId = user.Id,
                     AnnouncerId = announcerId,
                 };
 

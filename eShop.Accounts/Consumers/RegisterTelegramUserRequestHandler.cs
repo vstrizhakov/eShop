@@ -3,16 +3,20 @@ using eShop.Messaging.Contracts.Telegram;
 using eShop.Messaging.Contracts.Identity;
 using MassTransit;
 using eShop.Messaging.Contracts.Distribution;
+using eShop.Messaging.Contracts;
+using AutoMapper;
 
 namespace eShop.Accounts.Consumers
 {
     public class RegisterTelegramUserRequestHandler : IConsumer<RegisterTelegramUserRequest>
     {
         private readonly IAccountService _accountService;
+        private readonly IMapper _mapper;
 
-        public RegisterTelegramUserRequestHandler(IAccountService accountService)
+        public RegisterTelegramUserRequestHandler(IAccountService accountService, IMapper mapper)
         {
             _accountService = accountService;
+            _mapper = mapper;
         }
 
         public async Task Consume(ConsumeContext<RegisterTelegramUserRequest> context)
@@ -27,13 +31,11 @@ namespace eShop.Accounts.Consumers
             {
                 await _accountService.LinkTelegramUserAsync(account, telegramUserId);
 
-                var response = new RegisterTelegramUserResponse
+                var @event = new AccountUpdatedEvent
                 {
-                    TelegramUserId = telegramUserId,
-                    AccountId = account.Id,
+                    Account = _mapper.Map<Account>(account),
                 };
-
-                await context.Publish(response);
+                await context.Publish(@event);
 
                 var announcerId = request.AnnouncerId;
                 if (announcerId.HasValue)
@@ -43,9 +45,15 @@ namespace eShop.Accounts.Consumers
                         AccountId = account.Id,
                         AnnouncerId = announcerId.Value,
                     };
-
                     await context.Publish(command);
                 }
+
+                var response = new RegisterTelegramUserResponse
+                {
+                    TelegramUserId = telegramUserId,
+                    AccountId = account.Id,
+                };
+                await context.Publish(response);
             }
             else
             {
@@ -58,7 +66,6 @@ namespace eShop.Accounts.Consumers
                     TelegramUserId = telegramUserId,
                     IsConfirmationRequested = request.IsConfirmationRequested,
                 };
-
                 await context.Publish(getIdentityUserRequest);
             }
         }

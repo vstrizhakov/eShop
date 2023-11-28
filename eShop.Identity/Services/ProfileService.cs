@@ -28,15 +28,30 @@ namespace eShop.Identity.Services
             if (user != null)
             {
                 var claims = new List<Claim>();
+                var requestedClaims = context.RequestedClaimTypes;
+
 
                 var accountIdClaimType = "account_id";
-                if (context.RequestedClaimTypes.Contains(accountIdClaimType))
+                if (requestedClaims.Contains(accountIdClaimType))
                 {
                     var accountId = user.AccountId;
                     if (accountId.HasValue)
                     {
                         claims.Add(new Claim(accountIdClaimType, accountId.Value.ToString()));
                     }
+                }
+
+                if (requestedClaims.Contains(JwtClaimTypes.FamilyName))
+                {
+                    if (user.LastName != null)
+                    {
+                        claims.Add(new Claim(JwtClaimTypes.FamilyName, user.LastName));
+                    }
+                }
+
+                if (requestedClaims.Contains(JwtClaimTypes.GivenName))
+                {
+                    claims.Add(new Claim(JwtClaimTypes.GivenName, user.FirstName));
                 }
 
                 context.AddRequestedClaims(claims);

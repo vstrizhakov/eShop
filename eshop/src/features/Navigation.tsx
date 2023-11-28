@@ -16,6 +16,11 @@ const Navigation: React.FC<AuthContextProps> = props => {
 
     const location = useLocation();
 
+    let name = claims.given_name;
+    if (claims.family_name) {
+        name += ` ${claims.family_name}`;
+    }
+
     return (
         <Navbar>
             <Container>
@@ -27,7 +32,7 @@ const Navigation: React.FC<AuthContextProps> = props => {
                     {isAuthenticated ? (
                         <Dropdown>
                             <Dropdown.Toggle as={DropdownAnchorToggle} className="text-decoration-none text-reset">
-                                Володимир Стрижаков
+                                {name}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <LinkContainer to="/">

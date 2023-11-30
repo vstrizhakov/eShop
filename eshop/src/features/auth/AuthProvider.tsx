@@ -49,6 +49,18 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
 
     const pathname = window.location.pathname;
 
+    useEffect(() => {
+        const listener = (user: Oidc.User) => {
+            console.log("listener", "addUserLoaded")
+            processUser(user);
+        };
+
+        manager.events.addUserLoaded(listener);
+        return () => {
+            manager.events.removeUserLoaded(listener);
+        };
+    }, [manager]);
+
     const processUser = useCallback((user: Oidc.User | null) => {
         const isAuthenticated = user !== null;
         if (isAuthenticated) {
@@ -65,9 +77,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
             user = await manager.signinSilent();
         } catch (error: any) {
         }
-
-        processUser(user);
-    }, [processUser]);
+    }, []);
 
     const processSignInCallback = useCallback(async () => {
         try {

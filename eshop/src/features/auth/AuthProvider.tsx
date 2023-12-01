@@ -76,6 +76,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
         try {
             user = await manager.signinSilent();
         } catch (error: any) {
+            processUser(null);
         }
     }, []);
 

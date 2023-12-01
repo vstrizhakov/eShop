@@ -7,7 +7,7 @@ const MyInvitation: React.FC = () => {
         claims,
     } = useAuth();
 
-    const providerId = claims.account_id;
+    const providerId = claims!.account_id;
     const announcerLink = `${window.location.origin}/announcer/${providerId}`;
 
     const onCopyClicked = () => {

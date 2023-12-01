@@ -18,8 +18,12 @@ const Authorize: React.FC<PropsWithChildren<IProps>> = props => {
     const [isAuthorized, setIsAuthorized] = useState<boolean | undefined>(undefined);
 
     useEffect(() => {
-        const authorized = handle(claims);
-        setIsAuthorized(authorized);
+        if (claims) {
+            const authorized = handle(claims);
+            setIsAuthorized(authorized);
+        } else {
+            setIsAuthorized(false);
+        }
     }, [claims, handle]);
 
     // if (isAuthorized === undefined) {

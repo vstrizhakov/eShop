@@ -104,7 +104,7 @@ const Main: React.FC<AuthContextProps> = props => {
                     <div className="d-flex align-items-center justify-content-center" style={{ height: 240 }}>
                         <LinkContainer to="/addAnnounce">
                             <Button size="lg" className="fw-semibold" variant="outline-primary border-start-0 border-end-0 rounded-0 text-white">
-                                ДОДАТИ АНОНС
+                                СТВОРИТИ АНОНС
                             </Button>
                         </LinkContainer>
                     </div>
@@ -121,12 +121,12 @@ const Main: React.FC<AuthContextProps> = props => {
                             <Button className="fw-semibold">Зареєструватися</Button>
                         </Col>
                     </Row>
-
+                    
                     <div className="mb-5">
-                        <h2 className="display-6 text-body-emphasis mb-3">Анонсерам</h2>
+                        <h2 className="display-6 text-body-emphasis mb-3">Байєрам</h2>
                         <Row className="g-3">
-                            {announcerFeatures && announcerFeatures.map(feature => (
-                                <Col xs={12} md={6} xxl={4}
+                            {buyerFeatures && buyerFeatures.map((feature, index) => (
+                                <Col key={index} xs={12} md={6} xxl={4}
                                     className="d-flex align-items-stretch">
                                     <Feature
                                         title={feature.title}
@@ -140,10 +140,10 @@ const Main: React.FC<AuthContextProps> = props => {
                     </div>
 
                     <div className="mb-5">
-                        <h2 className="display-6 text-body-emphasis mb-3">Байєрам</h2>
+                        <h2 className="display-6 text-body-emphasis mb-3">Анонсерам</h2>
                         <Row className="g-3">
-                            {buyerFeatures && buyerFeatures.map(feature => (
-                                <Col xs={12} md={6} xxl={4}
+                            {announcerFeatures && announcerFeatures.map((feature, index) => (
+                                <Col key={index} xs={12} md={6} xxl={4}
                                     className="d-flex align-items-stretch">
                                     <Feature
                                         title={feature.title}

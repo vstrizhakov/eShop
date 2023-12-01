@@ -30,24 +30,28 @@ const Announce: React.FC<IProps> = props => {
     } = props;
 
     const mainImage = announce.images[0];
+    const createdAtDatetime = new Date(announce.createdAt);
 
     return (
         <>
             <Row className="mb-5">
                 <Col>
-                    <h4 className="mb-3">Анонс #1</h4>
+                    <h4 className="d-flex justify-content-between align-items-center mb-3">
+                        <span className="text-body-emphasis">Анонс від {createdAtDatetime.getDate()}.{createdAtDatetime.getMonth() + 1}.{createdAtDatetime.getFullYear()}, {createdAtDatetime.toLocaleTimeString()}</span>
+                        <Badge bg="info" pill className="fw-semibold">{announce.shop.name}</Badge>
+                    </h4>
                     <img className="rounded" src={mainImage} width="100%" />
                 </Col>
                 <Col>
                     <h4 className="d-flex justify-content-between align-items-center mb-3">
-                        <span className="text-muted">{announce.shop.name} - Позиції</span>
-                        <Badge bg="secondary" pill>{announce.products.length}</Badge>
+                        <span className="text-body-emphasis">Позиції</span>
+                        <Badge bg="secondary" pill className="fw-semibold">{announce.products.length}</Badge>
                     </h4>
                     <ListGroup>
                         {announce.products.map(product => (
                             <ListGroupItem key={product.id} className="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <strong>{product.name}</strong>
+                                    <strong className="fw-semibold">{product.name}</strong>
                                     {product.description && (
                                         <p className="text-muted">
                                             <small>

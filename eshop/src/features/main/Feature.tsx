@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "react-bootstrap";
+import { Badge, Card } from "react-bootstrap";
 import { ReactComponent as ViberIcon } from "../../assets/viber.svg";
 
 export interface IFeatureProps {
@@ -19,7 +19,7 @@ const Feature: React.FC<IFeatureProps> = props => {
 
     return (
         <Card className="bg-body-tertiary border-0 w-100 rounded-5 shadow">
-            <Card.Body className="d-flex gap-3 position-relative flex-column p-4">
+            <Card.Body className="d-flex gap-1 position-relative flex-column p-4">
                 {icon !== "bi-viber" && (
                     <i className={`text-primary bi ${icon} fs-3`}></i>
                 )}
@@ -31,10 +31,7 @@ const Feature: React.FC<IFeatureProps> = props => {
                     <p className="m-0">{description}</p>
                 </div>
                 {!implemented && (
-                    <span className="position-absolute badge rounded bg-info" style={{ top: -5, right: -5 }}>
-                        Очікується
-                        <span className="visually-hidden">unread messages</span>
-                    </span>
+                    <Badge bg="info" pill className="position-absolute fw-semibold" style={{ top: -5, right: -5 }}>Очікується</Badge>
                 )}
             </Card.Body>
         </Card>

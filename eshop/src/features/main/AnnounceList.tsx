@@ -1,7 +1,8 @@
 import React from "react";
 import { useGetAnnouncesQuery } from "../api/catalogSlice";
-import { Spinner } from "react-bootstrap";
+import { Anchor, Col, Row, Spinner } from "react-bootstrap";
 import AnnounceListItem from "./AnnounceListItem";
+import { LinkContainer } from "react-router-bootstrap";
 
 const AnnounceList: React.FC = () => {
     const {
@@ -19,11 +20,17 @@ const AnnounceList: React.FC = () => {
     }
 
     return (
-        <>
+        <Row>
             {announces.map(announce => (
-                <AnnounceListItem announce={announce} />
+                <Col key={announce.id} lg={6} xxl={4} className="mb-2">
+                    <LinkContainer to={`/announces/${announce.id}`}>
+                        <Anchor className="text-decoration-none">
+                            <AnnounceListItem announce={announce} />
+                        </Anchor>
+                    </LinkContainer>
+                </Col>
             ))}
-        </>
+        </Row>
     );
 };
 

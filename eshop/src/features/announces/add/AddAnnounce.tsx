@@ -46,7 +46,7 @@ const AddAnnounce: React.FC = () => {
             product,
         ]));
 
-        form.reset({
+        form.restart({
             currencyId: values.currencyId,
             sale: values.sale,
         });

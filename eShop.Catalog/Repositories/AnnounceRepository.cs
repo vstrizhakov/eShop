@@ -60,7 +60,7 @@ namespace eShop.Catalog.Repositories
                 .Include(e => e.Shop)
                 .Include(e => e.Images)
                 .Where(e => e.OwnerId == ownerId)
-                .OrderBy(e => e.CreatedAt)
+                .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
 
             return announces;

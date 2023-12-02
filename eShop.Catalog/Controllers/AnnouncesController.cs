@@ -45,7 +45,7 @@ namespace eShop.Catalog.Controllers
             return response;
         }
 
-        [HttpPost] // TODO: Add URL validation, etc.
+        [HttpPost] // TODO: Add URL validation, etc. | Validation URL already added
         public async Task<ActionResult<Models.Announces.Announce>> CreateAnnounce(
             [FromForm] Models.Announces.CreateAnnounceRequest request)
         {

@@ -1,10 +1,15 @@
-﻿namespace eShop.Catalog.Models.Products
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace eShop.Catalog.Models.Products
 {
     public class CreateProductRequest
     {
         public string Name { get; set; }
         public Guid? CategoryId { get; set; }
-        public string Url { get; set; }
+
+        [Url]
+        public Uri Url { get; set; }
+        
         public CreateProductPrice Price { get; set; }
         public IEnumerable<IFormFile>? Images { get; set; }
         public string? Description { get; set; }

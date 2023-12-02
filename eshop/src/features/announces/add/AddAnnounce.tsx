@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from "react";
-import { Col, Row, Form as BootstrapForm, Button } from "react-bootstrap";
+import { Col, Row, Form as BootstrapForm, Button, Spinner } from "react-bootstrap";
 import PickImageStep, { ImageFormValues } from "./PickImageStep";
 import SelectShopStep, { ShopFormValues } from "./SelectShopStep";
 import AddProduct, { AddProductForm } from "./AddProduct";
 import { Form } from "react-final-form";
-import { CreateAnnounceRequest, CreateProductRequest, useCreateAnnounceMutation } from "../../api/catalogSlice";
+import { FormApi } from "final-form";
+import { CreateAnnounceRequest, CreateProductRequest, useCreateAnnounceMutation, useGetCurrenciesQuery } from "../../api/catalogSlice";
 import Product from "../../main/Product";
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +13,10 @@ const AddAnnounce: React.FC = () => {
     const [image, setImage] = useState<File | undefined>(undefined);
     const [shopId, setShopId] = useState<string | undefined>(undefined);
     const [products, setProducts] = useState<CreateProductRequest[]>([]);
+
+    const {
+        data: currencies,
+    } = useGetCurrenciesQuery(undefined);
 
     const onImageFormSubmit = useCallback((values: ImageFormValues) => {
         setImage(values.image);
@@ -21,7 +26,7 @@ const AddAnnounce: React.FC = () => {
         setShopId(values.shopId);
     }, [setShopId]);
 
-    const onAddProductFormSubmit = useCallback((values: AddProductForm) => {
+    const onAddProductFormSubmit = useCallback((values: AddProductForm, form: FormApi<AddProductForm, Partial<AddProductForm>>) => {
         const product: CreateProductRequest = {
             name: values.name,
             url: values.url,
@@ -40,6 +45,11 @@ const AddAnnounce: React.FC = () => {
             ...products,
             product,
         ]));
+
+        form.reset({
+            currencyId: values.currencyId,
+            sale: values.sale,
+        });
     }, [setProducts]);
 
     const [createAnnounce] = useCreateAnnounceMutation();
@@ -62,23 +72,8 @@ const AddAnnounce: React.FC = () => {
 
     return (
         <>
-            <Row className="mb-3">
-                <Col className="d-flex justify-content-end">
-                    <Button disabled={!canFinish} onClick={onFinishClick}>Завершити</Button>
-                </Col>
-            </Row>
-            <Row className="mb-3">
-                <Col xs={6}>
-                    <Form<ImageFormValues>
-                        onSubmit={onImageFormSubmit}
-                        render={({ handleSubmit }) => (
-                            <BootstrapForm onSubmit={handleSubmit}>
-                                <PickImageStep />
-                            </BootstrapForm>
-                        )}
-                    />
-                </Col>
-                <Col xs={6} className="d-flex flex-column justify-content-center">
+            <Row className="flex-wrap-reverse">
+                <Col className="mb-3">
                     <Form<ShopFormValues>
                         onSubmit={onShopFormSubmit}
                         render={({ handleSubmit }) => (
@@ -88,28 +83,52 @@ const AddAnnounce: React.FC = () => {
                         )}
                     />
                 </Col>
-            </Row>
-            <Row>
-                <Col xs={6}>
-                    <Row>
-                        {products.map((product, index) => (
-                            <Col key={index} xs={6} className="mb-3">
-                                <Product product={product} />
-                            </Col>
-                        ))}
-                    </Row>
+                <Col md={3} lg={2} className="mb-3">
+                    <Button disabled={!canFinish} onClick={onFinishClick} className="fw-semibold w-100">Опублікувати</Button>
                 </Col>
-                <Col xs={6}>
-                    <Form<AddProductForm>
-                        onSubmit={onAddProductFormSubmit}
+            </Row>
+            <Row className="mb-3">
+                <Col lg={6}>
+                    <Form<ImageFormValues>
+                        onSubmit={onImageFormSubmit}
                         render={({ handleSubmit }) => (
                             <BootstrapForm onSubmit={handleSubmit}>
-                                <AddProduct />
+                                <PickImageStep />
                             </BootstrapForm>
                         )}
                     />
                 </Col>
+                <Col lg={6}>
+                    {currencies ? (
+                        <Form<AddProductForm>
+                            initialValues={{
+                                currencyId: currencies[0]?.id,
+                            }}
+                            onSubmit={onAddProductFormSubmit}
+                            render={({ handleSubmit }) => (
+                                <form noValidate={true} onSubmit={handleSubmit}>
+                                    <AddProduct currencies={currencies} />
+                                </form>
+                            )}
+                        />
+                    ) : (
+                        <Spinner />
+                    )}
+                </Col>
             </Row>
+
+            <h4 className="mb-3">Позиції</h4>
+            {products.length > 0 ? (
+                <Row>
+                    {products.map((product, index) => (
+                        <Col key={index} md={6} lg={4} xxl={3} className="mb-3">
+                            <Product product={product} />
+                        </Col>
+                    ))}
+                </Row>
+            ) : (
+                <p>Ви не додали жодних позицій</p>
+            )}
         </>
     );
 };

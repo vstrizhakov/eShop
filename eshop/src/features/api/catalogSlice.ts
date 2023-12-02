@@ -9,7 +9,7 @@ export interface CreateCategoryRequest {
     name: string,
 };
 
-interface Currency {
+export interface Currency {
     id: string,
     name: string,
 };

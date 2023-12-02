@@ -8,7 +8,7 @@ import store from "./app/store";
 import AuthProvider from './features/auth/AuthProvider';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import AddAnnounce from './features/announces/add/AddAnonce';
+import AddAnnounce from './features/announces/add/AddAnnounce';
 import Clients from './features/main/Clients';
 import Invitation from './features/main/Invitation';
 import SignIn from './features/signIn/SignIn';

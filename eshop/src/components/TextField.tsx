@@ -5,7 +5,8 @@ const TextField = (props: FieldRenderProps<string>) => {
     return (
         <Form.Control
             {...props.input}
-            {...props} />
+            {...props}
+            isInvalid={!!props.meta.error} />
     );
 };
 

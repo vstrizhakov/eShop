@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form as BootstrapForm } from "react-bootstrap";
+import { Form as BootstrapForm, Col } from "react-bootstrap";
 import { Field, useField, useForm } from "react-final-form";
 import Select from "../../../components/Select";
 import { useGetShopsQuery } from "../../api/catalogSlice";
@@ -32,22 +32,21 @@ const SelectShopStep: React.FC = () => {
     }, [shop, form]);
 
     return (
-        <BootstrapForm.Group controlId="shop-select">
-            <center>
-                <div>
-                    <BootstrapForm.Label className="fw-semibold fs-2 mb-3">Оберіть магазин анонсу</BootstrapForm.Label>
-                    <Field
-                        name="shopId"
-                        disabled={shops === undefined}
-                        defaultValue={shops && shops.length > 0 && shops[0].id}
-                        style={{ width: 320 }}
-                        component={Select}>
-                        {shops && shops.map(shop => (
-                            <option key={shop.id} value={shop.id}>{shop.name}</option>
-                        ))}
-                    </Field>
-                </div>
-            </center>
+        <BootstrapForm.Group controlId="shop-select" className="row align-items-center">
+            <BootstrapForm.Label column={true} md="auto">Оберіть магазин анонсу</BootstrapForm.Label>
+            <Col sm={12} md={6} lg={5} xl={4} xxl={3}>
+                <Field
+                    name="shopId"
+                    list="shops"
+                    disabled={shops === undefined}
+                    defaultValue={shops && shops.length > 0 && shops[0].id}
+                    required={true}
+                    component={Select}>
+                    {shops && shops.map(shop => (
+                        <option key={shop.id} value={shop.id}>{shop.name}</option>
+                    ))}
+                </Field>
+            </Col>
         </BootstrapForm.Group>
     );
 };

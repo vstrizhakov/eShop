@@ -27,21 +27,26 @@ const PickImageStep: React.FC = () => {
     }, [image, form]);
 
     return (
-        <Card>
-            <Card.Body className="d-flex align-items-center justify-content-center" style={{ height: 440 }}>
-                <BootstrapForm.Group controlId="image" className="mb-3">
-                    <center>
-                        <BootstrapForm.Label className="fw-semibold fs-2 mb-3">Додайте фотографію анонсу</BootstrapForm.Label>
-                        <Field
-                            name="image"
 
-                            accept=".png,.jpg,.jpeg"
-                            component={FileField}
-                        />
-                    </center>
-                </BootstrapForm.Group>
-            </Card.Body>
-        </Card>
+        <BootstrapForm.Group controlId="image">
+            <BootstrapForm.Label className="d-block">
+                <Card>
+                    <Card.Body className="d-flex align-items-center justify-content-center position-relative" style={{ height: 440 }}>
+                        <div className={image ? "d-none" : ""}>
+                            <span className="d-block fs-6 mb-1">Завантажте зображення для анонсу</span>
+                            <Field
+                                name="image"
+                                accept=".png,.jpg,.jpeg"
+                                component={FileField}
+                            />
+                        </div>
+                        {image && (
+                            <img className="position-absolute w-100 h-100" src={URL.createObjectURL(image)} style={{ objectFit: "contain"}} />
+                        )}
+                    </Card.Body>
+                </Card>
+            </BootstrapForm.Label>
+        </BootstrapForm.Group>
     );
 };
 

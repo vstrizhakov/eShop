@@ -8,7 +8,7 @@ namespace eShop.Catalog.Models.Products
         public Guid? CategoryId { get; set; }
 
         [Url]
-        public Uri Url { get; set; }
+        public string Url { get; set; }
         
         public CreateProductPrice Price { get; set; }
         public IEnumerable<IFormFile>? Images { get; set; }

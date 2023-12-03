@@ -10,7 +10,7 @@
 
         public string Link(string text, string url)
         {
-            return $"{text} ({url})";
+            return $"{text}\n{url}";
         }
     }
 }

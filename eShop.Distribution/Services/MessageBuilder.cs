@@ -14,18 +14,13 @@ namespace eShop.Distribution.Services
             {
                 var productCaption = new StringBuilder();
 
-                productCaption.AppendLine(formatter.Link(product.Name, product.Url.OriginalString));
-                productCaption.AppendLine();
-
-                var description = product.Description;
-                if (description != null)
-                {
-                    productCaption.AppendLine(description);
-                    productCaption.AppendLine();
-                }
-
                 (var price, var discountedPrice, var currencyName) = CalculatePrices(product, distributionSettings);
                 var showSales = distributionSettings.ShowSales;
+
+                if (showSales && discountedPrice.HasValue)
+                {
+                    productCaption.Append($"{discountedPrice} {currencyName} ");
+                }
 
                 var priceLine = $"{price} {currencyName}";
                 if (showSales && discountedPrice.HasValue)
@@ -33,11 +28,16 @@ namespace eShop.Distribution.Services
                     priceLine = formatter.Strikethrough(priceLine);
                 }
 
-                productCaption.AppendLine(priceLine);
+                productCaption.Append(priceLine);
 
-                if (showSales && discountedPrice.HasValue)
+                productCaption.AppendLine();
+
+                productCaption.AppendLine(formatter.Link(product.Name, product.Url.OriginalString));
+
+                var description = product.Description;
+                if (description != null)
                 {
-                    productCaption.AppendLine($" {discountedPrice} {currencyName}");
+                    productCaption.AppendLine(description);
                 }
 
                 return productCaption.ToString();

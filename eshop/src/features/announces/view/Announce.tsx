@@ -6,6 +6,7 @@ import { RootState } from "../../../app/store";
 import { ConnectedProps, connect } from "react-redux";
 import { setAnnounce } from "./viewAnnounceSlice";
 import { Badge, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import Product from "../Product";
 
 const mapStateToProps = (state: RootState) => ({
     accessToken: state.auth.token,
@@ -49,28 +50,16 @@ const Announce: React.FC<IProps> = props => {
                     </h4>
                     <ListGroup>
                         {announce.products.map(product => (
-                            <ListGroupItem key={product.id} className="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong className="fw-semibold">{product.name}</strong>
-                                    {product.description && (
-                                        <p className="text-muted">
-                                            <small>
-                                                {product.description}
-                                            </small>
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="d-flex gap-2">
-                                    {!product.price.discountedPrice && (
-                                        <span>{product.price.price} {product.price.currency.name}</span>
-                                    )}
-                                    {product.price.discountedPrice && (
-                                        <>
-                                            <s>{product.price.price} {product.price.currency.name}</s>
-                                            <span>{product.price.discountedPrice} {product.price.currency.name}</span>
-                                        </>
-                                    )}
-                                </div>
+                            // probably need to use product's card externally here instead of p-0 border-0
+                            <ListGroupItem key={product.id} className="p-0 border-0">
+                                <Product
+                                    name={product.name}
+                                    url={product.url}
+                                    price={product.price.price}
+                                    discountedPrice={product.price.discountedPrice}
+                                    currencyName={product.price.currency.name}
+                                    description={product.description}
+                                />
                             </ListGroupItem>
                         ))}
                     </ListGroup>

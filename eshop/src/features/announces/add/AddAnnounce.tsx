@@ -6,7 +6,7 @@ import AddProduct, { AddProductForm } from "./AddProduct";
 import { Form } from "react-final-form";
 import { FormApi } from "final-form";
 import { CreateAnnounceRequest, CreateProductRequest, useCreateAnnounceMutation, useGetCurrenciesQuery } from "../../api/catalogSlice";
-import Product from "../../main/Product";
+import Product from "../Product";
 import { useNavigate } from "react-router-dom";
 
 const AddAnnounce: React.FC = () => {
@@ -122,7 +122,14 @@ const AddAnnounce: React.FC = () => {
                 <Row>
                     {products.map((product, index) => (
                         <Col key={index} md={6} lg={4} xxl={3} className="mb-3">
-                            <Product product={product} />
+                            <Product
+                                name={product.name}
+                                url={product.url}
+                                price={product.price.price}
+                                discountedPrice={product.price.discountedPrice}
+                                currencyName={currencies?.find(currency => currency.id === product.price.currencyId)?.name!}
+                                description={product.description}
+                            />
                         </Col>
                     ))}
                 </Row>

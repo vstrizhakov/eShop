@@ -51,6 +51,7 @@ namespace eShop.Distribution.Services
                 FirstName = firstName,
                 LastName = lastName,
                 AnnouncerId = announcerId,
+                IsActivated = true,
                 DistributionSettings = new DistributionSettings
                 {
                     AccountId = accountId,
@@ -81,6 +82,7 @@ namespace eShop.Distribution.Services
         public async Task SubscribeToAnnouncerAsync(Account account, Account announcer)
         {
             account.AnnouncerId = announcer.Id;
+            account.IsActivated = true;
 
             await _accountRepository.UpdateAccountAsync(account);
         }

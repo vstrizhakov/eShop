@@ -35,7 +35,7 @@ namespace eShop.Telegram.Consumers
                 else
                 {
                     await _viewRunner.RunAsync(
-                        new SuccessfullyRegisteredView(chatId, response.ProviderEmail),
+                        new SuccessfullyRegisteredView(chatId, response.Announcer),
                         new WelcomeView(chatId, null)
                     );
                 }

@@ -59,6 +59,7 @@ namespace eShop.Accounts.Services
             if (account.TelegramUserId.HasValue)
             {
                 throw new InvalidOperationException(); // TODO: make new exception type
+                // TODO: probably need to skip if ids are the same
             }
 
             account.TelegramUserId = telegramUserId;

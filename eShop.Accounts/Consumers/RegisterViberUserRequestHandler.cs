@@ -37,15 +37,22 @@ namespace eShop.Accounts.Consumers
                 };
                 await context.Publish(@event);
 
+                Entities.Account? announcer = null;
+
                 var announcerId = request.AnnouncerId;
                 if (announcerId.HasValue)
                 {
-                    var command = new SubscribeToAnnouncerRequest
+                    announcer = await _accountService.GetAccountByIdAsync(announcerId.Value);
+                    if (announcer != null)
                     {
-                        AccountId = account.Id,
-                        AnnouncerId = announcerId.Value,
-                    };
-                    await context.Publish(command);
+                        var command = new SubscribeToAnnouncerRequest
+                        {
+                            AccountId = account.Id,
+                            AnnouncerId = announcerId.Value,
+                        };
+                        await context.Publish(command);
+                    }
+                    // TODO: handle announcer not exists
                 }
 
                 var response = new RegisterViberUserResponse
@@ -53,6 +60,7 @@ namespace eShop.Accounts.Consumers
                     IsSuccess = true,
                     AccountId = account.Id,
                     ViberUserId = viberUserId,
+                    Announcer = _mapper.Map<Announcer>(announcer),
                     IsConfirmationRequested = request.IsConfirmationRequested,
                 };
                 await context.Publish(response);

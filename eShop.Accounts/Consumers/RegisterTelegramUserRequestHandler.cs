@@ -37,21 +37,28 @@ namespace eShop.Accounts.Consumers
                 };
                 await context.Publish(@event);
 
+                Entities.Account? announcer = null;
+
                 var announcerId = request.AnnouncerId;
                 if (announcerId.HasValue)
                 {
-                    var command = new SubscribeToAnnouncerRequest
+                    announcer = await _accountService.GetAccountByIdAsync(announcerId.Value);
+                    if (announcer != null)
                     {
-                        AccountId = account.Id,
-                        AnnouncerId = announcerId.Value,
-                    };
-                    await context.Publish(command);
+                        var command = new SubscribeToAnnouncerRequest
+                        {
+                            AccountId = account.Id,
+                            AnnouncerId = announcerId.Value,
+                        };
+                        await context.Publish(command);
+                    }
                 }
 
                 var response = new RegisterTelegramUserResponse
                 {
                     TelegramUserId = telegramUserId,
                     AccountId = account.Id,
+                    Announcer = _mapper.Map<Announcer>(announcer),
                 };
                 await context.Publish(response);
             }

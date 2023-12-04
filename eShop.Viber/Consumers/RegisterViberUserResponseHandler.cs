@@ -29,7 +29,7 @@ namespace eShop.Viber.Consumers
 
                     if (!response.IsConfirmationRequested)
                     {
-                        var view = new SuccessfullyRegisteredView(user.ExternalId, response.ProviderEmail);
+                        var view = new SuccessfullyRegisteredView(user.ExternalId, response.Announcer);
                         await _viewRunner.RunAsync(view);
                     }
                     else

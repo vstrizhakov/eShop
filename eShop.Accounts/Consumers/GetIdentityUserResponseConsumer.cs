@@ -46,10 +46,12 @@ namespace eShop.Accounts.Consumers
                 {
                     account = await _accountService.RegisterAccountAsync(phoneNumber, account);
 
+                    Account? announcer = null;
+
                     var announcerId = response.AnnouncerId;
                     if (announcerId.HasValue)
                     {
-                        var announcer = await _accountService.GetAccountByIdAsync(announcerId.Value);
+                        announcer = await _accountService.GetAccountByIdAsync(announcerId.Value);
                         if (announcer == null)
                         {
                             announcerId = null;
@@ -72,6 +74,7 @@ namespace eShop.Accounts.Consumers
                             IsSuccess = true,
                             ViberUserId = viberUserId.Value,
                             AccountId = account.Id,
+                            Announcer = _mapper.Map<Messaging.Contracts.Distribution.Announcer>(announcer),
                             IsConfirmationRequested = response.IsConfirmationRequested,
                         };
 
@@ -84,6 +87,7 @@ namespace eShop.Accounts.Consumers
                         {
                             TelegramUserId = telegramUserId.Value,
                             AccountId = account.Id,
+                            Announcer = _mapper.Map<Messaging.Contracts.Distribution.Announcer>(announcer),
                             IsConfirmationRequested = response.IsConfirmationRequested,
                         };
 

@@ -30,6 +30,43 @@ const Announce: React.FC<IProps> = props => {
         accessToken,
     } = props;
 
+
+    useEffect(() => {
+        if (!announce.distributionId) {
+            const connection = new HubConnectionBuilder()
+                .withUrl("/api/catalog/ws", {
+                    accessTokenFactory: () => accessToken!,
+                })
+                .withAutomaticReconnect()
+                .build();
+
+            let canceled = false;
+            const task = (async function () {
+                connection.on("announceUpdated", (announce: AnnounceModel) => {
+                    setAnnounce(announce);
+                });
+
+                await connection.start();
+
+                if (!canceled) {
+                    await connection.invoke("subscribe", {
+                        announceId: announce.id,
+                    });
+                }
+            })();
+
+            return () => {
+                (async function () {
+                    canceled = true;
+
+                    await task;
+
+                    await connection.stop()
+                })();
+            };
+        }
+    }, [announce]);
+
     const mainImage = announce.images[0];
     const createdAtDatetime = new Date(announce.createdAt);
 

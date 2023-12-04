@@ -8,6 +8,7 @@ import { FormApi } from "final-form";
 import { CreateAnnounceRequest, CreateProductRequest, useCreateAnnounceMutation, useGetCurrenciesQuery } from "../../api/catalogSlice";
 import Product from "../Product";
 import { useNavigate } from "react-router-dom";
+import LoadingButton from "../../../components/LoadingButton";
 
 const AddAnnounce: React.FC = () => {
     const [image, setImage] = useState<File | undefined>(undefined);
@@ -52,7 +53,9 @@ const AddAnnounce: React.FC = () => {
         });
     }, [setProducts]);
 
-    const [createAnnounce] = useCreateAnnounceMutation();
+    const [createAnnounce, {
+        isLoading: isCreatingAnnounce,
+    }] = useCreateAnnounceMutation();
 
     const navigate = useNavigate();
 
@@ -84,7 +87,13 @@ const AddAnnounce: React.FC = () => {
                     />
                 </Col>
                 <Col md={3} lg={2} className="mb-3">
-                    <Button disabled={!canFinish} onClick={onFinishClick} className="fw-semibold w-100">Опублікувати</Button>
+                    <LoadingButton
+                        disabled={!canFinish}
+                        isLoading={isCreatingAnnounce}
+                        onClick={onFinishClick}
+                        className="fw-semibold w-100">
+                        Опублікувати
+                    </LoadingButton>
                 </Col>
             </Row>
             <Row className="mb-3">

@@ -95,9 +95,8 @@ const Confirm: React.FC<PropsFromRedux> = props => {
 
     return (
         <Row>
-            <Col xs={4}></Col>
-            <Col xs={4}>
-                <div className="vstack mb-3">
+            <Col md={{offset: 2, span: 8}} lg={{offset: 3, span: 6}} xxl={{offset: 4, span: 4}}>
+                <div className="vstack gap-3">
                     <Form.Group>
                         <Form.Control
                             value={phoneNumber}
@@ -110,28 +109,26 @@ const Confirm: React.FC<PropsFromRedux> = props => {
                         </Form.Text>
                     </Form.Group>
 
-                    <LoadingButton
-                        className="fw-semibold mt-2"
-                        type="submit"
-                        variant="primary"
-                        onClick={onContinue}
-                        isLoading={isLoading}>
-                        <span>Продовжити</span>
-                    </LoadingButton>
-                </div>
-
-                <div className="vstack gap-3">
                     <span className="text-center">Щоб продовжити, підтвердіть ваш номер телефону за допомогою одного з месенджерів:</span>
                     <div className="hstack gap-3 justify-content-center">
-                        <Button variant="outline-primary" className="d-flex gap-1 fw-semibold" href={links.telegram} target="_blank">
+                        <Button variant="primary" className="d-flex gap-1 fw-semibold" href={links.telegram} target="_blank">
                             <TelegramIcon fill="currentColor" height="24px" width="24px" />
                             <span>Telegram</span>
                         </Button>
-                        <Button variant="outline-primary" className="d-flex gap-1 fw-semibold" href={links.viber} target="_blank">
+                        <Button variant="primary" className="d-flex gap-1 fw-semibold" href={links.viber} target="_blank">
                             <ViberIcon fill="currentColor" height="24px" width="24px" />
                             <span>Viber</span>
                         </Button>
                     </div>
+                    
+                    <LoadingButton
+                        className="fw-semibold mt-2"
+                        type="submit"
+                        variant="outline-primary"
+                        onClick={onContinue}
+                        isLoading={isLoading}>
+                        <span>Продовжити</span>
+                    </LoadingButton>
                 </div>
             </Col>
         </Row>

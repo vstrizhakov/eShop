@@ -33,17 +33,17 @@ namespace eShop.Accounts
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.Configure<RabbitMqOptions>(options => builder.Configuration.Bind("RabbitMq", options));
+            builder.Services.Configure<AzureServiceBusOptions>(options => builder.Configuration.Bind("AzureServiceBus", options));
             builder.Services.AddMassTransit(x =>
             {
                 x.AddConsumers(Assembly.GetExecutingAssembly());
 
                 x.SetKebabCaseEndpointNameFormatter();
 
-                x.UsingRabbitMq((context, cfg) =>
+                x.UsingAzureServiceBus((context, cfg) =>
                 {
-                    var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
-                    cfg.Host(options.HostName);
+                    var options = context.GetRequiredService<IOptions<AzureServiceBusOptions>>().Value;
+                    cfg.Host(options.ConnectionString);
 
                     cfg.ConfigureEndpoints(context);
                 });

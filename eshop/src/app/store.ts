@@ -1,4 +1,4 @@
-import { AnyAction, ThunkAction, combineReducers, configureStore } from "@reduxjs/toolkit";
+import { AnyAction, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../features/api/apiSlice";
 import authReducer from "../features/auth/authSlice";
 import signInReducer from "../features/signIn/signInSlice";

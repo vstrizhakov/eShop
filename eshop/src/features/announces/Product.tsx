@@ -29,7 +29,7 @@ const Product: React.FC<IProps> = props => {
                         <span className="text-body-emphasis">{price} {currencyName}</span>
                     )}
                 </div>
-                <a href={url} target="_blank">{name}</a>
+                <a href={url} target="_blank" rel="noreferrer">{name}</a>
                 {description && (
                     <p className="m-0">{description}</p>
                 )}

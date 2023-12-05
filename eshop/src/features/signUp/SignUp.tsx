@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Form as BootstrapForm, Row, Col, Anchor } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -36,7 +36,7 @@ const SignUp: React.FC<PropsFromRedux> = props => {
         return () => {
             reset();
         };
-    }, []);
+    }, [reset]);
 
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -66,7 +66,7 @@ const SignUp: React.FC<PropsFromRedux> = props => {
                     break;
             }
         }
-    }, [signUp, navigate, setError]);
+    }, [signUp, navigate, setError, savePhoneNumberForConfirmation, searchParams]);
 
     return (
         <Form
@@ -74,7 +74,7 @@ const SignUp: React.FC<PropsFromRedux> = props => {
             render={({ handleSubmit }) => (
                 <BootstrapForm onSubmit={handleSubmit}>
                     <Row>
-                        <Col md={{offset: 2, span: 8}} lg={{offset: 3, span: 6}} xxl={{offset: 4, span: 4}}>
+                        <Col md={{ offset: 2, span: 8 }} lg={{ offset: 3, span: 6 }} xxl={{ offset: 4, span: 4 }}>
                             <h2 className="mb-3">Реєстрація</h2>
 
                             <Row className="mb-2">

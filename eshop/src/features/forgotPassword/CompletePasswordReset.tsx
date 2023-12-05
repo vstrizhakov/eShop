@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { Row, Col, Button, Form as BootstrapForm, Anchor } from "react-bootstrap";
+import { Row, Col, Form as BootstrapForm, Anchor } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TextField from "../../components/TextField";
@@ -38,7 +38,7 @@ const CompletePasswordReset: React.FC<PropsFromRedux> = props => {
         if (!phoneNumber || !token) {
             navigate("/auth/signIn");
         }
-    }, [phoneNumber, token]);
+    }, [phoneNumber, token, navigate]);
 
     const [completePasswordReset, {
         isLoading,
@@ -57,7 +57,7 @@ const CompletePasswordReset: React.FC<PropsFromRedux> = props => {
         } else {
             setError(response.errorCode!);
         }
-    }, []);
+    }, [completePasswordReset, navigate, setError, token]);
 
     return (
         <Form

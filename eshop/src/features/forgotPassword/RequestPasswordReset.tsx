@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Row, Col, Button, Anchor, Form as BootstrapForm } from "react-bootstrap";
+import { Row, Col, Anchor, Form as BootstrapForm } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import { LinkContainer } from "react-router-bootstrap";
 import TextField from "../../components/TextField";
@@ -46,7 +46,7 @@ const RequestPasswordReset: React.FC<PropsFromRedux> = props => {
             isRequested: response.succeeded,
             error: response.errorCode,
         });
-    }, [requestPasswordReset]);
+    }, [requestPasswordReset, setResult]);
 
     useEffect(() => {
         return () => {

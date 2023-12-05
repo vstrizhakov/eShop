@@ -36,7 +36,7 @@ const DistributionContainer: React.FC<IProps> = props => {
         if (data && !distribution) {
             setDistribution(data);
         }
-    }, [data, distribution]);
+    }, [data, distribution, setDistribution]);
 
     if (isError) {
         return <>Під час завантаження сталася помилка</>;

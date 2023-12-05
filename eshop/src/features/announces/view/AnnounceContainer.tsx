@@ -36,7 +36,7 @@ const AnnounceContainer: React.FC<PropsFromRedux> = props => {
         if (data) {
             setAnnounce(data);
         }
-    }, [data]);
+    }, [data, setAnnounce]);
 
     if (isError) {
         return <>Під час завантаження сталася помилка</>;

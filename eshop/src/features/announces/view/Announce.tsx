@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Announce as AnnounceModel } from "../../api/catalogSlice";
-import { HttpTransportType, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 import DistributionContainer from "./DistributionContainer";
 import { RootState } from "../../../app/store";
 import { ConnectedProps, connect } from "react-redux";
@@ -65,20 +65,21 @@ const Announce: React.FC<IProps> = props => {
                 })();
             };
         }
-    }, [announce]);
+    }, [announce, accessToken, setAnnounce]);
 
     const mainImage = announce.images[0];
     const createdAtDatetime = new Date(announce.createdAt);
-
+    const announceName = `Анонс від ${createdAtDatetime.getDate()}.${createdAtDatetime.getMonth() + 1}.${createdAtDatetime.getFullYear()}, ${createdAtDatetime.toLocaleTimeString()}`;
+    
     return (
         <>
             <Row className="mb-5">
                 <Col>
                     <h4 className="d-flex justify-content-between align-items-center mb-3">
-                        <span className="text-body-emphasis">Анонс від {createdAtDatetime.getDate()}.{createdAtDatetime.getMonth() + 1}.{createdAtDatetime.getFullYear()}, {createdAtDatetime.toLocaleTimeString()}</span>
+                        <span className="text-body-emphasis">{announceName}</span>
                         <Badge bg="info" pill className="fw-semibold">{announce.shop.name}</Badge>
                     </h4>
-                    <img className="rounded" src={mainImage} width="100%" />
+                    <img className="rounded" src={mainImage} width="100%" alt={announceName}/>
                 </Col>
                 <Col>
                     <h4 className="d-flex justify-content-between align-items-center mb-3">

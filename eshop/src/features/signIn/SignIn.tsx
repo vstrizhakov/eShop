@@ -1,8 +1,8 @@
-﻿import React, { useCallback, useEffect, useMemo } from "react";
-import { Button, Form as BootstrapForm, Row, Col, Anchor, Spinner } from "react-bootstrap";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { Form as BootstrapForm, Row, Col, Anchor, Spinner } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 import { connect, ConnectedProps } from "react-redux";
-import { createSearchParams, useHref, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { RootState } from "../../app/store";
 import TextField from "../../components/TextField";
 import { useGetSignInInfoQuery, useSignInMutation } from "../api/authSlice";
@@ -36,19 +36,19 @@ const SignIn: React.FC<PropsFromRedux> = props => {
         data: signInInfo,
     } = useGetSignInInfoQuery(undefined);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (signInInfo) {
             if (signInInfo.waitingForConfirmation) {
                 navigate(`/auth/confirm?${searchParams}`);
             }
         }
-    }, [signInInfo]);
+    }, [signInInfo, navigate, searchParams]);
 
     const [signIn, {
         isLoading,
     }] = useSignInMutation();
-
-    const navigate = useNavigate();
 
     const onSubmit = useCallback(async (values: Record<string, any>) => {
         const response = await signIn({
@@ -69,7 +69,7 @@ const SignIn: React.FC<PropsFromRedux> = props => {
                 setIsError(true);
             }
         }
-    }, [signIn, returnUrl, setIsError]);
+    }, [signIn, returnUrl, setIsError, navigate, savePhoneNumberForConfirmation, searchParams]);
 
     if (!signInInfo || signInInfo.waitingForConfirmation) {
         return (
@@ -85,7 +85,7 @@ const SignIn: React.FC<PropsFromRedux> = props => {
             render={({ handleSubmit }) => (
                 <BootstrapForm onSubmit={handleSubmit}>
                     <Row>
-                        <Col md={{offset: 2, span: 8}} lg={{offset: 3, span: 6}} xxl={{offset: 4, span: 4}}>
+                        <Col md={{ offset: 2, span: 8 }} lg={{ offset: 3, span: 6 }} xxl={{ offset: 4, span: 4 }}>
                             <h3 className="mb-3">Вхід</h3>
 
                             <Field

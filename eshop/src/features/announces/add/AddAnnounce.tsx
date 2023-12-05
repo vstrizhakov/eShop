@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Col, Row, Form as BootstrapForm, Button, Spinner } from "react-bootstrap";
+import { Col, Row, Form as BootstrapForm, Spinner } from "react-bootstrap";
 import PickImageStep, { ImageFormValues } from "./PickImageStep";
 import SelectShopStep, { ShopFormValues } from "./SelectShopStep";
 import AddProduct, { AddProductForm } from "./AddProduct";

@@ -49,18 +49,6 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
 
     const pathname = window.location.pathname;
 
-    useEffect(() => {
-        const listener = (user: Oidc.User) => {
-            console.log("listener", "addUserLoaded")
-            processUser(user);
-        };
-
-        manager.events.addUserLoaded(listener);
-        return () => {
-            manager.events.removeUserLoaded(listener);
-        };
-    }, [manager]);
-
     const processUser = useCallback((user: Oidc.User | null) => {
         const isAuthenticated = user !== null;
         if (isAuthenticated) {
@@ -68,17 +56,26 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
             setClaims(user.profile);
         }
         setIsAuthenticated(isAuthenticated);
-    }, []);
+    }, [setClaims, setIsAuthenticated, setToken]);
+
+    useEffect(() => {
+        const listener = (user: Oidc.User) => {
+            processUser(user);
+        };
+
+        manager.events.addUserLoaded(listener);
+        return () => {
+            manager.events.removeUserLoaded(listener);
+        };
+    }, [manager, processUser]);
 
     const getUser = useCallback(async () => {
-        let user: Oidc.User | null = null;
-
         try {
-            user = await manager.signinSilent();
+            await manager.signinSilent();
         } catch (error: any) {
             processUser(null);
         }
-    }, []);
+    }, [manager, processUser]);
 
     const processSignInCallback = useCallback(async () => {
         try {
@@ -92,14 +89,14 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
             }
         } catch (error) {
         }
-    }, [pathname, processUser]);
+    }, [manager, processUser]);
 
     const processSignOutCallback = useCallback(async () => {
         const response = await manager.signoutRedirectCallback();
 
         const returnUrl = response.state?.returnUrl ?? "/";
         window.location.assign(returnUrl);
-    }, []);
+    }, [manager]);
 
     useEffect(() => {
         if (pathname === "/auth/signIn/callback") {
@@ -117,7 +114,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
                 returnUrl: window.location.href,
             },
         });
-    }, []);
+    }, [manager]);
 
     const signOut = useCallback(async () => {
         await manager.signoutRedirect({
@@ -125,7 +122,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
                 returnUrl: window.location.href,
             },
         });
-    }, []);
+    }, [manager]);
 
     return (
         <>

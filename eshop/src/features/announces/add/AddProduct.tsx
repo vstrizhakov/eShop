@@ -1,10 +1,7 @@
 import React from "react";
-import { Form as BootstrapForm, Button, Card, Col, InputGroup, Row } from "react-bootstrap";
+import { Form as BootstrapForm, Button, Card, Col, Row } from "react-bootstrap";
 import { Field, useField } from "react-final-form";
-import Check from "../../../components/Check";
-import Select from "../../../components/Select";
-import TextField from "../../../components/TextField";
-import { Currency, useGetCurrenciesQuery, useGetShopsQuery } from "../../api/catalogSlice";
+import { Currency } from "../../api/catalogSlice";
 
 export interface AddProductForm {
     shopId: string,
@@ -52,9 +49,9 @@ const AddProduct: React.FC<IProps> = props => {
         currencies,
     } = props;
 
-    const {
-        data: shops,
-    } = useGetShopsQuery(undefined);
+    // const {
+    //     data: shops,
+    // } = useGetShopsQuery(undefined);
 
     const {
         input: {

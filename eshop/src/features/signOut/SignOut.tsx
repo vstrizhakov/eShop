@@ -9,7 +9,6 @@ const SignOut: React.FC = () => {
 
     const {
         data: signOutInfo,
-        isLoading: isTryingSignOut,
     } = useTrySignOutQuery(logoutId!); // check for null
 
     const [signOut] = useSignOutMutation();

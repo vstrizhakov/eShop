@@ -1,7 +1,7 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { Badge, Card, Col, ProgressBar, Row, Table } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Card, Col, ProgressBar, Row } from "react-bootstrap";
 import { DeliveryStatus, DistributionItem, Distribution as DistributionModel } from "../../api/distributionSlice";
-import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 import { RootState } from "../../../app/store";
 import { ConnectedProps, connect } from "react-redux";
 import { updateDistributionItem, reset } from "./viewAnnounceSlice";
@@ -67,7 +67,7 @@ const Distribution: React.FC<IProps> = props => {
                 await connection.stop()
             })();
         };
-    }, []);
+    }, [accessToken, distribution.id, updateDistributionItem]);
 
     const items = distribution.recipients.reduce<DistributionItem[]>((prev, current) => [...prev, ...current.items], []);
     const totalInProgress = items.filter(item => item.deliveryStatus === DeliveryStatus.Pending).length > 0;

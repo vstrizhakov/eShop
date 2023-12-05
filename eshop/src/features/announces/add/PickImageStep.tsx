@@ -41,7 +41,7 @@ const PickImageStep: React.FC = () => {
                             />
                         </div>
                         {image && (
-                            <img className="position-absolute w-100 h-100" src={URL.createObjectURL(image)} style={{ objectFit: "contain"}} />
+                            <img className="position-absolute w-100 h-100" src={URL.createObjectURL(image)} style={{ objectFit: "contain"}} alt=""/>
                         )}
                     </Card.Body>
                 </Card>

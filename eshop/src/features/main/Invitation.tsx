@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Anchor, Button, Card, Spinner } from "react-bootstrap";
+import { Button, Card, Spinner } from "react-bootstrap";
 import { ReactComponent as Viber } from "../../assets/viber.svg";
 import { ReactComponent as Telegram } from "../../assets/telegram.svg";
 import { useGetAnnouncerInvitationQuery } from "../api/distributionSlice";

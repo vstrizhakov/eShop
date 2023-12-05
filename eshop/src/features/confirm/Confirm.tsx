@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { CheckConfirmationRequest, useCancelConfirmationMutation, useCheckConfirmationMutation } from "../api/authSlice";
-import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { RootState } from "../../app/store";
 import { setLinks, reset, readPhoneNumber } from "./confirmSlice";
 import { ConnectedProps, connect } from "react-redux";
-import { Anchor, Button, Col, Row, Form, Spinner } from "react-bootstrap";
+import { Anchor, Button, Col, Row, Form } from "react-bootstrap";
 import { isFetchBaseQueryError } from "../../services/helpers";
 import { ReactComponent as ViberIcon } from "../../assets/viber.svg";
 import { ReactComponent as TelegramIcon } from "../../assets/telegram.svg";
@@ -39,7 +39,7 @@ const Confirm: React.FC<PropsFromRedux> = props => {
         return () => {
             reset();
         };
-    }, []);
+    }, [readPhoneNumber, reset]);
 
     const [searchParams] = useSearchParams();
     const returnUrl = useMemo(() => searchParams.get("returnUrl"), [searchParams]);
@@ -72,7 +72,7 @@ const Confirm: React.FC<PropsFromRedux> = props => {
                 }
             }
         }
-    }, [checkConfirmation, returnUrl, setLinks]);
+    }, [checkConfirmation, returnUrl, setLinks, navigate, searchParams]);
 
     useEffect(() => {
         updateConfirmationInfo();
@@ -83,7 +83,7 @@ const Confirm: React.FC<PropsFromRedux> = props => {
     const onCancel = useCallback(async () => {
         await cancelConfirmation(undefined);
         navigate(`/auth/signIn?${searchParams}`);
-    }, [cancelConfirmation]);
+    }, [cancelConfirmation, navigate, searchParams]);
 
     const onContinue = useCallback(() => {
         updateConfirmationInfo();

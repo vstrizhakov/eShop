@@ -24,7 +24,7 @@ namespace eShop.Distribution.Hubs
             var distributionId = request.DistributionId;
 
             var userId = Context.User.GetAccountId();
-            var distribution = await _distributionService.GetDistributionAsync(distributionId);
+            var distribution = await _distributionService.GetDistributionAsync(distributionId, userId.Value);
             if (distribution == null || distribution.AnnouncerId != userId)
             {
                 throw new InvalidOperationException("The specified distribution doesn't exist.");
@@ -32,10 +32,13 @@ namespace eShop.Distribution.Hubs
 
             await Groups.AddToGroupAsync(Context.ConnectionId, distributionId.ToString());
 
-            var items = _mapper.Map<IEnumerable<DistributionItem>>(distribution.Items);
-            foreach (var item in items)
+            foreach (var target in distribution.Targets)
             {
-                await Clients.Caller.RequestUpdated(item);
+                var items = _mapper.Map<IEnumerable<DistributionItem>>(target.Items);
+                foreach (var item in items)
+                {
+                    await Clients.Caller.RequestUpdated(item);
+                }
             }
         }
 
@@ -44,7 +47,7 @@ namespace eShop.Distribution.Hubs
             var distributionId = request.DistributionId;
 
             var userId = Context.User.GetAccountId();
-            var distribution = await _distributionService.GetDistributionAsync(distributionId);
+            var distribution = await _distributionService.GetDistributionAsync(distributionId, userId.Value);
             if (distribution == null || distribution.AnnouncerId != userId)
             {
                 throw new InvalidOperationException("The specified distribution doesn't exist.");

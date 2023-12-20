@@ -1,7 +1,6 @@
 ﻿using eShop.Telegram.Entities;
 using eShop.Telegram.Repositories;
 using eShop.TelegramFramework;
-using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -78,7 +77,7 @@ namespace eShop.Telegram.TelegramFramework.Middlewares
                     var baseTelegramChat = await _telegramChatRepository.GetTelegramChatByExternalIdAsync(message.MigrateFromChatId!.Value);
                     if (baseTelegramChat != null)
                     {
-                        baseTelegramChat.Supergroup = telegramChat;
+                        baseTelegramChat.SupergroupId = telegramChat.Id;
                         foreach (var member in baseTelegramChat.Members)
                         {
                             telegramChat.Members.Add(member);
@@ -101,6 +100,13 @@ namespace eShop.Telegram.TelegramFramework.Middlewares
         private async Task AddOrUpdateTelegramUserAsync(TelegramChat telegramChat, User user, ChatMemberStatus? chatMemberStatus = null)
         {
             var userId = user.Id;
+
+            if (chatMemberStatus == null)
+            {
+                var chatMember = await _botClient.GetChatMemberAsync(telegramChat.ExternalId, userId);
+                chatMemberStatus = chatMember.Status;
+            }
+
             var telegramUser = await _telegramUserRepository.GetTelegramUserByExternalIdAsync(userId);
             if (telegramUser == null)
             {
@@ -110,6 +116,15 @@ namespace eShop.Telegram.TelegramFramework.Middlewares
                     LastName = user.LastName,
                     Username = user.Username,
                     ExternalId = userId,
+                    Chats =
+                    {
+                        new EmbeddedTelegramChat
+                        {
+                            ChatId = telegramChat.Id,
+                            Type = telegramChat.Type,
+                            Status = chatMemberStatus.Value,
+                        },
+                    },
                 };
 
                 await _telegramUserRepository.CreateTelegramUserAsync(telegramUser);
@@ -120,27 +135,34 @@ namespace eShop.Telegram.TelegramFramework.Middlewares
                 telegramUser.LastName = user.LastName;
                 telegramUser.Username = user.Username;
 
+                var telegramUserChat = telegramUser.Chats.FirstOrDefault(e => e.ChatId == telegramChat.Id);
+                if (telegramUserChat == null)
+                {
+                    telegramUserChat = new EmbeddedTelegramChat
+                    {
+                        ChatId= telegramChat.Id,
+                        Type = telegramChat.Type,
+                        Status = chatMemberStatus.Value,
+                    };
+
+                    telegramUser.Chats.Add(telegramUserChat);
+                }
+
                 await _telegramUserRepository.UpdateTelegramUserAsync(telegramUser);
             }
 
-            var telegramChatMember = telegramChat.Members.FirstOrDefault(e => e.UserId == telegramUser.Id);
-            if (telegramChatMember == null)
             {
-                telegramChatMember = new TelegramChatMember
+                var telegramChatMember = telegramChat.Members.FirstOrDefault(e => e.UserId == telegramUser.Id);
+                if (telegramChatMember == null)
                 {
-                    User = telegramUser,
-                    UserId = telegramUser.Id,
-                };
+                    telegramChatMember = new EmbeddedTelegramUser
+                    {
+                        UserId = telegramUser.Id,
+                        Status = chatMemberStatus.Value,
+                    };
 
-                telegramChat.Members.Add(telegramChatMember);
-
-                if (chatMemberStatus == null)
-                {
-                    var chatMember = await _botClient.GetChatMemberAsync(telegramChat.ExternalId, userId);
-                    chatMemberStatus = chatMember.Status;
+                    telegramChat.Members.Add(telegramChatMember);
                 }
-
-                telegramChatMember.Status = chatMemberStatus.Value;
             }
         }
     }

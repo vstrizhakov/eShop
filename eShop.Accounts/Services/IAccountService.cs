@@ -8,7 +8,7 @@ namespace eShop.Accounts.Services
         Task<Account> RegisterAccountAsync(string phoneNumber, Account account);
         Task LinkTelegramUserAsync(Account account, Guid telegramuserId);
         Task LinkViberUserAsync(Account account, Guid viberUserId);
-        Task LinkIdentityUserAsync(Account account, string identityUserId);
+        Task LinkIdentityUserAsync(Account account, Guid identityUserId);
         Task<Account?> GetAccountByIdAsync(Guid value);
     }
 }

@@ -12,6 +12,12 @@ namespace eShop.Catalog.Services
             _shopRepository = shopRepository;
         }
 
+        public async Task<Shop?> GetShopAsync(Guid id)
+        {
+            var shop = await _shopRepository.GetShopAsync(id);
+            return shop;
+        }
+
         public async Task<IEnumerable<Shop>> GetShopsAsync()
         {
             var shops = await _shopRepository.GetShopsAsync();

@@ -17,6 +17,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using Telegram.Bot;
+using eShop.Database.Extensions;
 
 namespace eShop.Telegram
 {
@@ -48,7 +49,9 @@ namespace eShop.Telegram
             }
 
             builder.Services.AddDbContext<TelegramDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
+                options.UseCosmos(builder.Configuration.GetConnectionString("Default"), "eShop"));
+
+            builder.Services.AddDatabaseDeployment<TelegramDbContext>();
 
             builder.Services.Configure<TelegramBotConfiguration>(builder.Configuration.GetSection("TelegramBot"));
 

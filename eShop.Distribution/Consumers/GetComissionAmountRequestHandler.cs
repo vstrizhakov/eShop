@@ -6,20 +6,21 @@ namespace eShop.Distribution.Consumers
 {
     public class GetComissionAmountRequestHandler : IConsumer<GetComissionAmountRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
 
-        public GetComissionAmountRequestHandler(IDistributionSettingsService distributionSettingsService)
+        public GetComissionAmountRequestHandler(IAccountService accountService)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
         }
 
         public async Task Consume(ConsumeContext<GetComissionAmountRequest> context)
         {
             var request = context.Message;
             var accountId = request.AccountId;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-            if (distributionSettings != null)
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            if (account != null)
             {
+                var distributionSettings = account.DistributionSettings;
                 var comissionSettings = distributionSettings.ComissionSettings;
 
                 var response = new GetComissionAmountResponse(accountId, comissionSettings.Amount);

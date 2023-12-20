@@ -24,7 +24,7 @@ namespace eShop.Catalog.Hubs
             var announceId = request.AnnounceId;
 
             var userId = Context.User.GetAccountId();
-            var announce = await _announcesService.GetAnnounceAsync(announceId);
+            var announce = await _announcesService.GetAnnounceAsync(announceId, userId.Value);
             if (announce == null || announce.OwnerId != userId)
             {
                 throw new InvalidOperationException("The specified announce doesn't exist.");
@@ -41,7 +41,7 @@ namespace eShop.Catalog.Hubs
             var announceId = request.AnnounceId;
 
             var userId = Context.User.GetAccountId();
-            var announce = await _announcesService.GetAnnounceAsync(announceId);
+            var announce = await _announcesService.GetAnnounceAsync(announceId, userId.Value);
             if (announce == null || announce.OwnerId != userId)
             {
                 throw new InvalidOperationException("The specified announce doesn't exist.");

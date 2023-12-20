@@ -4,10 +4,10 @@ namespace eShop.Distribution.Aggregates
 {
     public class ShopFilter
     {
-        public Shop Shop { get; }
+        public EmbeddedShop Shop { get; }
         public bool IsEnabled { get; }
 
-        public ShopFilter(Shop shop, bool isEnabled)
+        public ShopFilter(EmbeddedShop shop, bool isEnabled)
         {
             Shop = shop;
             IsEnabled = isEnabled;

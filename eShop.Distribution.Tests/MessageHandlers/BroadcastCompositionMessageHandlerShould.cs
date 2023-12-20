@@ -51,7 +51,7 @@ namespace eShop.Distribution.Tests.MessageHandlers
             var distributionSettings = new DistributionSettings();
             var distribution = new Entities.Distribution()
             {
-                Items = new List<DistributionItem>
+                Targets = new List<DistributionItem>
                 {
                     telegramRequest,
                     viberRequest,
@@ -90,12 +90,12 @@ namespace eShop.Distribution.Tests.MessageHandlers
             Assert.NotNull(broadcastToTelegramMessage);
             Assert.Equal(messageFromComposition, broadcastToTelegramMessage.Message);
             Assert.Equal(telegramRequest.TelegramChatId, broadcastToTelegramMessage.TargetId);
-            Assert.Equal(telegramRequest.Id, broadcastToTelegramMessage.RequestId);
+            Assert.Equal(telegramRequest.Id, broadcastToTelegramMessage.DistributionItemId);
 
             Assert.NotNull(broadcastToViberMessage);
             Assert.Equal(messageFromComposition, broadcastToViberMessage.Message);
             Assert.Equal(viberRequest.ViberChatId, broadcastToViberMessage.TargetId);
-            Assert.Equal(viberRequest.Id, broadcastToViberMessage.RequestId);
+            Assert.Equal(viberRequest.Id, broadcastToViberMessage.DistributionItemId);
         }
     }
 }

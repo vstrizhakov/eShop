@@ -7,11 +7,20 @@ namespace eShop.Telegram.DbContexts
     {
         public DbSet<TelegramUser> TelegramUsers { get; set; }
         public DbSet<TelegramChat> TelegramChats { get; set; }
-        public DbSet<TelegramChatMember> TelegramChatMembers { get; set; }
-        public DbSet<TelegramChatSettings> TelegramChatSettings { get; set; }
 
         public TelegramDbContext(DbContextOptions<TelegramDbContext> options) : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasAutoscaleThroughput(1000);
+
+            modelBuilder.Entity<TelegramUser>()
+                .HasPartitionKey(e => e.PartitionKey);
+
+            modelBuilder.Entity<TelegramChat>()
+                .HasPartitionKey(e => e.PartitionKey);
         }
     }
 }

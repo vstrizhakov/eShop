@@ -1,12 +1,11 @@
-﻿using eShop.Distribution.Entities;
-using eShop.Messaging.Contracts;
+﻿using eShop.Messaging.Contracts;
 
 namespace eShop.Distribution.Services
 {
     public interface IDistributionService
     {
         Task<Entities.Distribution> CreateDistributionAsync(Guid announcerId, Announce composition);
-        Task<Entities.Distribution?> GetDistributionAsync(Guid distributionId);
-        Task UpdateDistributionRequestStatusAsync(Guid distributionRequestId, bool deliveryFailed);
+        Task<Entities.Distribution?> GetDistributionAsync(Guid distributionId, Guid announcerId);
+        Task SetDistributionItemStatusAsync(Guid distributionId, Guid announcerId, Guid distributionItemId, bool deliveryFailed);
     }
 }

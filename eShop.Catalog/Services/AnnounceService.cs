@@ -1,4 +1,5 @@
-﻿using eShop.Catalog.Entities;
+﻿using AutoMapper;
+using eShop.Catalog.Entities;
 using eShop.Catalog.Repositories;
 using eShop.Common;
 using MassTransit;
@@ -12,19 +13,22 @@ namespace eShop.Catalog.Services
         private readonly IPublicUriBuilder _publicUriBuilder;
         private readonly IBus _producer;
         private readonly IAnnouncesHubServer _announcesHubServer;
+        private readonly IMapper _mapper;
 
         public AnnounceService(
             IFileManager fileManager,
             IAnnounceRepository announceRepository,
             IPublicUriBuilder publicUriBuilder,
             IBus producer,
-            IAnnouncesHubServer announcesHubServer)
+            IAnnouncesHubServer announcesHubServer,
+            IMapper mapper)
         {
             _fileManager = fileManager;
             _announceRepository = announceRepository;
             _publicUriBuilder = publicUriBuilder;
             _producer = producer;
             _announcesHubServer = announcesHubServer;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Announce>> GetAnnouncesAsync(Guid ownerId)
@@ -33,9 +37,9 @@ namespace eShop.Catalog.Services
             return announces;
         }
 
-        public async Task<Announce?> GetAnnounceAsync(Guid id)
+        public async Task<Announce?> GetAnnounceAsync(Guid id, Guid ownerId)
         {
-            var announce = await _announceRepository.GetAnnounceByIdAsync(id);
+            var announce = await _announceRepository.GetAnnounceAsync(id, ownerId);
             return announce;
         }
 
@@ -71,7 +75,7 @@ namespace eShop.Catalog.Services
                 Announce = new Messaging.Contracts.Announce
                 {
                     Id = announce.Id,
-                    ShopId = announce.ShopId,
+                    ShopId = announce.Shop.Id,
                     Images = announce.Images.Select(e => new Uri(_publicUriBuilder.Path(e.Path))).ToList(),
                     Products = announce.Products.Select(e =>
                     {
@@ -86,11 +90,7 @@ namespace eShop.Catalog.Services
                             {
                                 Price = price.Value,
                                 DiscountedPrice = price.DiscountedValue,
-                                Currency = new Messaging.Contracts.Currency
-                                {
-                                    Id = currency.Id,
-                                    Name = currency.Name,
-                                },
+                                Currency = _mapper.Map<Messaging.Contracts.Currency>(currency),
                             },
                         };
 

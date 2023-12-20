@@ -1,8 +1,23 @@
-﻿namespace eShop.Distribution.Entities
+﻿using eShop.Database;
+
+namespace eShop.Distribution.Entities
 {
-    public class Currency
+    public class Currency : EntityBase
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
+
+        public EmbeddedCurrency GeneratedEmbedded()
+        {
+            return new EmbeddedCurrency
+            {
+                Id = Id,
+                Name = Name,
+            };
+        }
+
+        protected override string GetPartitionKey()
+        {
+            return UseDiscriminator();
+        }
     }
 }

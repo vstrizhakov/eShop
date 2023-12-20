@@ -1,5 +1,6 @@
 ﻿using eShop.Catalog.DbContexts;
 using eShop.Catalog.Entities;
+using eShop.Database.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Catalog.Repositories
@@ -15,17 +16,6 @@ namespace eShop.Catalog.Repositories
 
         public async Task CreateAnnounceAsync(Announce announce)
         {
-            // TODO: find another way to achieve currency property on product prices exist
-            var currencyIds = announce.Products
-                .SelectMany(product => product.Prices.Select(price => price.CurrencyId))
-                .Distinct();
-
-            await _context.Currencies
-                .Where(currency => currencyIds.Contains(currency.Id))
-                .ToListAsync();
-
-            await _context.Shops.FirstOrDefaultAsync(shop => shop.Id == announce.ShopId);
-
             _context.Announces.Add(announce);
 
             await _context.SaveChangesAsync();
@@ -38,14 +28,10 @@ namespace eShop.Catalog.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Announce?> GetAnnounceByIdAsync(Guid id)
+        public async Task<Announce?> GetAnnounceAsync(Guid id, Guid ownerId)
         {
             var announce = await _context.Announces
-                .Include(e => e.Products)
-                    .ThenInclude(e => e.Prices)
-                        .ThenInclude(e => e.Currency)
-                .Include(e => e.Shop)
-                .Include(e => e.Images)
+                .WithPartitionKey(ownerId)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             return announce;
@@ -54,12 +40,7 @@ namespace eShop.Catalog.Repositories
         public async Task<IEnumerable<Announce>> GetAnnouncesAsync(Guid ownerId)
         {
             var announces = await _context.Announces
-                .Include(e => e.Products)
-                    .ThenInclude(e => e.Prices)
-                        .ThenInclude(e => e.Currency)
-                .Include(e => e.Shop)
-                .Include(e => e.Images)
-                .Where(e => e.OwnerId == ownerId)
+                .WithPartitionKey(ownerId)
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
 

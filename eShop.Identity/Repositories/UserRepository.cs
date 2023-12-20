@@ -1,4 +1,5 @@
-﻿using eShop.Identity.DbContexts;
+﻿using eShop.Database.Extensions;
+using eShop.Identity.DbContexts;
 using eShop.Identity.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +14,24 @@ namespace eShop.Identity.Repositories
             _context = context;
         }
 
-        public async Task<User?> GetUserByIdAsync(string id)
+        public async Task CreateAsync(User user)
+        {
+            _context.Users.Add(user);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(User user)
+        {
+            _context.Users.Remove(user);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<User?> GetUserByIdAsync(Guid id)
         {
             var user = await _context.Users
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.Id == id);
             return user;
         }
@@ -23,6 +39,7 @@ namespace eShop.Identity.Repositories
         public async Task<User?> GetUserByPhoneNumberAsync(string phoneNumber)
         {
             var user = await _context.Users
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.PhoneNumber == phoneNumber);
             return user;
         }

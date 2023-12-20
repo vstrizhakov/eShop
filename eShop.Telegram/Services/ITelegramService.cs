@@ -5,7 +5,7 @@ namespace eShop.Telegram.Services
     public interface ITelegramService
     {
         Task<TelegramUser?> GetUserByExternalIdAsync(long externalId);
-        IEnumerable<TelegramChatMember> GetManagableChats(TelegramUser user);
+        Task<IEnumerable<TelegramChat>> GetManagableChats(TelegramUser user);
         Task UpdateUserAsync(TelegramUser user);
         Task<TelegramUser?> GetUserByAccountIdAsync(Guid accountId);
         Task<TelegramUser?> GetUserByTelegramUserIdAsync(Guid telegramUserId);

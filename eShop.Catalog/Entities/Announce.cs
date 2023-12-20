@@ -1,18 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eShop.Database;
 
 namespace eShop.Catalog.Entities
 {
-    [Index(nameof(OwnerId))]
-    public class Announce
+    public class Announce : EntityBase
     {
-        public Guid Id { get; set; }
-        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public Guid OwnerId { get; set; }
         public Guid? DistributionId { get; set; }
-        public Guid ShopId { get; set; }
-
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public ICollection<AnnounceImage> Images { get; set; } = new List<AnnounceImage>();
         public ICollection<Product> Products { get; set; } = new List<Product>();
-        public Shop Shop { get; set; }
+        public EmbeddedShop Shop { get; set; }
+
+        protected override string GetPartitionKey()
+        {
+            return OwnerId.ToString();
+        }
     }
 }

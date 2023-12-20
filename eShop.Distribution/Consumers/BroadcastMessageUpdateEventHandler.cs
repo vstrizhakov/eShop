@@ -19,7 +19,7 @@ namespace eShop.Distribution.Consumers
             var @event = context.Message;
             try
             {
-                await _distributionService.UpdateDistributionRequestStatusAsync(@event.RequestId, @event.Succeeded);
+                await _distributionService.SetDistributionItemStatusAsync(@event.DistributionId, @event.AnnouncerId, @event.DistributionItemId, @event.Succeeded);
             }
             catch (DistributionRequestNotFoundException)
             {

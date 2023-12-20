@@ -9,10 +9,9 @@ namespace eShop.Distribution.Profiles
         public DistributionProfile()
         {
             CreateMap<Entities.Distribution, Models.Distributions.Distribution>()
-                .ForMember(dest => dest.Recipients, options => options.MapFrom(src => src.Items.GroupBy(e => e.Account)));
-            CreateMap<IGrouping<Entities.Account, Entities.DistributionItem>, DistributionRecipient>()
-                .ForMember(dest => dest.Client, options => options.MapFrom(src => src.Key))
-                .ForMember(dest => dest.Items, options => options.MapFrom(src => src.AsEnumerable()));
+                .ForMember(dest => dest.Recipients, options => options.MapFrom(src => src.Targets));
+            CreateMap<Entities.DistributionGroup, DistributionRecipient>()
+                .ForMember(dest => dest.Client, options => options.MapFrom(src => src.Account));
             CreateMap<Entities.DistributionItem, DistributionItem>()
                 .ForMember(dest => dest.DeliveryStatus, options => options.MapFrom(src => src.Status));
             CreateMap<Entities.DistributionItemStatus, DeliveryStatus>()

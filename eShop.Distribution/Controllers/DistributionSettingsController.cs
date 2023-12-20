@@ -12,12 +12,12 @@ namespace eShop.Distribution.Controllers
     [Authorize]
     public class DistributionSettingsController : ControllerBase
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public DistributionSettingsController(IDistributionSettingsService distributionSettingsService, IMapper mapper)
+        public DistributionSettingsController(IAccountService accountService, IMapper mapper)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _mapper = mapper;
         }
 
@@ -25,8 +25,8 @@ namespace eShop.Distribution.Controllers
         public async Task<ActionResult<DistributionSettings>> GetDistributionSettings()
         {
             var accountId = User.GetAccountId().Value;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-            var response = _mapper.Map<DistributionSettings>(distributionSettings);
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            var response = _mapper.Map<DistributionSettings>(account.DistributionSettings);
             return Ok(response);
         }
     }

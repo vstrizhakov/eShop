@@ -7,23 +7,24 @@ namespace eShop.Distribution.Consumers
 {
     public class SetShowSalesRequestHandler : IConsumer<SetShowSalesRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public SetShowSalesRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
+        public SetShowSalesRequestHandler(IAccountService accountService, IMapper mapper)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _mapper = mapper;
         }
 
         public async Task Consume(ConsumeContext<SetShowSalesRequest> context)
         {
             var request = context.Message;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(request.AccountId);
-            if (distributionSettings != null)
+            var account = await _accountService.GetAccountByIdAsync(request.AccountId);
+            if (account != null)
             {
-                await _distributionSettingsService.SetShowSalesAsync(distributionSettings, request.ShowSales);
+                await _accountService.SetShowSalesAsync(account, request.ShowSales);
 
+                var distributionSettings = account.DistributionSettings;
                 var mappedDistributionSettings = _mapper.Map<DistributionSettings>(distributionSettings);
                 var response = new SetShowSalesResponse(request.AccountId, mappedDistributionSettings);
 

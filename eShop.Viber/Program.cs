@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using eShop.Database.Extensions;
 
 namespace eShop.Viber
 {
@@ -49,7 +50,9 @@ namespace eShop.Viber
             }
 
             builder.Services.AddDbContext<ViberDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
+                options.UseCosmos(builder.Configuration.GetConnectionString("Default"), "eShop"));
+
+            builder.Services.AddDatabaseDeployment<ViberDbContext>();
 
             builder.Services.Configure<ViberBotConfiguration>(builder.Configuration.GetSection("ViberBot"));
 

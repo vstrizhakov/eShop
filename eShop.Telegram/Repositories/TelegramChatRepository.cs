@@ -1,4 +1,5 @@
-﻿using eShop.Telegram.DbContexts;
+﻿using eShop.Database.Extensions;
+using eShop.Telegram.DbContexts;
 using eShop.Telegram.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,9 +24,7 @@ namespace eShop.Telegram.Repositories
         public async Task<TelegramChat?> GetTelegramChatByExternalIdAsync(long externalId)
         {
             var telegramChat = await _context.TelegramChats
-                .Include(e => e.Members)
-                .Include(e => e.Supergroup)
-                .Include(e => e.Settings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.ExternalId == externalId);
             return telegramChat;
         }
@@ -33,9 +32,7 @@ namespace eShop.Telegram.Repositories
         public async Task<TelegramChat?> GetTelegramChatByIdAsync(Guid id)
         {
             var telegramChat = await _context.TelegramChats
-                .Include(e => e.Members)
-                .Include(e => e.Supergroup)
-                .Include(e => e.Settings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.Id == id);
             return telegramChat;
         }
@@ -43,9 +40,7 @@ namespace eShop.Telegram.Repositories
         public async Task<IEnumerable<TelegramChat>> GetTelegramChatsByIdsAsync(IEnumerable<Guid> ids)
         {
             var telegramChats = await _context.TelegramChats
-                .Include(e => e.Members)
-                .Include(e => e.Supergroup)
-                .Include(e => e.Settings)
+                .WithDiscriminatorAsPartitionKey()
                 .Where(e => ids.Contains(e.Id))
                 .ToListAsync();
             return telegramChats;

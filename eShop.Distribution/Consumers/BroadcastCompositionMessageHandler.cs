@@ -1,6 +1,5 @@
 ﻿using eShop.Distribution.Services;
 using eShop.Messaging.Contracts;
-using eShop.Messaging.Contracts;
 using MassTransit;
 
 namespace eShop.Distribution.Consumers
@@ -23,48 +22,56 @@ namespace eShop.Distribution.Consumers
             var message = context.Message;
             var composition = message.Announce;
 
-            // TODO: Handle provider is absent
+            // TODO: Handle provider/announcer is absent
             var distribution = await _distributionService.CreateDistributionAsync(message.AnnouncerId, composition);
 
             var distributionId = distribution.Id;
             var update = new BroadcastAnnounceUpdateEvent
             {
                 AnnounceId = composition.Id,
+                OwnerId = message.AnnouncerId, // TODO: check whether taking message.AnnouncerId is valid here
                 DistributionId = distributionId,
             };
 
             await context.Publish(update);
 
-            var distributionItems = distribution.Items.Where(e => e.Status == Entities.DistributionItemStatus.Pending);
-
             var telegramFormatter = new TelegramFormatter();
-            var telegramRequests = distributionItems.Where(e => e.TelegramChatId.HasValue);
-            foreach (var telegramRequest in telegramRequests)
-            {
-                var messageToSend = _messageBuilder.FromComposition(composition, telegramRequest.DistributionSettings, telegramFormatter);
-                var telegramMessage = new BroadcastCompositionToTelegramMessage
-                {
-                    RequestId = telegramRequest.Id,
-                    TargetId = telegramRequest.TelegramChatId!.Value,
-                    Message = messageToSend,
-                };
-
-                await context.Publish(telegramMessage);
-            }
-
             var viberFormatter = new ViberFormatter();
-            var viberRequests = distributionItems.Where(e => e.ViberChatId.HasValue);
-            foreach (var viberRequest in viberRequests)
+            foreach (var target in distribution.Targets)
             {
-                var messageToSend = _messageBuilder.FromComposition(composition, viberRequest.DistributionSettings, viberFormatter);
-                var viberMessage = new BroadcastCompositionToViberMessage
-                {
-                    RequestId = viberRequest.Id,
-                    TargetId = viberRequest.ViberChatId!.Value,
-                    Message = messageToSend,
-                };
+                var distributionItems = target.Items.Where(e => e.Status == Entities.DistributionItemStatus.Pending);
 
-                await context.Publish(viberMessage);
+                var telegramRequests = distributionItems.Where(e => e.TelegramChatId.HasValue);
+                foreach (var telegramRequest in telegramRequests)
+                {
+                    var messageToSend = _messageBuilder.FromComposition(composition, target.DistributionSettings, telegramFormatter);
+                    var telegramMessage = new BroadcastCompositionToTelegramMessage
+                    {
+                        DistributionId = distribution.Id,
+                        AnnouncerId = distribution.AnnouncerId,
+                        DistributionItemId = telegramRequest.Id,
+                        TargetId = telegramRequest.TelegramChatId!.Value,
+                        Message = messageToSend,
+                    };
+
+                    await context.Publish(telegramMessage);
+                }
+
+                var viberRequests = distributionItems.Where(e => e.ViberChatId.HasValue);
+                foreach (var viberRequest in viberRequests)
+                {
+                    var messageToSend = _messageBuilder.FromComposition(composition, target.DistributionSettings, viberFormatter);
+                    var viberMessage = new BroadcastCompositionToViberMessage
+                    {
+                        DistributionId = distribution.Id,
+                        AnnouncerId = distribution.AnnouncerId,
+                        DistributionItemId = viberRequest.Id,
+                        TargetId = viberRequest.ViberChatId!.Value,
+                        Message = messageToSend,
+                    };
+
+                    await context.Publish(viberMessage);
+                }
             }
         }
     }

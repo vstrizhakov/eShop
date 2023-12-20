@@ -1,5 +1,6 @@
 ﻿using eShop.Catalog.DbContexts;
 using eShop.Catalog.Entities;
+using eShop.Database.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Catalog.Repositories
@@ -13,9 +14,19 @@ namespace eShop.Catalog.Repositories
             _context = context;
         }
 
+        public async Task<Shop?> GetShopAsync(Guid id)
+        {
+            var shop = await _context.Shops
+                .WithDiscriminatorAsPartitionKey()
+                .FirstOrDefaultAsync(e => e.Id == id);
+            return shop;
+        }
+
         public async Task<IEnumerable<Shop>> GetShopsAsync()
         {
-            var shops = await _context.Shops.ToListAsync();
+            var shops = await _context.Shops
+                .WithDiscriminatorAsPartitionKey()
+                .ToListAsync();
             return shops;
         }
     }

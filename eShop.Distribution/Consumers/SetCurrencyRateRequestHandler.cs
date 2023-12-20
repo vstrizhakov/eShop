@@ -8,31 +8,37 @@ namespace eShop.Distribution.Consumers
 {
     public class SetCurrencyRateRequestHandler : IConsumer<SetCurrencyRateRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
+        private readonly ICurrencyService _currencyService;
 
-        public SetCurrencyRateRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
+        public SetCurrencyRateRequestHandler(IAccountService accountService, IMapper mapper, ICurrencyService currencyService)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _mapper = mapper;
+            _currencyService = currencyService;
         }
 
         public async Task Consume(ConsumeContext<SetCurrencyRateRequest> context)
         {
             var request = context.Message;
             var accountId = request.AccountId;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-
-            if (distributionSettings != null)
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            if (account != null)
             {
-                distributionSettings = await _distributionSettingsService.SetCurrencyRateAsync(distributionSettings, request.CurrencyId, request.Rate);
-                var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
+                var currency = await _currencyService.GetCurrencyAsync(request.CurrencyId);
+                if (currency != null)
+                {
+                    await _accountService.SetCurrencyRateAsync(account, currency, request.Rate);
+                    var currencyRates = await _accountService.GetCurrencyRatesAsync(account);
 
-                var mappedPreferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
-                var mappedCurrencyRates = _mapper.Map<IEnumerable<CurrencyRate>>(currencyRates);
-                var response = new SetCurrencyRateResponse(accountId, mappedPreferredCurrency, mappedCurrencyRates);
+                    var distributionSettings = account.DistributionSettings;
+                    var mappedPreferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
+                    var mappedCurrencyRates = _mapper.Map<IEnumerable<CurrencyRate>>(currencyRates);
+                    var response = new SetCurrencyRateResponse(accountId, mappedPreferredCurrency, mappedCurrencyRates);
 
-                await context.RespondAsync(response);
+                    await context.RespondAsync(response);
+                }
             }
         }
     }

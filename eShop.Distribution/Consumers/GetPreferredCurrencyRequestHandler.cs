@@ -2,19 +2,18 @@
 using eShop.Distribution.Services;
 using eShop.Messaging.Contracts;
 using eShop.Messaging.Contracts.Distribution;
-using eShop.Messaging.Contracts.Distribution;
 using MassTransit;
 
 namespace eShop.Distribution.Consumers
 {
     public class GetPreferredCurrencyRequestHandler : IConsumer<GetPreferredCurrencyRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public GetPreferredCurrencyRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
+        public GetPreferredCurrencyRequestHandler(IAccountService accountService, IMapper mapper)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _mapper = mapper;
         }
 
@@ -22,9 +21,10 @@ namespace eShop.Distribution.Consumers
         {
             var request = context.Message;
             var accountId = request.AccountId;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-            if (distributionSettings != null)
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            if (account != null)
             {
+                var distributionSettings = account.DistributionSettings;
                 var preferredCurrency = _mapper.Map<Currency>(distributionSettings.PreferredCurrency);
 
                 var response = new GetPreferredCurrencyResponse(accountId, preferredCurrency);

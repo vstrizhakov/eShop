@@ -1,5 +1,6 @@
 ﻿using eShop.Accounts.DbContexts;
 using eShop.Accounts.Entities;
+using eShop.Database.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Accounts.Repositories
@@ -23,13 +24,15 @@ namespace eShop.Accounts.Repositories
         public async Task<Account?> GetAccountByIdAsync(Guid id)
         {
             var account = await _context.Accounts
-                .FindAsync(id);
+                .WithDiscriminatorAsPartitionKey()
+                .FirstOrDefaultAsync(e => e.Id == id);
             return account;
         }
 
         public async Task<Account?> GetAccountByPhoneNumberAsync(string phoneNumber)
         {
             var account = await _context.Accounts
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.PhoneNumber.Contains(phoneNumber));
             return account;
         }

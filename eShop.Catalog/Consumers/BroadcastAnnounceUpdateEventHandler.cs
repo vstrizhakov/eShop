@@ -17,7 +17,7 @@ namespace eShop.Catalog.Consumers
         {
             var message = context.Message;
 
-            var announce = await _announceService.GetAnnounceAsync(message.AnnounceId);
+            var announce = await _announceService.GetAnnounceAsync(message.AnnounceId, message.OwnerId);
             if (announce != null)
             {
                 await _announceService.SetAnnounceDistributionIdAsync(announce, message.DistributionId);

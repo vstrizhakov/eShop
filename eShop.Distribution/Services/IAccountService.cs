@@ -1,4 +1,5 @@
-﻿using eShop.Distribution.Entities;
+﻿using eShop.Distribution.Aggregates;
+using eShop.Distribution.Entities;
 
 namespace eShop.Distribution.Services
 {
@@ -12,5 +13,14 @@ namespace eShop.Distribution.Services
         Task<Account?> GetAccountByTelegramUserIdAsync(Guid accountId);
         Task<Account?> GetAccountByViberUserIdAsync(Guid accountId);
         Task SubscribeToAnnouncerAsync(Account account, Account announcer);
+        Task<IEnumerable<ICurrencyRate>> GetCurrencyRatesAsync(Account account);
+        Task<IEnumerable<ShopFilter>> GetShopsAsync(Account account);
+        Task SetComissionAmountAsync(Account account, double amount);
+        Task SetCurrencyRateAsync(Account account, Currency sourceCurrency, double rate);
+        Task SetFilterShopsAsync(Account account, bool filter);
+        Task SetPreferredCurrencyAsync(Account account, Currency currency);
+        Task SetShopIsEnabledAsync(Account account, Guid shopId, bool isEnabled);
+        Task SetShowSalesAsync(Account account, bool showSales);
+        Task<IEnumerable<Account>> GetSubscribersAsync(Guid announcerId);
     }
 }

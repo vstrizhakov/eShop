@@ -1,4 +1,5 @@
-﻿using eShop.Viber.DbContexts;
+﻿using eShop.Database.Extensions;
+using eShop.Viber.DbContexts;
 using eShop.Viber.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ namespace eShop.Viber.Repositories
         public async Task<ViberUser?> GetViberUserByAccountIdAsync(Guid accountId)
         {
             var viberUser = await _context.ViberUsers
-                .Include(e => e.ChatSettings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.AccountId == accountId);
             return viberUser;
         }
@@ -31,7 +32,7 @@ namespace eShop.Viber.Repositories
         public async Task<ViberUser?> GetViberUserByExternalIdAsync(string externalId)
         {
             var viberUser = await _context.ViberUsers
-                .Include(e => e.ChatSettings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.ExternalId == externalId);
             return viberUser;
         }
@@ -39,7 +40,7 @@ namespace eShop.Viber.Repositories
         public async Task<ViberUser?> GetViberUserByIdAsync(Guid id)
         {
             var viberUser = await _context.ViberUsers
-                .Include(e => e.ChatSettings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.Id == id);
             return viberUser;
         }
@@ -47,7 +48,7 @@ namespace eShop.Viber.Repositories
         public async Task<IEnumerable<ViberUser>> GetViberUsersByIdsAsync(IEnumerable<Guid> ids)
         {
             var viberUsers = await _context.ViberUsers
-                .Include(e => e.ChatSettings)
+                .WithDiscriminatorAsPartitionKey()
                 .Where(e => ids.Contains(e.Id))
                 .ToListAsync();
             return viberUsers;

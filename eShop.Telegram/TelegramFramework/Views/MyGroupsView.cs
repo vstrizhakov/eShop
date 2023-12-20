@@ -14,26 +14,25 @@ namespace eShop.Telegram.TelegramFramework.Views
         private readonly long _chatId;
         private readonly int _messageId;
         private readonly string _callbackQueryId;
-        private readonly IEnumerable<TelegramChatMember> _telegramUserChats;
+        private readonly IEnumerable<TelegramChat> _chats;
 
-        public MyGroupsView(long chatId, int messageId, string callbackQueryId, IEnumerable<TelegramChatMember> telegramUserChats)
+        public MyGroupsView(long chatId, int messageId, string callbackQueryId, IEnumerable<TelegramChat> chats)
         {
             _chatId = chatId;
             _messageId = messageId;
             _callbackQueryId = callbackQueryId;
-            _telegramUserChats = telegramUserChats;
+            _chats = chats;
         }
 
         public async Task ProcessAsync(ITelegramBotClient botClient, IInlineKeyboardMarkupBuilder markupBuilder)
         {
-            if (_telegramUserChats.Any())
+            if (_chats.Any())
             {
                 var text = "Оберіть групу чи канал, до якої хотіли б налаштувати відправку анонсів:";
 
                 var elements = new List<IInlineKeyboardElement>();
-                foreach (var chatMember in _telegramUserChats)
+                foreach (var chat in _chats)
                 {
-                    var chat = chatMember.Chat;
                     var element = new InlineKeyboardAction(chat.Title!, TelegramAction.SetUpGroup, chat.Id.ToString());
                     elements.Add(element);
                 }

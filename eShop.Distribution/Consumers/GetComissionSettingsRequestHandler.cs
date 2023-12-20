@@ -1,17 +1,16 @@
 ﻿using eShop.Distribution.Services;
 using eShop.Messaging.Contracts.Distribution;
-using eShop.Messaging.Contracts.Distribution;
 using MassTransit;
 
 namespace eShop.Distribution.Consumers
 {
     public class GetComissionSettingsRequestHandler : IConsumer<GetComissionSettingsRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
 
-        public GetComissionSettingsRequestHandler(IDistributionSettingsService distributionSettingsService)
+        public GetComissionSettingsRequestHandler(IAccountService accountService)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
         }
 
         public async Task Consume(ConsumeContext<GetComissionSettingsRequest> context)
@@ -19,10 +18,10 @@ namespace eShop.Distribution.Consumers
             var request = context.Message;
 
             var accountId = request.AccountId;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-
-            if (distributionSettings != null)
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            if (account != null)
             {
+                var distributionSettings = account.DistributionSettings;
                 var comissionSettings = distributionSettings.ComissionSettings;
                 var response = new GetComissionSettingsResponse(accountId, comissionSettings.Amount);
 

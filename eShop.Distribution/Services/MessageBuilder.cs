@@ -72,7 +72,7 @@ namespace eShop.Distribution.Services
 
             if (preferredCurrency != null && preferredCurrency.Id != priceCurrency.Id)
             {
-                var currencyRate = currencyRates.FirstOrDefault(e => e.CurrencyId == priceCurrency.Id);
+                var currencyRate = currencyRates.FirstOrDefault(e => e.Currency.Id == priceCurrency.Id);
                 priceValue *= currencyRate.Rate;
 
                 if (discountedPriceValue.HasValue)

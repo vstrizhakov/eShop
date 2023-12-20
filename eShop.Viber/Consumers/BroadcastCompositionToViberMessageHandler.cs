@@ -58,7 +58,9 @@ namespace eShop.Viber.Consumers
 
                 var update = new BroadcastMessageUpdateEvent
                 {
-                    RequestId = command.RequestId,
+                    DistributionId = command.DistributionId,
+                    AnnouncerId = command.AnnouncerId,
+                    DistributionItemId = command.DistributionItemId,
                     Succeeded = succeeded,
                 };
                 await context.Publish(update);

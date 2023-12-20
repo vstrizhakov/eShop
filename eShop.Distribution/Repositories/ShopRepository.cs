@@ -1,4 +1,5 @@
-﻿using eShop.Distribution.DbContexts;
+﻿using eShop.Database.Extensions;
+using eShop.Distribution.DbContexts;
 using eShop.Distribution.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,7 @@ namespace eShop.Distribution.Repositories
         public async Task<Shop?> GetShopAsync(Guid shopId)
         {
             var shop = await _context.Shops
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.Id == shopId);
             return shop;
         }
@@ -30,6 +32,7 @@ namespace eShop.Distribution.Repositories
         public async Task<IEnumerable<Shop>> GetShopsAsync(IEnumerable<Guid> ids)
         {
             var shops = await _context.Shops
+                .WithDiscriminatorAsPartitionKey()
                 .Where(e => ids.Contains(e.Id))
                 .ToListAsync();
             return shops;
@@ -38,6 +41,7 @@ namespace eShop.Distribution.Repositories
         public async Task<IEnumerable<Shop>> GetShopsAsync()
         {
             var shops = await _context.Shops
+                .WithDiscriminatorAsPartitionKey()
                 .ToListAsync();
             return shops;
         }

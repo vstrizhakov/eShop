@@ -9,19 +9,16 @@ namespace eShop.Distribution.Services
     public class DistributionService : IDistributionService
     {
         private readonly IDistributionRepository _distributionRepository;
-        private readonly IAccountRepository _accountRepository;
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IDistributionsHubServer _distributionHubServer;
 
         public DistributionService(
             IDistributionRepository distributionRepository,
-            IAccountRepository accountRepository,
-            IDistributionSettingsService distributionSettingsService,
+            IAccountService accountService,
             IDistributionsHubServer distributionHubServer)
         {
             _distributionRepository = distributionRepository;
-            _accountRepository = accountRepository;
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _distributionHubServer = distributionHubServer;
         }
 
@@ -32,36 +29,38 @@ namespace eShop.Distribution.Services
                 AnnouncerId = announcerId,
             };
 
-            var accounts = await _accountRepository.GetAccountsByAnnouncerIdAsync(announcerId, true, true);
+            var accounts = await _accountService.GetSubscribersAsync(announcerId);
 
             var shopId = composition.ShopId;
             foreach (var account in accounts)
             {
-                var historyRecord = await CreateHistoryRecord(account.DistributionSettings);
+                var historyRecord = await CreateHistoryRecord(account);
                 var shopSettings = historyRecord.ShopSettings;
+                var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(shop => shop.Id == shopId);
 
-                var telegramChatGroups = account.TelegramChats
-                    .Where(e => e.IsEnabled)
-                    .GroupBy(e => e.Account);
-                foreach (var telegramChats in telegramChatGroups)
+                var group = new DistributionGroup
                 {
-                    var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
-                    foreach (var telegramChat in telegramChats)
+                    Account = account.GeneratedEmbedded(),
+                    DistributionSettings = historyRecord,
+                };
+
+                var itemStatus = DistributionItemStatus.Pending;
+                if (isFiltered)
+                {
+                    itemStatus = DistributionItemStatus.Filtered;
+                }
+
+                var telegramChats = account.TelegramChats
+                    .Where(e => e.IsEnabled);
+                foreach (var telegramChat in telegramChats)
+                {
+                    var item = new DistributionItem
                     {
-                        var item = new DistributionItem
-                        {
-                            AccountId = account.Id,
-                            TelegramChatId = telegramChat.Id,
-                            DistributionSettings = historyRecord,
-                        };
+                        TelegramChatId = telegramChat.Id,
+                        Status = itemStatus,
+                    };
 
-                        if (isFiltered)
-                        {
-                            item.Status = DistributionItemStatus.Filtered;
-                        }
-
-                        distribution.Items.Add(item);
-                    }
+                    group.Items.Add(item);
                 }
 
                 var viberChats = new[] { account.ViberChat }
@@ -70,19 +69,14 @@ namespace eShop.Distribution.Services
                 {
                     var item = new DistributionItem
                     {
-                        AccountId = account.Id,
                         ViberChatId = viberChat.Id,
-                        DistributionSettings = historyRecord,
+                        Status = itemStatus,
                     };
 
-                    var isFiltered = shopSettings.Filter && !shopSettings.PreferredShops.Any(e => e.Id == shopId);
-                    if (isFiltered)
-                    {
-                        item.Status = DistributionItemStatus.Filtered;
-                    }
-
-                    distribution.Items.Add(item);
+                    group.Items.Add(item);
                 }
+
+                distribution.Targets.Add(group);
             }
 
             await _distributionRepository.CreateDistributionAsync(distribution);
@@ -90,34 +84,41 @@ namespace eShop.Distribution.Services
             return distribution;
         }
 
-        public async Task<Entities.Distribution?> GetDistributionAsync(Guid distributionId)
+        public async Task<Entities.Distribution?> GetDistributionAsync(Guid distributionId, Guid announcerId)
         {
-            var distribution = await _distributionRepository.GetDistributionByIdAsync(distributionId);
+            var distribution = await _distributionRepository.GetDistributionAsync(distributionId, announcerId);
             return distribution;
         }
 
-        public async Task UpdateDistributionRequestStatusAsync(Guid distributionRequestId, bool succeeded)
+        public async Task SetDistributionItemStatusAsync(Guid distributionId, Guid announcerId, Guid distributionItemId, bool succeeded)
         {
-            var request = await _distributionRepository.GetDistributionRequestAsync(distributionRequestId);
-            if (request == null)
+            var distribution = await _distributionRepository.GetDistributionAsync(distributionId, announcerId);
+            if (distribution == null)
             {
                 throw new DistributionRequestNotFoundException();
             }
 
-            if (request.Status != DistributionItemStatus.Pending)
+            var distributionItem = distribution.Targets.SelectMany(e => e.Items).FirstOrDefault(e => e.Id == distributionItemId);
+            if (distributionItem == null)
+            {
+                throw new DistributionRequestNotFoundException();
+            }
+
+            if (distributionItem.Status != DistributionItemStatus.Pending)
             {
                 throw new InvalidDistributionRequestStatusException();
             }
 
-            request.Status = succeeded ? DistributionItemStatus.Delivered : DistributionItemStatus.Failed;
+            distributionItem.Status = succeeded ? DistributionItemStatus.Delivered : DistributionItemStatus.Failed;
 
-            await _distributionRepository.UpdateDistributionItemAsync(request);
+            await _distributionRepository.UpdateDistributionAsync(distribution);
 
-            await _distributionHubServer.SendRequestUpdatedAsync(request);
+            await _distributionHubServer.SendRequestUpdatedAsync(distributionId, distributionItem);
         }
 
-        private async Task<DistributionSettingsRecord> CreateHistoryRecord(DistributionSettings distributionSettings)
+        private async Task<DistributionSettingsRecord> CreateHistoryRecord(Entities.Account account)
         {
+            var distributionSettings = account.DistributionSettings;
             var shopSettings = distributionSettings.ShopSettings;
             var shopSettingsRecord = new ShopSettingsRecord
             {
@@ -138,11 +139,11 @@ namespace eShop.Distribution.Services
             var currencyRateRecords = Array.Empty<CurrencyRateRecord>();
             if (preferredCurrency != null)
             {
-                var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
+                var currencyRates = await _accountService.GetCurrencyRatesAsync(account);
 
                 currencyRateRecords = currencyRates.Select(e => new CurrencyRateRecord
                 {
-                    CurrencyId = e.SourceCurrencyId,
+                    Currency = e.SourceCurrency,
                     Rate = e.Rate,
                 }).ToArray();
             }

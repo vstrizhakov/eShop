@@ -5,12 +5,7 @@ namespace eShop.Catalog.DbContexts
 {
     public class CatalogDbContext : DbContext
     {
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<ProductImage> ProductImages { get; set; }
-        public DbSet<ProductPrice> ProductPrices { get; set; }
         public DbSet<Announce> Announces { get; set; }
-        public DbSet<AnnounceImage> AnnounceImages { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Shop> Shops { get; set; }
 
@@ -20,10 +15,16 @@ namespace eShop.Catalog.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Category>()
-                .HasOne(e => e.ParentCategory)
-                .WithMany(e => e.SubCategories)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.HasAutoscaleThroughput(1000);
+
+            modelBuilder.Entity<Announce>()
+                .HasPartitionKey(e => e.PartitionKey);
+
+            modelBuilder.Entity<Currency>()
+                .HasPartitionKey(e => e.PartitionKey);
+
+            modelBuilder.Entity<Shop>()
+                .HasPartitionKey(e => e.PartitionKey);
 
             modelBuilder.Entity<Shop>()
                 .HasData(
@@ -320,8 +321,6 @@ namespace eShop.Catalog.DbContexts
                         CreatedAt = DateTimeOffset.MinValue,
                     }
                 );
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

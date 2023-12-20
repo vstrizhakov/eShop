@@ -2,7 +2,6 @@
 using eShop.Catalog.Repositories;
 using eShop.Messaging.Contracts;
 using eShop.Messaging.Contracts.Catalog;
-using eShop.Messaging.Contracts.Catalog;
 using MassTransit;
 
 namespace eShop.Catalog.Services

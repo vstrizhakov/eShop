@@ -6,10 +6,17 @@ namespace eShop.Viber.DbContexts
     public class ViberDbContext : DbContext
     {
         public DbSet<ViberUser> ViberUsers { get; set; }
-        public DbSet<ViberChatSettings> ViberChatSettings { get; set; }
 
         public ViberDbContext(DbContextOptions options) : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasAutoscaleThroughput(1000);
+
+            modelBuilder.Entity<ViberUser>()
+                .HasPartitionKey(e => e.PartitionKey);
         }
     }
 }

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using eShop.Database.Extensions;
 
 namespace eShop.Catalog
 {
@@ -44,14 +45,14 @@ namespace eShop.Catalog
                 builder.Configuration.AddJsonFile(Path.Combine(executionRoot, "appsettings.json"), true, true);
             }
 
-            builder.Services.AddDbContext<CatalogDbContext>(options
-                => options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
+            builder.Services.AddDbContext<CatalogDbContext>(options =>
+                options.UseCosmos(builder.Configuration.GetConnectionString("Default"), "eShop"));
+
+            builder.Services.AddDatabaseDeployment<CatalogDbContext>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IAnnounceRepository, AnnounceRepository>();
             builder.Services.AddScoped<IShopRepository, ShopRepository>();
 
@@ -61,6 +62,7 @@ namespace eShop.Catalog
             builder.Services.AddScoped<IShopService, ShopService>();
             builder.Services.AddScoped<ISyncService, SyncService>();
             builder.Services.AddScoped<IAnnouncesHubServer, AnnounceHubServer>();
+            builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

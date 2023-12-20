@@ -7,12 +7,12 @@ namespace eShop.Distribution.Consumers
 {
     public class SetShopSettingsShopStateRequestHandler : IConsumer<SetShopSettingsShopStateRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public SetShopSettingsShopStateRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
+        public SetShopSettingsShopStateRequestHandler(IAccountService accountService, IMapper mapper)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _mapper = mapper;
         }
 
@@ -20,12 +20,11 @@ namespace eShop.Distribution.Consumers
         {
             var request = context.Message;
             var accountId = request.AccountId;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-
-            if (distributionSettings != null)
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            if (account != null)
             {
-                distributionSettings = await _distributionSettingsService.SetShopIsEnabledAsync(distributionSettings, request.ShopId, request.IsEnabled);
-                var shops = await _distributionSettingsService.GetShopsAsync(distributionSettings);
+                await _accountService.SetShopIsEnabledAsync(account, request.ShopId, request.IsEnabled);
+                var shops = await _accountService.GetShopsAsync(account);
                 var mappedShops = _mapper.Map<IEnumerable<Shop>>(shops);
 
                 var response = new SetShopSettingsShopStateResponse(accountId, mappedShops);

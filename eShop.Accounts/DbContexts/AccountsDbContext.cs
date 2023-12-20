@@ -10,5 +10,13 @@ namespace eShop.Accounts.DbContexts
         public AccountsDbContext(DbContextOptions<AccountsDbContext> options) : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasAutoscaleThroughput(1000);
+
+            modelBuilder.Entity<Account>()
+                .HasPartitionKey(e => e.PartitionKey);
+        }
     }
 }

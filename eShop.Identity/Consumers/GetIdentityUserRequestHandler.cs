@@ -47,7 +47,6 @@ namespace eShop.Identity.Consumers
             {
                 user = new User
                 {
-                    UserName = phoneNumber,
                     PhoneNumber = phoneNumber,
                     PhoneNumberConfirmed = true,
                     FirstName = request.FirstName,

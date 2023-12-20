@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using eShop.Database.Extensions;
+using eShop.Identity.Stores;
 
 namespace eShop.Identity
 {
@@ -44,15 +46,18 @@ namespace eShop.Identity
             }
 
             builder.Services.AddDbContext<IdentityDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
+                options.UseCosmos(builder.Configuration.GetConnectionString("Default"), "eShop"));
 
-            builder.Services.AddIdentity<User, IdentityRole>(options =>
+            builder.Services.AddDatabaseDeployment<IdentityDbContext>();
+
+            builder.Services.AddIdentity<User, Role>(options =>
             {
                 options.SignIn.RequireConfirmedPhoneNumber = true;
                 options.Password.RequireNonAlphanumeric = false;
             })
-                .AddEntityFrameworkStores<IdentityDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddUserStore<UserStore>()
+                .AddRoleStore<RoleStore>();
 
             var identity = new Uri(builder.Configuration["PublicUri:Identity"]);
             var host = new Uri(builder.Configuration["PublicUri:Host"]);

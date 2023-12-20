@@ -44,7 +44,7 @@ namespace eShop.Distribution.Tests.Controllers
 
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
-                .Setup(e => e.GetDistributionByIdAsync(distributionId))
+                .Setup(e => e.GetDistributionAsync(distributionId))
                 .ReturnsAsync(distribution);
 
             var expectedResult = new Models.Distribution();
@@ -81,7 +81,7 @@ namespace eShop.Distribution.Tests.Controllers
 
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
-                .Setup(e => e.GetDistributionByIdAsync(distributionId))
+                .Setup(e => e.GetDistributionAsync(distributionId))
                 .ReturnsAsync(default(Distribution));
 
             var expectedResult = new Models.Distribution();
@@ -115,7 +115,7 @@ namespace eShop.Distribution.Tests.Controllers
 
             var distributionRepository = new Mock<IDistributionRepository>();
             distributionRepository
-                .Setup(e => e.GetDistributionByIdAsync(distributionId))
+                .Setup(e => e.GetDistributionAsync(distributionId))
                 .ReturnsAsync(distribution);
 
             var expectedResult = new Models.Distribution();

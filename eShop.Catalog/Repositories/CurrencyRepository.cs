@@ -1,5 +1,6 @@
 ﻿using eShop.Catalog.DbContexts;
 using eShop.Catalog.Entities;
+using eShop.Database.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Catalog.Repositories
@@ -30,6 +31,16 @@ namespace eShop.Catalog.Repositories
         public async Task<IEnumerable<Currency>> GetCurrenciesAsync()
         {
             var currencies = await _context.Currencies
+                .WithDiscriminatorAsPartitionKey()
+                .ToListAsync();
+            return currencies;
+        }
+
+        public async Task<IEnumerable<Currency>> GetCurrenciesAsync(IEnumerable<Guid> currencyIds)
+        {
+            var currencies = await _context.Currencies
+                .WithDiscriminatorAsPartitionKey()
+                .Where(e => currencyIds.Contains(e.Id))
                 .ToListAsync();
             return currencies;
         }
@@ -37,7 +48,8 @@ namespace eShop.Catalog.Repositories
         public async Task<Currency?> GetCurrencyByIdAsync(Guid id)
         {
             var currency = await _context.Currencies
-                .FindAsync(id);
+                .WithDiscriminatorAsPartitionKey()
+                .FirstOrDefaultAsync(e => e.Id == id);
             return currency;
         }
     }

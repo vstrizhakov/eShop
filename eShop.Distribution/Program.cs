@@ -1,4 +1,5 @@
 using eShop.Bots.Links;
+using eShop.Database.Extensions;
 using eShop.Distribution.DbContexts;
 using eShop.Distribution.Hubs;
 using eShop.Distribution.Repositories;
@@ -51,20 +52,21 @@ namespace eShop.Distribution
                 builder.Configuration.AddJsonFile(Path.Combine(executionRoot, "appsettings.json"), true, true);
             }
 
-            builder.Services.AddDbContext<DistributionDbContext>(options
-                => options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
-            
+            builder.Services.AddDbContext<DistributionDbContext>(options =>
+                options.UseCosmos(builder.Configuration.GetConnectionString("Default"), "eShop"));
+
+            builder.Services.AddDatabaseDeployment<DistributionDbContext>();
+
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IDistributionRepository, DistributionRepository>();
             builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-            builder.Services.AddScoped<IDistributionSettingsRepository, DistributionSettingsRepository>();
             builder.Services.AddScoped<IShopRepository, ShopRepository>();
+            builder.Services.AddScoped<IDefaultCurrencyRateRepository, DefaultCurrencyRateRepository>();
 
             builder.Services.AddScoped<IDistributionService, DistributionService>();
             builder.Services.AddScoped<IMessageBuilder, MessageBuilder>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ICurrencyService, CurrencyService>();
-            builder.Services.AddScoped<IDistributionSettingsService, DistributionSettingsService>();
             builder.Services.AddScoped<IShopService, ShopService>();
             builder.Services.AddScoped<IDistributionsHubServer, DistributionsHubServer>();
 

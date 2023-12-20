@@ -1,13 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using eShop.Database;
 
 namespace eShop.Identity.Entities
 {
-    [Index(nameof(AccountId), IsUnique = true)]
-    public class User : IdentityUser
+    public class User : EntityBase
     {
-        public Guid? AccountId { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool PhoneNumberConfirmed { get; set; }
         public string FirstName { get; set; }
         public string? LastName { get; set; }
+        public Guid? AccountId { get; set; }
+        public string? PasswordHash { get; set; }
+
+        protected override string GetPartitionKey()
+        {
+            return UseDiscriminator();
+        }
     }
 }

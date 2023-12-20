@@ -7,19 +7,24 @@ namespace eShop.Telegram.Services
     public class TelegramService : ITelegramService
     {
         private readonly ITelegramUserRepository _telegramUserRepository;
+        private readonly ITelegramChatRepository _telegramChatRepository;
 
-        public TelegramService(ITelegramUserRepository tegramUserRepository)
+        public TelegramService(ITelegramUserRepository tegramUserRepository, ITelegramChatRepository telegramChatRepository)
         {
             _telegramUserRepository = tegramUserRepository;
+            _telegramChatRepository = telegramChatRepository;
         }
 
-        public IEnumerable<TelegramChatMember> GetManagableChats(TelegramUser user)
+        public async Task<IEnumerable<TelegramChat>> GetManagableChats(TelegramUser user)
         {
-            var chats = user.Chats
-                .Where(e => e.Chat.Type == ChatType.Group || e.Chat.Type == ChatType.Channel || e.Chat.Type == ChatType.Supergroup)
-                .Where(e => e.Chat.SupergroupId == null)
-                .Where(e => e.Status == ChatMemberStatus.Creator || e.Status == ChatMemberStatus.Administrator);
-            return chats;
+            var chatIds = user.Chats
+                .Where(e => e.Status == ChatMemberStatus.Creator)
+                .Where(e => e.Type == ChatType.Group || e.Type == ChatType.Channel || e.Type == ChatType.Supergroup)
+                .Select(e => e.ChatId);
+            var chats = await _telegramChatRepository.GetTelegramChatsByIdsAsync(chatIds);
+            var result = chats
+                .Where(e => e.SupergroupId == null);
+            return result;
         }
 
         public async Task<TelegramUser?> GetUserByAccountIdAsync(Guid accountId)

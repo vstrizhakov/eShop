@@ -1,10 +1,16 @@
-﻿namespace eShop.Distribution.Entities
+﻿using eShop.Database;
+
+namespace eShop.Distribution.Entities
 {
-    public class Distribution
+    public class Distribution : EntityBase
     {
-        public Guid Id { get; set; }
         public Guid AnnouncerId { get; set; }
 
-        public ICollection<DistributionItem> Items { get; set; } = new List<DistributionItem>();
+        public ICollection<DistributionGroup> Targets { get; set; } = new List<DistributionGroup>();
+
+        protected override string GetPartitionKey()
+        {
+            return UseGuid(AnnouncerId);
+        }
     }
 }

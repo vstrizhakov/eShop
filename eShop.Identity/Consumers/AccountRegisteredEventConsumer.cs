@@ -19,7 +19,7 @@ namespace eShop.Identity.Consumers
             var identityUserId = message.Account.IdentityUserId;
             if (identityUserId != null)
             {
-                var user = await _userRepository.GetUserByIdAsync(identityUserId);
+                var user = await _userRepository.GetUserByIdAsync(identityUserId.Value);
                 if (user != null)
                 {
                     user.AccountId = message.Account.Id;

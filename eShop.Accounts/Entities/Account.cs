@@ -1,14 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eShop.Database;
 
 namespace eShop.Accounts.Entities
 {
-    [Index(nameof(TelegramUserId), IsUnique = true)]
-    [Index(nameof(ViberUserId), IsUnique = true)]
-    [Index(nameof(IdentityUserId), IsUnique = true)]
-    public class Account
+    public class Account : EntityBase
     {
-        public Guid Id { get; set; }
-
         public string FirstName { get; set; }
 
         public string? LastName { get; set; }
@@ -19,8 +14,13 @@ namespace eShop.Accounts.Entities
 
         public Guid? ViberUserId { get; set; }
 
-        public string? IdentityUserId { get; set; }
+        public Guid? IdentityUserId { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+        protected override string GetPartitionKey()
+        {
+            return UseDiscriminator();
+        }
     }
 }

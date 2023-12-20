@@ -1,8 +1,23 @@
-﻿namespace eShop.Distribution.Entities
+﻿using eShop.Database;
+
+namespace eShop.Distribution.Entities
 {
-    public class Shop
+    public class Shop : EntityBase
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
+
+        public EmbeddedShop GenerateEmbedded()
+        {
+            return new EmbeddedShop
+            {
+                Id = Id,
+                Name = Name,
+            };
+        }
+
+        protected override string GetPartitionKey()
+        {
+            return UseDiscriminator();
+        }
     }
 }

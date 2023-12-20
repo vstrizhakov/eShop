@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
 using eShop.Distribution.Services;
 using eShop.Messaging.Contracts.Distribution.ShopSettings;
-using eShop.Messaging.Contracts.Distribution.ShopSettings;
 using MassTransit;
 
 namespace eShop.Distribution.Consumers
 {
     public class SetShopSettingsFilterRequestHandler : IConsumer<SetShopSettingsFilterRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public SetShopSettingsFilterRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
+        public SetShopSettingsFilterRequestHandler(IAccountService accountService, IMapper mapper)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _mapper = mapper;
         }
 
@@ -21,11 +20,13 @@ namespace eShop.Distribution.Consumers
         {
             var request = context.Message;
             var accountId = request.AccountId;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
 
-            if (distributionSettings != null)
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            if (account != null)
             {
-                distributionSettings = await _distributionSettingsService.SetFilterShopsAsync(distributionSettings, request.Filter);
+                await _accountService.SetFilterShopsAsync(account, request.Filter);
+
+                var distributionSettings = account.DistributionSettings;
                 var shopSettings = _mapper.Map<ShopSettings>(distributionSettings.ShopSettings);
 
                 var response = new SetShopSettingsFilterResponse(accountId, shopSettings);

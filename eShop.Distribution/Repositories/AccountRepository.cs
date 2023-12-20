@@ -1,4 +1,5 @@
-﻿using eShop.Distribution.DbContexts;
+﻿using eShop.Database.Extensions;
+using eShop.Distribution.DbContexts;
 using eShop.Distribution.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,8 +24,7 @@ namespace eShop.Distribution.Repositories
         public async Task<Account?> GetAccountByIdAsync(Guid id, Guid? announcerId = null)
         {
             var query = _context.Accounts
-                .Include(e => e.TelegramChats)
-                .Include(e => e.ViberChat)
+                .WithDiscriminatorAsPartitionKey()
                 .Where(e => e.Id == id);
 
             if (announcerId.HasValue)
@@ -39,8 +39,7 @@ namespace eShop.Distribution.Repositories
         public async Task<Account?> GetAccountByTelegramUserIdAsync(Guid telegramUserId)
         {
             var account = await _context.Accounts
-                .Include(e => e.TelegramChats)
-                .Include(e => e.ViberChat)
+                .WithDiscriminatorAsPartitionKey()
                 .Where(e => e.TelegramUserId == telegramUserId)
                 .FirstOrDefaultAsync();
 
@@ -50,8 +49,7 @@ namespace eShop.Distribution.Repositories
         public async Task<Account?> GetViberByTelegramUserIdAsync(Guid viberUserId)
         {
             var account = await _context.Accounts
-                .Include(e => e.TelegramChats)
-                .Include(e => e.ViberChat)
+                .WithDiscriminatorAsPartitionKey()
                 .Where(e => e.ViberUserId == viberUserId)
                 .FirstOrDefaultAsync();
 
@@ -61,23 +59,8 @@ namespace eShop.Distribution.Repositories
         public async Task<IEnumerable<Account>> GetAccountsByAnnouncerIdAsync(Guid announcerId, bool? isActivated = null, bool includeDistributionSettings = false)
         {
             var query = _context.Accounts
-                .Include(e => e.TelegramChats)
-                .Include(e => e.ViberChat)
+                .WithDiscriminatorAsPartitionKey()
                 .Where(e => e.AnnouncerId == announcerId);
-
-            if (includeDistributionSettings)
-            {
-                query = query
-                    .Include(e => e.DistributionSettings)
-                        .ThenInclude(e => e.CurrencyRates)
-                    .Include(e => e.DistributionSettings)
-                        .ThenInclude(e => e.PreferredCurrency)
-                    .Include(e => e.DistributionSettings)
-                        .ThenInclude(e => e.ComissionSettings)
-                    .Include(e => e.DistributionSettings)
-                        .ThenInclude(e => e.ShopSettings)
-                            .ThenInclude(e => e.PreferredShops);
-            }
 
             if (isActivated.HasValue)
             {
@@ -112,8 +95,6 @@ namespace eShop.Distribution.Repositories
                 };
 
                 telegramChats.Add(telegramChat);
-
-                _context.Entry(telegramChat).State = EntityState.Added;
             }
 
             telegramChat.IsEnabled = isEnabled;
@@ -132,8 +113,6 @@ namespace eShop.Distribution.Repositories
                 };
 
                 account.ViberChat = viberChat;
-
-                _context.Entry(viberChat).State = EntityState.Added;
             }
 
             viberChat.IsEnabled = isEnabled;

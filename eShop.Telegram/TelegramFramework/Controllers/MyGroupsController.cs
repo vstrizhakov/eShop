@@ -1,5 +1,4 @@
-﻿using eShop.Telegram.Entities;
-using eShop.Telegram.Models;
+﻿using eShop.Telegram.Models;
 using eShop.Telegram.Services;
 using eShop.Telegram.TelegramFramework.Views;
 using eShop.TelegramFramework;
@@ -24,7 +23,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
             {
-                var chats = _telegramService.GetManagableChats(user);
+                var chats = await _telegramService.GetManagableChats(user);
 
                 return new MyGroupsView(context.ChatId, context.MessageId, context.Id, chats);
             }
@@ -38,7 +37,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
             {
-                var chats = _telegramService.GetManagableChats(user);
+                var chats = await _telegramService.GetManagableChats(user);
 
                 return new MyGroupsView(context.ChatId, context.MessageId, context.Id, chats);
             }
@@ -56,21 +55,11 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
             {
-                var chats = _telegramService.GetManagableChats(user);
-                var telegramChat = chats.FirstOrDefault(e => e.ChatId == telegramChatId)?.Chat;
-                if (telegramChat != null)
+                var chats = await _telegramService.GetManagableChats(user);
+                var chat = chats.FirstOrDefault(e => e.Id == telegramChatId);
+                if (chat != null)
                 {
-                    if (telegramChat.Settings == null)
-                    {
-                        telegramChat.Settings = new TelegramChatSettings
-                        {
-                            Owner = user,
-                        };
-
-                        await _telegramService.UpdateUserAsync(user);
-                    }
-
-                    return new GroupSettingsView(context.ChatId, context.MessageId, telegramChat);
+                    return new GroupSettingsView(context.ChatId, context.MessageId, chat);
                 }
                 else
                 {

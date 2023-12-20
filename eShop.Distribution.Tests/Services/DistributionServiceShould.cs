@@ -76,12 +76,12 @@ namespace eShop.Distribution.Tests.Services
 
             Assert.NotNull(result);
             Assert.Equal(providerId, result.AnnouncerId);
-            Assert.Contains(result.Items, item => item.ViberChatId == accounts[0].ViberChat.Id);
-            Assert.Contains(result.Items, item => item.TelegramChatId == accounts[0].TelegramChats.ElementAt(0).Id);
-            Assert.DoesNotContain(result.Items, item => item.ViberChatId == accounts[1].ViberChat.Id);
-            Assert.DoesNotContain(result.Items, item => item.TelegramChatId == accounts[1].TelegramChats.ElementAt(0).Id);
-            Assert.DoesNotContain(result.Items, item => !item.ViberChatId.HasValue && !item.TelegramChatId.HasValue);
-            Assert.All(result.Items, item => Assert.Equal(DistributionItemStatus.Pending, item.Status));
+            Assert.Contains(result.Targets, item => item.ViberChatId == accounts[0].ViberChat.Id);
+            Assert.Contains(result.Targets, item => item.TelegramChatId == accounts[0].TelegramChats.ElementAt(0).Id);
+            Assert.DoesNotContain(result.Targets, item => item.ViberChatId == accounts[1].ViberChat.Id);
+            Assert.DoesNotContain(result.Targets, item => item.TelegramChatId == accounts[1].TelegramChats.ElementAt(0).Id);
+            Assert.DoesNotContain(result.Targets, item => !item.ViberChatId.HasValue && !item.TelegramChatId.HasValue);
+            Assert.All(result.Targets, item => Assert.Equal(DistributionItemStatus.Pending, item.Status));
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace eShop.Distribution.Tests.Services
 
             // Act
 
-            await sut.UpdateDistributionRequestStatusAsync(distributionRequestId, false);
+            await sut.SetDistributionItemStatusAsync(distributionRequestId, false);
 
             // Assert
 
@@ -138,7 +138,7 @@ namespace eShop.Distribution.Tests.Services
 
             // Act
 
-            await sut.UpdateDistributionRequestStatusAsync(distributionRequestId, true);
+            await sut.SetDistributionItemStatusAsync(distributionRequestId, true);
 
             // Assert
 
@@ -175,7 +175,7 @@ namespace eShop.Distribution.Tests.Services
 
             await Assert.ThrowsAsync<InvalidDistributionRequestStatusException>(async () =>
             {
-                await sut.UpdateDistributionRequestStatusAsync(distributionRequestId, true);
+                await sut.SetDistributionItemStatusAsync(distributionRequestId, true);
             });
         }
 
@@ -199,7 +199,7 @@ namespace eShop.Distribution.Tests.Services
 
             await Assert.ThrowsAsync<DistributionRequestNotFoundException>(async () =>
             {
-                await sut.UpdateDistributionRequestStatusAsync(distributionRequestId, true);
+                await sut.SetDistributionItemStatusAsync(distributionRequestId, true);
             });
         }
     }

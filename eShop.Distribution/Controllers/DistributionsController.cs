@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using eShop.Common.Extensions;
-using eShop.Distribution.Repositories;
+using eShop.Distribution.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +14,11 @@ namespace eShop.Distribution.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Distributions.Distribution>> GetDistribution(
             [FromRoute] Guid id,
-            [FromServices] IDistributionRepository distributionRepository,
+            [FromServices] IDistributionService distributionService,
             [FromServices] IMapper mapper)
         {
-            var distribution = await distributionRepository.GetDistributionByIdAsync(id);
-
             var announcerId = User.GetAccountId().Value;
+            var distribution = await distributionService.GetDistributionAsync(id, announcerId);
             if (distribution == null || distribution.AnnouncerId != announcerId)
             {
                 return NotFound();

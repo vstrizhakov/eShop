@@ -1,11 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eShop.Database;
 
 namespace eShop.Viber.Entities
 {
-    [Index(nameof(ExternalId), IsUnique = true)]
-    public class ViberUser
+    public class ViberUser : EntityBase
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
         public string ExternalId { get; set; }
         public string Name { get; set; }
         public string? PhoneNumber { get; set; }
@@ -14,5 +12,10 @@ namespace eShop.Viber.Entities
         public string? ActiveContext { get; set; }
 
         public ViberChatSettings ChatSettings { get; set; }
+
+        protected override string GetPartitionKey()
+        {
+            return UseDiscriminator();
+        }
     }
 }

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using eShop.Database.Extensions;
 
 namespace eShop.Accounts
 {
@@ -58,7 +59,9 @@ namespace eShop.Accounts
             }
 
             builder.Services.AddDbContext<AccountsDbContext>(options
-                => options.UseSqlServer(builder.Configuration.GetConnectionString(Assembly.GetExecutingAssembly().GetName().Name)));
+                => options.UseCosmos(builder.Configuration.GetConnectionString("Default"), "eShop"));
+
+            builder.Services.AddDatabaseDeployment<AccountsDbContext>();
 
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 

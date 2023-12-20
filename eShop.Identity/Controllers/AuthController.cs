@@ -315,7 +315,7 @@ namespace eShop.Identity.Controllers
         private ClaimsPrincipal BuildUserPrincipal(User user)
         {
             var identity = new ClaimsIdentity(PhoneNumberConfirmationCookie);
-            identity.AddClaim(new Claim("user_id", user.Id));
+            identity.AddClaim(new Claim("user_id", user.Id.ToString()));
 
             return new ClaimsPrincipal(identity);
         }

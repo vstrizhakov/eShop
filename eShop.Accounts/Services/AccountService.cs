@@ -84,7 +84,7 @@ namespace eShop.Accounts.Services
             await _accountRepository.UpdateAccountAsync(account);
         }
 
-        public async Task LinkIdentityUserAsync(Account account, string identityUserId)
+        public async Task LinkIdentityUserAsync(Account account, Guid identityUserId)
         {
             if (account == null)
             {

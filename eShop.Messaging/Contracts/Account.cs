@@ -16,6 +16,6 @@
 
         public Guid? ViberUserId { get; set; }
 
-        public string? IdentityUserId { get; set; }
+        public Guid? IdentityUserId { get; set; }
     }
 }

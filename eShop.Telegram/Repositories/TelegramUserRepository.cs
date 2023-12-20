@@ -1,4 +1,5 @@
-﻿using eShop.Telegram.DbContexts;
+﻿using eShop.Database.Extensions;
+using eShop.Telegram.DbContexts;
 using eShop.Telegram.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,9 +24,7 @@ namespace eShop.Telegram.Repositories
         public Task<TelegramUser?> GetTelegramUserByAccountIdAsync(Guid accountId)
         {
             var telegramUser = _context.TelegramUsers
-                .Include(e => e.Chats)
-                    .ThenInclude(e => e.Chat)
-                .Include(e => e.ChatSettings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.AccountId == accountId);
             return telegramUser;
         }
@@ -33,9 +32,7 @@ namespace eShop.Telegram.Repositories
         public Task<TelegramUser?> GetTelegramUserByExternalIdAsync(long externalId)
         {
             var telegramUser = _context.TelegramUsers
-                .Include(e => e.Chats)
-                    .ThenInclude(e => e.Chat)
-                .Include(e => e.ChatSettings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.ExternalId == externalId);
             return telegramUser;
         }
@@ -43,9 +40,7 @@ namespace eShop.Telegram.Repositories
         public Task<TelegramUser?> GetTelegramUserByIdAsync(Guid id)
         {
             var telegramUser = _context.TelegramUsers
-                .Include(e => e.Chats)
-                    .ThenInclude(e => e.Chat)
-                .Include(e => e.ChatSettings)
+                .WithDiscriminatorAsPartitionKey()
                 .FirstOrDefaultAsync(e => e.Id == id);
             return telegramUser;
         }

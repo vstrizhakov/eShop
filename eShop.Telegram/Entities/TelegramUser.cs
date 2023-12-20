@@ -1,12 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eShop.Database;
 
 namespace eShop.Telegram.Entities
 {
-    [Index(nameof(ExternalId), IsUnique = true)]
-    public class TelegramUser
+    public class TelegramUser : EntityBase
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         public string FirstName { get; set; }
 
         public string? LastName { get; set; }
@@ -22,7 +19,11 @@ namespace eShop.Telegram.Entities
         public Guid? AccountId { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
-        public ICollection<TelegramChatMember> Chats { get; set; } = new List<TelegramChatMember>();
-        public ICollection<TelegramChatSettings> ChatSettings { get; set; } = new List<TelegramChatSettings>();
+        public ICollection<EmbeddedTelegramChat> Chats { get; set; } = new List<EmbeddedTelegramChat>();
+
+        protected override string GetPartitionKey()
+        {
+            return UseDiscriminator();
+        }
     }
 }

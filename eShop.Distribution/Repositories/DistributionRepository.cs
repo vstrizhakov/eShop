@@ -1,5 +1,5 @@
-﻿using eShop.Distribution.DbContexts;
-using eShop.Distribution.Entities;
+﻿using eShop.Database.Extensions;
+using eShop.Distribution.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Distribution.Repositories
@@ -20,23 +20,15 @@ namespace eShop.Distribution.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Entities.Distribution?> GetDistributionByIdAsync(Guid id)
+        public async Task<Entities.Distribution?> GetDistributionAsync(Guid id, Guid announcerId)
         {
             var distribution = await _context.Distribution
-                .Include(e => e.Items)
-                    .ThenInclude(e => e.Account)
+                .WithPartitionKey(announcerId)
                 .FirstOrDefaultAsync(e => e.Id == id);
             return distribution;
         }
 
-        public async Task<DistributionItem?> GetDistributionRequestAsync(Guid distributionRequestId)
-        {
-            var distributionRequest = await _context.DistributionItems
-                .FirstOrDefaultAsync(e => e.Id == distributionRequestId);
-            return distributionRequest;
-        }
-
-        public async Task UpdateDistributionItemAsync(DistributionItem item)
+        public async Task UpdateDistributionAsync(Entities.Distribution item)
         {
             await _context.SaveChangesAsync();
         }

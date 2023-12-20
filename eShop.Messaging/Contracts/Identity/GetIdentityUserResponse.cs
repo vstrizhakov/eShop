@@ -2,7 +2,7 @@
 {
     public class GetIdentityUserResponse
     {
-        public string? IdentityUserId { get; set; }
+        public Guid? IdentityUserId { get; set; }
         public string PhoneNumber { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

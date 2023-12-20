@@ -16,13 +16,13 @@ namespace eShop.Distribution.Tests.MessageHandlers
 
             var message = new BroadcastMessageUpdateEvent
             {
-                RequestId = Guid.NewGuid(),
+                DistributionItemId = Guid.NewGuid(),
                 Succeeded = succeeded,
             };
 
             var distributionService = new Mock<IDistributionService>();
             distributionService
-                .Setup(e => e.UpdateDistributionRequestStatusAsync(message.RequestId, message.Succeeded))
+                .Setup(e => e.SetDistributionItemStatusAsync(message.DistributionItemId, message.Succeeded))
                 .Returns(Task.CompletedTask);
 
             var sut = new BroadcastMessageUpdateEventHandler(distributionService.Object);
@@ -43,12 +43,12 @@ namespace eShop.Distribution.Tests.MessageHandlers
 
             var message = new BroadcastMessageUpdateEvent
             {
-                RequestId = Guid.NewGuid(),
+                DistributionItemId = Guid.NewGuid(),
             };
 
             var distributionService = new Mock<IDistributionService>();
             distributionService
-                .Setup(e => e.UpdateDistributionRequestStatusAsync(message.RequestId, message.Succeeded))
+                .Setup(e => e.SetDistributionItemStatusAsync(message.DistributionItemId, message.Succeeded))
                 .ThrowsAsync(new DistributionRequestNotFoundException());
 
             var sut = new BroadcastMessageUpdateEventHandler(distributionService.Object);

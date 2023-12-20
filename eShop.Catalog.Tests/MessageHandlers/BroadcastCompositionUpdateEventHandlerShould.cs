@@ -21,7 +21,7 @@ namespace eShop.Catalog.Tests.MessageHandlers
 
             var compositionRepository = new Mock<IAnnounceRepository>();
             compositionRepository
-                .Setup(e => e.GetAnnounceByIdAsync(composition.Id))
+                .Setup(e => e.GetAnnounceAsync(composition.Id))
                 .ReturnsAsync(composition);
 
             compositionRepository

@@ -8,12 +8,12 @@ namespace eShop.Distribution.Consumers
 {
     public class GetCurrencyRateRequestHandler : IConsumer<GetCurrencyRateRequest>
     {
-        private readonly IDistributionSettingsService _distributionSettingsService;
+        private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public GetCurrencyRateRequestHandler(IDistributionSettingsService distributionSettingsService, IMapper mapper)
+        public GetCurrencyRateRequestHandler(IAccountService accountService, IMapper mapper)
         {
-            _distributionSettingsService = distributionSettingsService;
+            _accountService = accountService;
             _mapper = mapper;
         }
 
@@ -21,36 +21,39 @@ namespace eShop.Distribution.Consumers
         {
             var request = context.Message;
             var accountId = request.AccountId;
-            var distributionSettings = await _distributionSettingsService.GetDistributionSettingsAsync(accountId);
-            var preferredCurrency = distributionSettings.PreferredCurrency;
-
-            if (preferredCurrency != null)
+            var account = await _accountService.GetAccountByIdAsync(accountId);
+            if (account != null)
             {
-                var currencyRates = await _distributionSettingsService.GetCurrencyRatesAsync(distributionSettings);
-                var currencyRate = currencyRates.FirstOrDefault(e => e.SourceCurrencyId == request.CurrencyId);
-                GetCurrencyRateResponse response;
-
-                if (currencyRate == null)
+                var distributionSettings = account.DistributionSettings;
+                var preferredCurrency = distributionSettings.PreferredCurrency;
+                if (preferredCurrency != null)
                 {
-                    response = new GetCurrencyRateResponse
-                    {
-                        AccountId = accountId,
-                    };
-                }
-                else
-                {
-                    var mappedPreferredCurrency = _mapper.Map<Currency>(preferredCurrency);
-                    var mappedCurrencyRate = _mapper.Map<CurrencyRate>(currencyRate);
-                    response = new GetCurrencyRateResponse
-                    {
-                        AccountId = accountId,
-                        Succeeded = true,
-                        PreferredCurrency = mappedPreferredCurrency,
-                        CurrencyRate = mappedCurrencyRate,
-                    };
-                }
+                    var currencyRates = await _accountService.GetCurrencyRatesAsync(account);
+                    var currencyRate = currencyRates.FirstOrDefault(e => e.SourceCurrency.Id == request.CurrencyId);
+                    GetCurrencyRateResponse response;
 
-                await context.RespondAsync(response);
+                    if (currencyRate == null)
+                    {
+                        response = new GetCurrencyRateResponse
+                        {
+                            AccountId = accountId,
+                        };
+                    }
+                    else
+                    {
+                        var mappedPreferredCurrency = _mapper.Map<Currency>(preferredCurrency);
+                        var mappedCurrencyRate = _mapper.Map<CurrencyRate>(currencyRate);
+                        response = new GetCurrencyRateResponse
+                        {
+                            AccountId = accountId,
+                            Succeeded = true,
+                            PreferredCurrency = mappedPreferredCurrency,
+                            CurrencyRate = mappedCurrencyRate,
+                        };
+                    }
+
+                    await context.RespondAsync(response);
+                }
             }
         }
     }

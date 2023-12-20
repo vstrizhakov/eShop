@@ -2,10 +2,7 @@
 {
     public class AnnounceImage
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Path { get; set; }
-        public Guid AnnounceId { get; set; }
-
-        public Announce Announce { get; set; }
     }
 }

@@ -16,10 +16,8 @@ namespace eShop.Distribution.Services
             _mapper = mapper;
         }
 
-        public async Task SendRequestUpdatedAsync(Entities.DistributionItem request)
+        public async Task SendRequestUpdatedAsync(Guid distributionId, DistributionItem request)
         {
-            var distributionId = request.DistributionId;
-
             var mappedRequest = _mapper.Map<Models.Distributions.DistributionItem>(request);
             await _hubContext.Clients.Group(distributionId.ToString()).RequestUpdated(mappedRequest);
         }

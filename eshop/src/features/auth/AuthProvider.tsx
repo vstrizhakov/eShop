@@ -31,11 +31,16 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
     } = props;
 
     const manager = useMemo(() => {
+        let authority = window.location.origin;
+        if (process.env.REACT_APP_ORIGIN) {
+            authority = process.env.REACT_APP_ORIGIN;
+        }
+
         const config: Oidc.UserManagerSettings = {
-            authority: window.location.origin,
+            authority: authority,
             client_id: "client",
-            redirect_uri: `${window.location.origin}/auth/signIn/callback`,
-            post_logout_redirect_uri: `${window.location.origin}/auth/signOut/callback`,
+            redirect_uri: `${authority}/auth/signIn/callback`,
+            post_logout_redirect_uri: `${authority}/auth/signOut/callback`,
             response_type: "code",
             scope: "openid profile phone account api",
             automaticSilentRenew: true,

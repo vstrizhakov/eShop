@@ -33,7 +33,7 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
     const manager = useMemo(() => {
         let authority = window.location.origin;
         if (process.env.REACT_APP_ORIGIN) {
-            authority = process.env.REACT_APP_ORIGIN;
+            authority = `https://${process.env.REACT_APP_ORIGIN}`;
         }
 
         const config: Oidc.UserManagerSettings = {

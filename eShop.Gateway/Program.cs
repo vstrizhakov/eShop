@@ -10,6 +10,7 @@ namespace eShop.Gateway
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Configuration.AddJsonFile("ocelot.json", false, true);
+            builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", true, true);
 
             builder.Services.AddOcelot();
             builder.Services.AddSignalR();

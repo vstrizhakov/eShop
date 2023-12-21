@@ -5,8 +5,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-accounts.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5001
         }
       ],
       "UpstreamPathTemplate": "/api/accounts/{everything}",
@@ -32,8 +32,8 @@
       "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-catalog.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5002
         }
       ]
     },
@@ -42,8 +42,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-catalog.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5002
         }
       ],
       "UpstreamPathTemplate": "/api/catalog/{everything}",
@@ -69,8 +69,8 @@
       "DownstreamScheme": "ws",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-distribution.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5003
         }
       ]
     },
@@ -79,8 +79,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-distribution.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5003
         }
       ],
       "UpstreamPathTemplate": "/api/distribution/{everything}",
@@ -98,8 +98,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-identity.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5004
         }
       ],
       "UpstreamPathTemplate": "/.well-known/openid-configuration",
@@ -111,8 +111,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-identity.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5004
         }
       ],
       "UpstreamPathTemplate": "/.well-known/openid-configuration/{everything}",
@@ -123,8 +123,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-identity.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5004
         }
       ],
       "UpstreamPathTemplate": "/connect/{everything}",
@@ -135,8 +135,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-identity.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5004
         }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
@@ -148,8 +148,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-telegram.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5005
         }
       ],
       "UpstreamPathTemplate": "/api/telegram/{everything}",
@@ -167,8 +167,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "eshop-viber.azurewebsites.net",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 5006
         }
       ],
       "UpstreamPathTemplate": "/api/viber/{everything}",
@@ -179,6 +179,30 @@
         "Patch",
         "Delete"
       ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 3000
+        }
+      ],
+      "UpstreamPathTemplate": "/{everything}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/ws",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 3000
+        }
+      ],
+      "UpstreamPathTemplate": "/ws"
     }
   ]
 }

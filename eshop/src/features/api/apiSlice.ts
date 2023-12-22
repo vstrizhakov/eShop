@@ -1,8 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../../app/store";
 
+let baseUrl = "";
+if (process.env.REACT_APP_ORIGIN) {
+    baseUrl = `https://${process.env.REACT_APP_ORIGIN}`;
+}
+
 const baseQuery = fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_ORIGIN + "/api",
+    baseUrl: baseUrl + "/api",
     prepareHeaders: (headers, { getState }) => {
         const state = getState() as RootState;
         const token = state.auth.token;

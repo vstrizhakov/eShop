@@ -3,7 +3,7 @@ using eShop.Catalog.Hubs;
 using eShop.Catalog.Repositories;
 using eShop.Catalog.Services;
 using eShop.Common.Extensions;
-using eShop.Configuration;
+using eShop.Database.Extensions;
 using eShop.Messaging;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,7 +13,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using eShop.Database.Extensions;
 
 namespace eShop.Catalog
 {
@@ -88,8 +87,6 @@ namespace eShop.Catalog
                         }
                     };
                 });
-
-            builder.Services.Configure<FilesConfiguration>(options => builder.Configuration.Bind("Files", options));
 
             builder.Services.Configure<AzureServiceBusOptions>(options => builder.Configuration.Bind("AzureServiceBus", options));
             builder.Services.AddMassTransit(x =>

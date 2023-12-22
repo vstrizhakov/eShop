@@ -59,7 +59,6 @@ namespace eShop.Identity
                 .AddUserStore<UserStore>()
                 .AddRoleStore<RoleStore>();
 
-            var identity = new Uri(builder.Configuration["PublicUri:Identity"]);
             var host = new Uri(builder.Configuration["PublicUri:Host"]);
 
             builder.Services
@@ -67,8 +66,9 @@ namespace eShop.Identity
                 {
                     options.UserInteraction.LoginReturnUrlParameter = "returnUrl";
                     options.UserInteraction.AllowOriginInReturnUrl = true;
-                    options.UserInteraction.LoginUrl = new Uri(identity, "/auth/signIn").ToString();
-                    options.UserInteraction.LogoutUrl = new Uri(identity, "/auth/signOut").ToString();
+                    options.UserInteraction.LoginUrl = new Uri(host, "/auth/signIn").ToString();
+                    options.UserInteraction.LogoutUrl = new Uri(host, "/auth/signOut").ToString();
+                    options.UserInteraction.ErrorUrl = new Uri(host, "/auth/error").ToString();
                 })
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)

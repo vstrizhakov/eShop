@@ -36,11 +36,13 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
             authority = `https://${process.env.REACT_APP_ORIGIN}`;
         }
 
+        const host = window.location.origin;
+
         const config: Oidc.UserManagerSettings = {
             authority: authority,
             client_id: "client",
-            redirect_uri: `${authority}/auth/signIn/callback`,
-            post_logout_redirect_uri: `${authority}/auth/signOut/callback`,
+            redirect_uri: `${host}/auth/signIn/callback`,
+            post_logout_redirect_uri: `${host}/auth/signOut/callback`,
             response_type: "code",
             scope: "openid profile phone account api",
             automaticSilentRenew: true,

@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace eShop.Identity.Stores
 {
-    public class UserStore : IUserStore<User>, IUserPasswordStore<User>
+    public class UserStore :
+        IUserStore<User>,
+        IUserPasswordStore<User>,
+        IUserPhoneNumberStore<User>
     {
         private readonly IUserRepository _userRepository;
 
@@ -118,6 +121,30 @@ namespace eShop.Identity.Stores
             var passwordHash = GetUserProperty(user, user => user.PasswordHash, cancellationToken);
             var result = passwordHash != null;
             return Task.FromResult(result);
+        }
+
+        public Task SetPhoneNumberAsync(User user, string? phoneNumber, CancellationToken cancellationToken)
+        {
+            SetUserProperty(user, phoneNumber, (user, value) => user.PhoneNumber = phoneNumber, cancellationToken);
+            return Task.CompletedTask;
+        }
+
+        public Task<string?> GetPhoneNumberAsync(User user, CancellationToken cancellationToken)
+        {
+            var phoneNumber = GetUserProperty(user, user => user.PhoneNumber, cancellationToken);
+            return Task.FromResult(phoneNumber);
+        }
+
+        public Task<bool> GetPhoneNumberConfirmedAsync(User user, CancellationToken cancellationToken)
+        {
+            var phoneNumberConfirmed = GetUserProperty(user, user => user.PhoneNumberConfirmed, cancellationToken);
+            return Task.FromResult(phoneNumberConfirmed);
+        }
+
+        public Task SetPhoneNumberConfirmedAsync(User user, bool confirmed, CancellationToken cancellationToken)
+        {
+            SetUserProperty(user, confirmed, (user, value) => user.PhoneNumberConfirmed = confirmed, cancellationToken);
+            return Task.CompletedTask;
         }
 
         private async Task<IdentityResult> ProcessAsync(Func<Task> action)

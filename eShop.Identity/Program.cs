@@ -82,7 +82,7 @@ namespace eShop.Identity
                 .AddCookie("PhoneNumberConfirmationCookie");
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Domain = host.Host;
+                options.Cookie.Domain = $".{host.Host}";
             });
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>

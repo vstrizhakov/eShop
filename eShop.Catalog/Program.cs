@@ -40,8 +40,8 @@ namespace eShop.Catalog
             {
                 var executionRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-                builder.Configuration.AddJsonFile(Path.Combine(executionRoot, $"appsettings.{builder.Environment.EnvironmentName}.json"), true, true);
                 builder.Configuration.AddJsonFile(Path.Combine(executionRoot, "appsettings.json"), true, true);
+                builder.Configuration.AddJsonFile(Path.Combine(executionRoot, $"appsettings.{builder.Environment.EnvironmentName}.json"), true, true);
             }
 
             builder.Services.AddDbContext<CatalogDbContext>(options =>

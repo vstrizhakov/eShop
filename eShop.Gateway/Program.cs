@@ -9,8 +9,7 @@ namespace eShop.Gateway
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Configuration.AddJsonFile("ocelot.json", false, true);
-            builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", true, true);
+            builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", false, true);
 
             builder.Services.AddOcelot();
             builder.Services.AddSignalR();
@@ -20,6 +19,11 @@ namespace eShop.Gateway
             app.UseHttpsRedirection();
 
             app.UseWebSockets();
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+            });
 
             await app.UseOcelot();
 

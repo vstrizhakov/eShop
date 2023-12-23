@@ -18,6 +18,7 @@ const baseQuery = fetchBaseQuery({
 
         return headers;
     },
+    credentials: "same-origin",
 });
 
 export const enum ErrorCode {

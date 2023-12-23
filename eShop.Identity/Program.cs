@@ -16,6 +16,7 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using eShop.Database.Extensions;
 using eShop.Identity.Stores;
+using Duende.IdentityServer;
 
 namespace eShop.Identity
 {
@@ -81,7 +82,7 @@ namespace eShop.Identity
                 .AddCookie("PhoneNumberConfirmationCookie");
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Domain = "eshopping.in.ua";
+                options.Cookie.Domain = host.Host;
             });
 
             builder.Services.Configure<ForwardedHeadersOptions>(options =>

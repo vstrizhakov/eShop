@@ -9,6 +9,7 @@ namespace eShop.Distribution.Profiles
         {
             CreateMap<Currency, Entities.Currency>();
             CreateMap<Entities.Currency, Currency>();
+            CreateMap<Entities.EmbeddedCurrency, Currency>();
         }
     }
 }

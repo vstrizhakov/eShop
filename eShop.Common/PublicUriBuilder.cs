@@ -11,9 +11,19 @@ namespace eShop.Common
             _configuration = configuration.Value;
         }
 
-        public string Path(string relativePath)
+        public string BackendPath(string relativePath)
         {
-            var uri = new Uri(_configuration.Host, relativePath);
+            return Path(_configuration.Backend, relativePath);
+        }
+
+        public string FrontendPath(string relativePath)
+        {
+            return Path(_configuration.Frontend, relativePath);
+        }
+
+        private static string Path(Uri host, string relativePath)
+        {
+            var uri = new Uri(host, relativePath);
             return uri.ToString();
         }
     }

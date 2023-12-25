@@ -16,7 +16,7 @@ namespace eShop.Viber.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var webhookAddress = _publicUriBuilder.Path(ViberBotConfiguration.WebhookRoute);
+            var webhookAddress = _publicUriBuilder.BackendPath(ViberBotConfiguration.WebhookRoute);
 
             await _botClient.SetWebhookAsync(webhookAddress);
         }

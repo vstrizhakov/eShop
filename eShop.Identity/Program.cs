@@ -60,7 +60,7 @@ namespace eShop.Identity
                 .AddUserStore<UserStore>()
                 .AddRoleStore<RoleStore>();
 
-            var host = new Uri(builder.Configuration["PublicUri:Host"]);
+            var host = new Uri(builder.Configuration["PublicUri:Frontend"]);
 
             builder.Services
                 .AddIdentityServer(options =>

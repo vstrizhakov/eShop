@@ -2,6 +2,7 @@
 {
     public class PublicUriConfiguration
     {
-        public Uri Host { get; set; }
+        public Uri Frontend { get; set; }
+        public Uri Backend { get; set; }
     }
 }

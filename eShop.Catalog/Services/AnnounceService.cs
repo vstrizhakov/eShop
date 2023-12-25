@@ -76,7 +76,7 @@ namespace eShop.Catalog.Services
                 {
                     Id = announce.Id,
                     ShopId = announce.Shop.Id,
-                    Images = announce.Images.Select(e => new Uri(_publicUriBuilder.Path(e.Path))).ToList(),
+                    Images = announce.Images.Select(e => new Uri(e.Path)).ToList(),
                     Products = announce.Products.Select(e =>
                     {
                         var price = e.Prices.FirstOrDefault();

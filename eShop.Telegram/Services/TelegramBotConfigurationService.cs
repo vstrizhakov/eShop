@@ -24,7 +24,7 @@ namespace eShop.Telegram.Services
             using var scope = _serviceProvider.CreateScope();
             var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
 
-            var webhookAddress = _publicUriBuilder.Path(TelegramBotConfiguration.WebhookRoute);
+            var webhookAddress = _publicUriBuilder.BackendPath(TelegramBotConfiguration.WebhookRoute);
 
             try
             {

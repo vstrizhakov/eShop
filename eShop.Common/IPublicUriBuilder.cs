@@ -2,6 +2,7 @@
 {
     public interface IPublicUriBuilder
     {
-        string Path(string relativePath);
+        string FrontendPath(string relativePath);
+        string BackendPath(string relativePath);
     }
 }

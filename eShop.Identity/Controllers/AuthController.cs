@@ -273,7 +273,7 @@ namespace eShop.Identity.Controllers
             var message = new SendResetPasswordMessage
             {
                 AccountId = user.AccountId!.Value,
-                ResetPasswordLink = publicUriBuilder.Path(QueryHelpers.AddQueryString("/auth/completePasswordReset", new Dictionary<string, string?>
+                ResetPasswordLink = publicUriBuilder.FrontendPath(QueryHelpers.AddQueryString("/auth/completePasswordReset", new Dictionary<string, string?>
                 {
                     { "phoneNumber", phoneNumber },
                     { "token", token },

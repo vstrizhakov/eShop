@@ -4,7 +4,6 @@ namespace eShop.Distribution.Entities.History
 {
     public class DistributionSettingsRecord
     {
-        public Guid? PreferredCurrencyId { get; set; }
         public bool ShowSales { get; set; }
 
         public EmbeddedCurrency? PreferredCurrency { get; set; }

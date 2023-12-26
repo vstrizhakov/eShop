@@ -10,5 +10,7 @@ namespace eShop.Distribution.Models.Distributions
         Delivered,
         [EnumMember(Value = "failed")]
         Failed,
+        [EnumMember(Value = "filtered")]
+        Filtered,
     }
 }

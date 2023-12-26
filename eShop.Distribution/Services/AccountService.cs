@@ -156,7 +156,7 @@ namespace eShop.Distribution.Services
 
                 currencyRate = new UserCurrencyRate
                 {
-                    TargetCurrency = targetCurrency,
+                    TargetCurrency = targetCurrency.Clone() as EmbeddedCurrency,
                     SourceCurrency = sourceCurrency.GeneratedEmbedded(),
                 };
 

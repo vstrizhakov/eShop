@@ -143,13 +143,13 @@ namespace eShop.Distribution.Services
 
                 currencyRateRecords = currencyRates.Select(e => new CurrencyRateRecord
                 {
-                    Currency = e.SourceCurrency,
+                    Currency = e.SourceCurrency.Clone() as EmbeddedCurrency,
                     Rate = e.Rate,
                 }).ToArray();
             }
             var historyRecord = new DistributionSettingsRecord
             {
-                PreferredCurrency = preferredCurrency,
+                PreferredCurrency = preferredCurrency?.Clone() as EmbeddedCurrency,
                 CurrencyRates = currencyRateRecords,
                 ShowSales = distributionSettings.ShowSales,
                 ShopSettings = shopSettingsRecord,

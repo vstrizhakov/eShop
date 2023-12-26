@@ -34,25 +34,6 @@ namespace eShop.Distribution.DbContexts
             modelBuilder.Entity<Shop>()
                 .HasPartitionKey(e => e.PartitionKey);
 
-            var uah = new Currency
-            {
-                Id = Guid.Parse("9724739E-E4B8-45EB-AC11-EFE2B0558A34"),
-                Name = "UAH",
-            };
-            var usd = new Currency
-            {
-                Id = Guid.Parse("BF879FB6-7B4B-41C7-9CC5-DF8724D511E5"),
-                Name = "USD",
-            };
-            var eur = new Currency
-            {
-                Id = Guid.Parse("41ED0945-7196-4EAD-8F5E-DB262E62E536"),
-                Name = "EUR",
-            };
-
-            modelBuilder.Entity<Currency>()
-                .HasData(uah, usd, eur);
-
             //modelBuilder.Entity<DefaultCurrencyRate>()
             //    .HasData(new[]
             //    {

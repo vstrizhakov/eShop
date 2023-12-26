@@ -1,6 +1,7 @@
 using eShop.Catalog.DbContexts;
 using eShop.Catalog.Hubs;
 using eShop.Catalog.Repositories;
+using eShop.Catalog.Seedings;
 using eShop.Catalog.Services;
 using eShop.Common.Extensions;
 using eShop.Database.Extensions;
@@ -47,7 +48,9 @@ namespace eShop.Catalog
             builder.Services.AddDbContext<CatalogDbContext>(options =>
                 options.UseCosmos(builder.Configuration.GetConnectionString("Default"), "eShop"));
 
-            builder.Services.AddDatabaseDeployment<CatalogDbContext>();
+            builder.Services.AddDatabaseDeployment<CatalogDbContext>()
+                .AddDataSeeding<CurrencySeeding>()
+                .AddDataSeeding<ShopSeeding>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

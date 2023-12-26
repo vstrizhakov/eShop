@@ -5,12 +5,12 @@ namespace eShop.Database.Extensions
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddDatabaseDeployment<TContext>(this IServiceCollection services)
+        public static IDatabaseDeploymentBuilder<TContext> AddDatabaseDeployment<TContext>(this IServiceCollection services)
             where TContext : DbContext
         {
             services.AddHostedService<DatabaseDeploymentService<TContext>>();
 
-            return services;
+            return new DatabaseDeploymentBuilder<TContext>(services);
         }
     }
 }

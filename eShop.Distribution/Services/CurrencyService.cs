@@ -12,6 +12,12 @@ namespace eShop.Distribution.Services
             _currencyRepository = currencyRepository;
         }
 
+        public async Task<IEnumerable<Currency>> GetCurrenciesAsync()
+        {
+            var currencies = await _currencyRepository.GetCurrenciesAsync();
+            return currencies;
+        }
+
         public async Task<Currency?> GetCurrencyAsync(Guid currencyId)
         {
             var currency = await _currencyRepository.GetCurrencyAsync(currencyId);

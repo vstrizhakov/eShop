@@ -38,5 +38,14 @@ namespace eShop.Distribution.Repositories
 
             return currency;
         }
+
+        public async Task<IEnumerable<Currency>> GetCurrenciesAsync()
+        {
+            var currencies = await _context.Currencies
+                .WithDiscriminatorAsPartitionKey()
+                .ToListAsync();
+
+            return currencies;
+        }
     }
 }

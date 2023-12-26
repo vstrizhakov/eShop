@@ -62,7 +62,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.ViberBot.Framework", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.Bots.Links", "eShop.Bots.Links\eShop.Bots.Links.csproj", "{C45DF769-D6DF-4B85-A368-8E4ADF902D0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.Database", "eShop.Database\eShop.Database.csproj", "{54DA0AF0-DC55-4A4C-9891-93F5C26CED6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShop.Database", "eShop.Database\eShop.Database.csproj", "{54DA0AF0-DC55-4A4C-9891-93F5C26CED6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShop.ExchangeRate", "eShop.ExchangeRate\eShop.ExchangeRate.csproj", "{A2D20F19-593A-4E07-9997-FD6E289ACEE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,6 +170,10 @@ Global
 		{54DA0AF0-DC55-4A4C-9891-93F5C26CED6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54DA0AF0-DC55-4A4C-9891-93F5C26CED6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54DA0AF0-DC55-4A4C-9891-93F5C26CED6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2D20F19-593A-4E07-9997-FD6E289ACEE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2D20F19-593A-4E07-9997-FD6E289ACEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2D20F19-593A-4E07-9997-FD6E289ACEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2D20F19-593A-4E07-9997-FD6E289ACEE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

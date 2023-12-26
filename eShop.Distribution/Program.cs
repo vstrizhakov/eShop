@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using eShop.ExchangeRate.Extensions;
 
 namespace eShop.Distribution
 {
@@ -122,6 +123,12 @@ namespace eShop.Distribution
             {
                 options.ChatUrl = builder.Configuration["ViberBot:ChatUrl"];
             });
+
+            builder.Services.AddExchangeRateClient(options => builder.Configuration.Bind("ExchangeRate", options));
+            builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
+            builder.Services.AddScoped<IDefaultCurrencyRateService, DefaultCurrencyRateService>();
+            builder.Services.AddScoped<IDefaultCurrencyRateSyncService, DefaultCurrencyRateSyncService>();
+            builder.Services.AddHostedService<DefaultCurrencyRateSyncBackgroundService>();
 
             var app = builder.Build();
 

@@ -134,7 +134,7 @@ namespace eShop.Distribution.Services
             return currencyRates.DistinctBy(e => e.SourceCurrency.Id);
         }
 
-        public async Task SetCurrencyRateAsync(Account account, Currency sourceCurrency, double rate)
+        public async Task SetCurrencyRateAsync(Account account, Currency sourceCurrency, float rate)
         {
             var distributionSettings = account.DistributionSettings;
             if (distributionSettings.PreferredCurrency == null)

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Col, Row, Form as BootstrapForm, Spinner } from "react-bootstrap";
+import { Col, Row, Form as BootstrapForm, Spinner, Button } from "react-bootstrap";
 import PickImageStep, { ImageFormValues } from "./PickImageStep";
 import SelectShopStep, { ShopFormValues } from "./SelectShopStep";
 import AddProduct, { AddProductForm } from "./AddProduct";
@@ -73,6 +73,16 @@ const AddAnnounce: React.FC = () => {
         }
     };
 
+    const onDeleteProductClick = (product: CreateProductRequest) => () => {
+        const newProducts = products.reduce<CreateProductRequest[]>((prev, current) => {
+            if (current !== product) {
+                prev.push(current);
+            }
+            return prev;
+        }, []);
+        setProducts(newProducts);
+    };
+
     return (
         <>
             <Row className="flex-wrap-reverse">
@@ -131,14 +141,19 @@ const AddAnnounce: React.FC = () => {
                 <Row>
                     {products.map((product, index) => (
                         <Col key={index} md={6} lg={4} xxl={3} className="mb-3">
-                            <Product
-                                name={product.name}
-                                url={product.url}
-                                price={product.price.price}
-                                discountedPrice={product.price.discountedPrice}
-                                currencyName={currencies?.find(currency => currency.id === product.price.currencyId)?.name!}
-                                description={product.description}
-                            />
+                            <div className="position-relative">
+                                <Product
+                                    name={product.name}
+                                    url={product.url}
+                                    price={product.price.price}
+                                    discountedPrice={product.price.discountedPrice}
+                                    currencyName={currencies?.find(currency => currency.id === product.price.currencyId)?.name!}
+                                    description={product.description}
+                                />
+                                <Button variant="link" className="text-danger position-absolute top-0 end-0 mt-2" onClick={onDeleteProductClick(product)}>
+                                    <i className="bi bi-trash"></i>
+                                </Button>
+                            </div>
                         </Col>
                     ))}
                 </Row>

@@ -109,7 +109,7 @@ const Distribution: React.FC<IProps> = props => {
                     const status = anyFailed ? DeliveryStatus.Failed : inProgress ? DeliveryStatus.Pending : DeliveryStatus.Delivered;
 
                     return (
-                        <Col xs={4} key={recipient.client.id}>
+                        <Col md={6} lg={4} xl={3} className="mb-1" key={recipient.client.id}>
                             <Card>
                                 <Card.Body>
                                     <div className="d-flex align-items-center flex-row gap-3">

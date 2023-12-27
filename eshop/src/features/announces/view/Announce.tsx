@@ -69,24 +69,24 @@ const Announce: React.FC<IProps> = props => {
 
     const mainImage = announce.images[0];
     const createdAtDatetime = new Date(announce.createdAt);
-    const announceName = `Анонс від ${createdAtDatetime.getDate()}.${createdAtDatetime.getMonth() + 1}.${createdAtDatetime.getFullYear()}, ${createdAtDatetime.toLocaleTimeString()}`;
+    const announceDate = `${createdAtDatetime.getDate()}.${createdAtDatetime.getMonth() + 1}.${createdAtDatetime.getFullYear()}, ${createdAtDatetime.toLocaleTimeString()}`;
     
     return (
         <>
-            <Row className="mb-5">
-                <Col>
+            <Row>
+                <Col sm={12} lg={6} className="mb-3">
                     <h4 className="d-flex justify-content-between align-items-center mb-3">
-                        <span className="text-body-emphasis">{announceName}</span>
+                        <span className="text-body-emphasis">Анонс від <span className="d-inline-block">{announceDate}</span></span>
                         <Badge bg="info" pill className="fw-semibold">{announce.shop.name}</Badge>
                     </h4>
-                    <img className="rounded" src={mainImage} width="100%" alt={announceName}/>
+                    <img className="rounded" src={mainImage} width="100%" alt={`Анонс від ${announceDate}`}/>
                 </Col>
-                <Col>
+                <Col sm={12} lg={6} className="mb-3">
                     <h4 className="d-flex justify-content-between align-items-center mb-3">
                         <span className="text-body-emphasis">Позиції</span>
                         <Badge bg="secondary" pill className="fw-semibold">{announce.products.length}</Badge>
                     </h4>
-                    <ListGroup>
+                    <ListGroup className="gap-1">
                         {announce.products.map(product => (
                             // probably need to use product's card externally here instead of p-0 border-0
                             <ListGroupItem key={product.id} className="p-0 border-0">

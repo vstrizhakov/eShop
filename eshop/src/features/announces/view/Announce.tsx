@@ -33,8 +33,13 @@ const Announce: React.FC<IProps> = props => {
 
     useEffect(() => {
         if (!announce.distributionId) {
+            let baseUrl = "";
+            if (process.env.REACT_APP_ORIGIN) {
+                baseUrl = `https://${process.env.REACT_APP_ORIGIN}`;
+            }
+
             const connection = new HubConnectionBuilder()
-                .withUrl("/api/catalog/ws", {
+                .withUrl(baseUrl + "/api/catalog/ws", {
                     accessTokenFactory: () => accessToken!,
                 })
                 .withAutomaticReconnect()

@@ -36,8 +36,13 @@ const Distribution: React.FC<IProps> = props => {
     }, []);
 
     useEffect(() => {
+        let baseUrl = "";
+        if (process.env.REACT_APP_ORIGIN) {
+            baseUrl = `https://${process.env.REACT_APP_ORIGIN}`;
+        }
+
         const connection = new HubConnectionBuilder()
-            .withUrl("/api/distribution/ws", {
+            .withUrl(baseUrl + "/api/distribution/ws", {
                 accessTokenFactory: () => accessToken!,
             })
             .withAutomaticReconnect()

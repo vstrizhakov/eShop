@@ -88,11 +88,14 @@ const Distribution: React.FC<IProps> = props => {
                 return "success";
             case DeliveryStatus.Failed:
                 return "danger";
+            case DeliveryStatus.Filtered:
+                return "secondary";
         }
     };
 
-    const totalRecipients = distribution.recipients.length;
-    const finishedRecipients = distribution.recipients.filter(recipient => recipient.items.every(item => item.deliveryStatus !== DeliveryStatus.Pending)).length;
+    const recipients = distribution.recipients.filter(recipient => recipient.items.filter(item => item.deliveryStatus !== DeliveryStatus.Filtered).length > 0);
+    const totalRecipients = recipients.length;
+    const finishedRecipients = recipients.filter(recipient => recipient.items.every(item => item.deliveryStatus !== DeliveryStatus.Pending)).length;
 
     return (
         <>
@@ -103,8 +106,8 @@ const Distribution: React.FC<IProps> = props => {
                 <ProgressBar className="flex-grow-1" variant={getVariant(totalStatus)} now={100} animated label={`${finishedRecipients}/${totalRecipients}`}></ProgressBar>
             </div>
             <Row>
-                {distribution.recipients.map(recipient => {
-                    const items = recipient.items;
+                {recipients.map(recipient => {
+                    const items = recipient.items.filter(item => item.deliveryStatus !== DeliveryStatus.Filtered);
                     const totalItems = items.length;
                     const finishedItems = items.filter(item => item.deliveryStatus !== DeliveryStatus.Pending).length;
 

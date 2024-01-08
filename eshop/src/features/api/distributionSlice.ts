@@ -19,6 +19,7 @@ export enum DeliveryStatus {
     Pending = "pending",
     Delivered = "delivered",
     Failed = "failed",
+    Filtered = "filtered",
 };
 
 export interface DistributionItem {

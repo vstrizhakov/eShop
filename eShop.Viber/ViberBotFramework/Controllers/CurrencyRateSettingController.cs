@@ -76,7 +76,7 @@ namespace eShop.Viber.ViberBotFramework.Controllers
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId != null)
             {
-                if (float.TryParse(context.Text, out var rate))
+                if (decimal.TryParse(context.Text, out var rate))
                 {
                     var request = new SetCurrencyRateRequest(user.AccountId.Value, currencyId, rate);
                     var result = await _setCurrencyRateRequestClient.GetResponse<SetCurrencyRateResponse>(request);

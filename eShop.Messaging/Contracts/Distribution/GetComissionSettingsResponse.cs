@@ -3,9 +3,9 @@
     public class GetComissionSettingsResponse
     {
         public Guid AccountId { get; }
-        public double Amount { get; }
+        public decimal Amount { get; }
 
-        public GetComissionSettingsResponse(Guid accountId, double amount)
+        public GetComissionSettingsResponse(Guid accountId, decimal amount)
         {
             AccountId = accountId;
             Amount = amount;

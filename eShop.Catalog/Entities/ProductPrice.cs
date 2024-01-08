@@ -3,8 +3,8 @@
     public class ProductPrice
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public double Value { get; set; }
-        public double? DiscountedValue { get; set; }
+        public decimal Value { get; set; }
+        public decimal? DiscountedValue { get; set; }
         public EmbeddedCurrency Currency { get; set; }
     }
 }

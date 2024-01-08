@@ -3,9 +3,9 @@
     public class SetComissionAmountRequest
     {
         public Guid AccountId { get; }
-        public double Amount { get; }
+        public decimal Amount { get; }
 
-        public SetComissionAmountRequest(Guid accountId, double amount)
+        public SetComissionAmountRequest(Guid accountId, decimal amount)
         {
             AccountId = accountId;
             Amount = amount;

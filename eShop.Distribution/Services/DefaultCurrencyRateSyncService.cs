@@ -20,14 +20,14 @@
         {
             var currencies = await _currencyService.GetCurrenciesAsync();
             var existingCurrencyRates = await _defaultCurrencyRateService.GetAllAsync();
-            foreach (var targetCurrency in currencies)
+            foreach (var sourceCurrency in currencies)
             {
-                var currencyRates = await _exchangeRateService.GetLatestRatesAsync(targetCurrency.Name);
+                var currencyRates = await _exchangeRateService.GetLatestRatesAsync(sourceCurrency.Name);
 
-                var sourceCurrencies = currencies.Where(e => e != targetCurrency);
-                foreach (var sourceCurrency in sourceCurrencies)
+                var targetCurrencies = currencies.Where(e => e != sourceCurrency);
+                foreach (var targetCurrency in targetCurrencies)
                 {
-                    if (currencyRates.TryGetValue(sourceCurrency.Name, out var currencyRate))
+                    if (currencyRates.TryGetValue(targetCurrency.Name, out var currencyRate))
                     {
                         var existingCurrencyRate = existingCurrencyRates
                             .FirstOrDefault(e => e.TargetCurrency.Id == targetCurrency.Id && e.SourceCurrency.Id == sourceCurrency.Id);

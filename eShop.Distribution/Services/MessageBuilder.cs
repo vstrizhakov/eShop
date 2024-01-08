@@ -51,7 +51,7 @@ namespace eShop.Distribution.Services
             return message;
         }
 
-        private (double price, double? discountedPrice, string currencyName) CalculatePrices(Product product, DistributionSettingsRecord distributionSettings)
+        private (decimal price, decimal? discountedPrice, string currencyName) CalculatePrices(Product product, DistributionSettingsRecord distributionSettings)
         {
             var preferredCurrency = distributionSettings.PreferredCurrency;
             var currencyRates = distributionSettings.CurrencyRates;

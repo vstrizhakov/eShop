@@ -11,9 +11,9 @@ namespace eShop.Telegram.TelegramFramework.Views
     {
         private readonly long _chatId;
         private readonly int? _messageId;
-        private readonly double _amount;
+        private readonly decimal _amount;
 
-        public ComissionSettingsView(long chatId, int? messageId, double amount)
+        public ComissionSettingsView(long chatId, int? messageId, decimal amount)
         {
             _chatId = chatId;
             _messageId = messageId;

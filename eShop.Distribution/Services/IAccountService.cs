@@ -15,8 +15,8 @@ namespace eShop.Distribution.Services
         Task SubscribeToAnnouncerAsync(Account account, Account announcer);
         Task<IEnumerable<ICurrencyRate>> GetCurrencyRatesAsync(Account account);
         Task<IEnumerable<ShopFilter>> GetShopsAsync(Account account);
-        Task SetComissionAmountAsync(Account account, double amount);
-        Task SetCurrencyRateAsync(Account account, Currency sourceCurrency, float rate);
+        Task SetComissionAmountAsync(Account account, decimal amount);
+        Task SetCurrencyRateAsync(Account account, Currency sourceCurrency, decimal rate);
         Task SetFilterShopsAsync(Account account, bool filter);
         Task SetPreferredCurrencyAsync(Account account, Currency currency);
         Task SetShopIsEnabledAsync(Account account, Guid shopId, bool isEnabled);

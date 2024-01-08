@@ -2,6 +2,6 @@
 {
     public class GetLatestResponse
     {
-        public IDictionary<string, float> ConversionRates { get; set; }
+        public IDictionary<string, decimal> ConversionRates { get; set; }
     }
 }

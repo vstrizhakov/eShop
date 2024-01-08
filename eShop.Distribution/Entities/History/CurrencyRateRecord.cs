@@ -2,7 +2,7 @@
 {
     public class CurrencyRateRecord
     {
-        public double Rate { get; set; }
+        public decimal Rate { get; set; }
         public EmbeddedCurrency Currency { get; set; }
     }
 }

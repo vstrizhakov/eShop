@@ -2,6 +2,6 @@
 {
     public class ComissionSettings
     {
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
     }
 }

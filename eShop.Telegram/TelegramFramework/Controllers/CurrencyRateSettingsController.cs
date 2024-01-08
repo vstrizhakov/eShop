@@ -80,7 +80,7 @@ namespace eShop.Telegram.TelegramFramework.Controllers
             var user = await _telegramService.GetUserByExternalIdAsync(context.FromId);
             if (user!.AccountId != null)
             {
-                if (float.TryParse(context.Text.Replace(',', '.'), out var rate))
+                if (decimal.TryParse(context.Text.Replace(',', '.'), out var rate))
                 {
                     await _telegramService.SetActiveContextAsync(user, null);
 

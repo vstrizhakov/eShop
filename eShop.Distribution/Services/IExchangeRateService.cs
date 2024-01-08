@@ -2,6 +2,6 @@
 {
     public interface IExchangeRateService
     {
-        Task<IDictionary<string, float>> GetLatestRatesAsync(string currency);
+        Task<IDictionary<string, decimal>> GetLatestRatesAsync(string currency);
     }
 }

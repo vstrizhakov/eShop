@@ -134,7 +134,7 @@ namespace eShop.Distribution.Services
             return currencyRates.DistinctBy(e => e.SourceCurrency.Id);
         }
 
-        public async Task SetCurrencyRateAsync(Account account, Currency sourceCurrency, float rate)
+        public async Task SetCurrencyRateAsync(Account account, Currency sourceCurrency, decimal rate)
         {
             var distributionSettings = account.DistributionSettings;
             if (distributionSettings.PreferredCurrency == null)
@@ -168,7 +168,7 @@ namespace eShop.Distribution.Services
             await _accountRepository.UpdateAccountAsync(account);
         }
 
-        public async Task SetComissionAmountAsync(Account account, double amount)
+        public async Task SetComissionAmountAsync(Account account, decimal amount)
         {
             var distributionSettings = account.DistributionSettings;
             distributionSettings.ComissionSettings.Amount = amount;

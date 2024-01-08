@@ -7,12 +7,12 @@ namespace eShop.Viber.ViberBotFramework.Views
 {
     public class ComissionSettingsView : IViberView
     {
-        private readonly double _amount;
+        private readonly decimal _amount;
         private readonly string _receiverId;
 
-        public ComissionSettingsView(string externalId, double amount)
+        public ComissionSettingsView(string receiverId, decimal amount)
         {
-            _receiverId = externalId;
+            _receiverId = receiverId;
             _amount = amount;
         }
 

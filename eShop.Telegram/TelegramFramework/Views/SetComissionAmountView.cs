@@ -9,9 +9,9 @@ namespace eShop.Telegram.TelegramFramework.Views
     public class SetComissionAmountView : ITelegramView
     {
         private readonly long _chatId;
-        private readonly double _amount;
+        private readonly decimal _amount;
 
-        public SetComissionAmountView(long chatId, double amount)
+        public SetComissionAmountView(long chatId, decimal amount)
         {
             _chatId = chatId;
             _amount = amount;

@@ -4,9 +4,9 @@
     {
         public Guid AccountId { get; }
         public Guid CurrencyId { get; }
-        public float Rate { get; }
+        public decimal Rate { get; }
 
-        public SetCurrencyRateRequest(Guid accountId, Guid currencyId, float rate)
+        public SetCurrencyRateRequest(Guid accountId, Guid currencyId, decimal rate)
         {
             AccountId = accountId;
             CurrencyId = currencyId;

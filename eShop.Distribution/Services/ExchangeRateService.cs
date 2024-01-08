@@ -11,7 +11,7 @@ namespace eShop.Distribution.Services
             _client = client;
         }
 
-        public async Task<IDictionary<string, float>> GetLatestRatesAsync(string currency)
+        public async Task<IDictionary<string, decimal>> GetLatestRatesAsync(string currency)
         {
             var response = await _client.GetLatestAsync(currency);
             return response.ConversionRates;

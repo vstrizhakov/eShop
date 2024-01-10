@@ -78,7 +78,7 @@ const Main: React.FC<AuthContextProps> = props => {
         },
         {
             title: "Налаштування курсів валют",
-            description: "Встановлюйте свої власні курси валют, або користуйтеся курсами НБУ",
+            description: "Встановлюйте свої власні курси валют, або користуйтеся щоденними курсами",
             icon: "bi-currency-exchange",
             implemented: true,
         },
@@ -118,10 +118,12 @@ const Main: React.FC<AuthContextProps> = props => {
                             <h1 className="display-5 text-body-emphasis">Створено для анонсерів та байєрів</h1>
                             <p className="lead text-muted">eShopping - просте рішення для сфери шопінгу</p>
 
-                            <Button className="fw-semibold">Зареєструватися</Button>
+                            <LinkContainer to="/auth/signUp">
+                                <Button className="fw-semibold">Зареєструватися</Button>
+                            </LinkContainer>
                         </Col>
                     </Row>
-                    
+
                     <div className="mb-5">
                         <h2 className="display-6 text-body-emphasis mb-3">Байєрам</h2>
                         <Row className="g-3">

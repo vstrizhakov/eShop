@@ -116,7 +116,7 @@ const Main: React.FC<AuthContextProps> = props => {
                     <Row className="mb-4">
                         <Col className="py-5">
                             <h1 className="display-5 text-body-emphasis">Створено для анонсерів та байєрів</h1>
-                            <p className="lead text-muted">eShop - просте рішення для сфери шопінгу</p>
+                            <p className="lead text-muted">eShopping - просте рішення для сфери шопінгу</p>
 
                             <Button className="fw-semibold">Зареєструватися</Button>
                         </Col>

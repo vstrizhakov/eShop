@@ -31,7 +31,7 @@ const Navigation: React.FC<AuthContextProps> = props => {
         <Navbar>
             <Container>
                 <LinkContainer to="/">
-                    <Navbar.Brand>eShop</Navbar.Brand>
+                    <Navbar.Brand>eShopping</Navbar.Brand>
                 </LinkContainer>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">

@@ -134,7 +134,9 @@ const AuthProvider: React.FC<PropsWithChildren<ReduxProps>> = (props) => {
     return (
         <>
             {isAuthenticated === undefined && (
-                <Spinner />
+                <div className="d-flex flex-column align-items-center justify-content-center" style={{ height: "100vh" }}>
+                    <Spinner />
+                </div>
             )}
             {isAuthenticated !== undefined && (
                 <AuthContext.Provider value={{

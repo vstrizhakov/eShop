@@ -16,7 +16,11 @@ const AnnounceList: React.FC = () => {
     }
 
     if (!announces) {
-        return <Spinner />;
+        return (
+            <div className="d-flex w-100 justify-content-center">
+                <Spinner />
+            </div>
+        );
     }
 
     return (

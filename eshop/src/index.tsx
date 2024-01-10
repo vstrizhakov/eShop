@@ -19,6 +19,7 @@ import AnnounceContainer from './features/announces/view/AnnounceContainer';
 import Confirm from './features/confirm/Confirm';
 import RequestPasswordReset from './features/forgotPassword/RequestPasswordReset';
 import CompletePasswordReset from './features/forgotPassword/CompletePasswordReset';
+import Authorize from './features/auth/Authorize';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -64,15 +65,27 @@ const router = createBrowserRouter([
             },
             {
                 path: "/addAnnounce",
-                element: <AddAnnounce />,
+                element: (
+                    <Authorize>
+                        <AddAnnounce />
+                    </Authorize>
+                ),
             },
             {
                 path: "/clients",
-                element: <Clients />,
+                element: (
+                    <Authorize>
+                        <Clients />
+                    </Authorize>
+                ),
             },
             {
                 path: "/announces/:announceId",
-                element: <AnnounceContainer />,
+                element: (
+                    <Authorize>
+                        <AnnounceContainer />
+                    </Authorize>
+                ),
             },
             {
                 path: "/",

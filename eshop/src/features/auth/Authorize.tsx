@@ -3,9 +3,10 @@ import { Spinner } from "react-bootstrap";
 import { AuthContextProps } from "./authContext";
 import { Claims } from "./authSlice";
 import { withAuth } from "./withAuth";
+import { useNavigate } from "react-router-dom";
 
 interface IProps extends AuthContextProps {
-    handle: (claims: Claims) => boolean,
+    handle?: (claims: Claims) => boolean,
 };
 
 const Authorize: React.FC<PropsWithChildren<IProps>> = props => {
@@ -15,32 +16,29 @@ const Authorize: React.FC<PropsWithChildren<IProps>> = props => {
         children,
     } = props;
 
-    const [isAuthorized, setIsAuthorized] = useState<boolean | undefined>(undefined);
+    const [isAuthorized, setIsAuthorized] = useState<boolean | undefined>();
 
     useEffect(() => {
         if (claims) {
-            const authorized = handle(claims);
+            const authorized = handle ? handle(claims) : true;
             setIsAuthorized(authorized);
         } else {
             setIsAuthorized(false);
         }
     }, [claims, handle]);
 
-    // if (isAuthorized === undefined) {
-    //     return <Spinner />;
-    // }
+    const navigate = useNavigate();
 
-    // if (!isAuthorized) {
-    //     return "Access Denied";
-    // }
+    useEffect(() => {
+        if (isAuthorized === false) {
+            navigate("/");
+        }
+    }, [isAuthorized]);
 
     return (
         <>
-            {isAuthorized === undefined && (
-                <Spinner />
-            )}
             {!isAuthorized && (
-                "Access Denied"
+                <Spinner />
             )}
             {isAuthorized && (
                 children

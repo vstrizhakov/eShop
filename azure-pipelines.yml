@@ -28,13 +28,12 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '$(project)'
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration $(BuildConfiguration)'
 
-- task: AzureRmWebAppDeployment@4
+- task: AzureWebApp@1
   inputs:
-    ConnectionType: 'AzureRM'
     azureSubscription: 'eShop(81178c23-91e2-4f9c-86c4-9fe9297ab236)'
     appType: 'webAppLinux'
-    WebAppName: 'eshop-accounts'
-    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
-    RuntimeStack: 'DOTNETCORE|7.0'
+    appName: 'eshop-accounts'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    runtimeStack: 'DOTNETCORE|7.0'

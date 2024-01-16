@@ -25,11 +25,10 @@ steps:
 
 - task: DotNetCoreCLI@2
   inputs:
-    command: publish
+    command: 'publish'
+    publishWebProjects: false
     projects: '$(project)'
-    publishWebProjects: True
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: True
 
 - task: AzureRmWebAppDeployment@4
   inputs:

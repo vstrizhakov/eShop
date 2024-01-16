@@ -7,7 +7,7 @@ trigger:
 - master
 
 variables:
-  project: 'eShop.Accounts/eShop.Accounts.csproj'
+  project: '**/eShopping.Accounts.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 

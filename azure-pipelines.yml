@@ -7,25 +7,34 @@ trigger:
 - master
 
 variables:
-  solution: 'eShop.Accounts/eShop.Accounts.csproj'
+  project: 'eShop.Accounts/eShop.Accounts.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: DotNetCoreCLI@2
   inputs:
-    restoreSolution: '$(solution)'
+    command: 'restore'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
+  displayName: Build
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: build
+    projects: '$(project)'
+    arguments: '--configuration $(buildConfiguration)' # Update this to match your need
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'eShop(81178c23-91e2-4f9c-86c4-9fe9297ab236)'
+    appType: 'webAppLinux'
+    WebAppName: 'eshop-accounts'
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    RuntimeStack: 'DOTNETCORE|7.0'

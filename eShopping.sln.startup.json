@@ -52,16 +52,16 @@
         }
     */
   "MultiProjectConfigurations": {
-    "eShop": {
+    "eShopping": {
       "Projects": {
-        "eShop": {},
-        "eShop.Accounts": {},
-        "eShop.Catalog": {},
-        "eShop.Distribution": {},
-        "eShop.Gateway": {},
-        "eShop.Identity": {},
-        "eShop.Telegram": {},
-        "eShop.Viber": {}
+        "eShopping": {},
+        "eShopping.Accounts": {},
+        "eShopping.Catalog": {},
+        "eShopping.Distribution": {},
+        "eShopping.Gateway": {},
+        "eShopping.Identity": {},
+        "eShopping.Telegram": {},
+        "eShopping.Viber": {}
       }
     }
   }

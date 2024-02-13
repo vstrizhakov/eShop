@@ -118,9 +118,9 @@ const Main: React.FC<AuthContextProps> = props => {
                             <h1 className="display-5 text-body-emphasis">Створено для анонсерів та байєрів</h1>
                             <p className="lead text-muted">eShopping - просте рішення для сфери шопінгу</p>
 
-                            <LinkContainer to="/auth/signUp">
+                            {/* <LinkContainer to="/auth/signUp">
                                 <Button className="fw-semibold">Зареєструватися</Button>
-                            </LinkContainer>
+                            </LinkContainer> */}
                         </Col>
                     </Row>
 

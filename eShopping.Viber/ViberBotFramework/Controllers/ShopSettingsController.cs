@@ -65,7 +65,7 @@ namespace eShopping.Viber.ViberBotFramework.Controllers
         }
 
         [TextMessage(Action = ViberAction.ShopSettingsShops)]
-        public async Task<IViberView?> ShopSettingsShops(TextMessageContext context)
+        public async Task<IViberView?> ShopSettingsShops(TextMessageContext context, int page = 0)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId != null)
@@ -74,14 +74,14 @@ namespace eShopping.Viber.ViberBotFramework.Controllers
                 var result = await _getShopSettingsShopsRequestClient.GetResponse<GetShopSettingsShopsResponse>(request);
                 var response = result.Message;
 
-                return new ShopSettingsShopsView(user.ExternalId, response.Shops);
+                return new ShopSettingsShopsView(user.ExternalId, response.Shops, page);
             }
 
             return null;
         }
 
         [TextMessage(Action = ViberAction.SetShopSettingsShopState)]
-        public async Task<IViberView?> SetShopSettingsShopState(TextMessageContext context, Guid shopId, bool shopEnabled)
+        public async Task<IViberView?> SetShopSettingsShopState(TextMessageContext context, Guid shopId, bool shopEnabled, int page = 0)
         {
             var user = await _viberService.GetUserByIdAsync(context.UserId);
             if (user!.AccountId != null)
@@ -90,7 +90,7 @@ namespace eShopping.Viber.ViberBotFramework.Controllers
                 var result = await _setShopSettingsShopStateRequestClient.GetResponse<SetShopSettingsShopStateResponse>(request);
                 var response = result.Message;
 
-                return new ShopSettingsShopsView(user.ExternalId, response.Shops);
+                return new ShopSettingsShopsView(user.ExternalId, response.Shops, page);
             }
 
             return null;

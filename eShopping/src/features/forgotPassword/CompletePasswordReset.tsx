@@ -66,7 +66,7 @@ const CompletePasswordReset: React.FC<PropsFromRedux> = props => {
             }}
             onSubmit={onSubmit}
             render={({ handleSubmit }) => (
-                <BootstrapForm onSubmit={handleSubmit}>
+                <BootstrapForm autoComplete="off" onSubmit={handleSubmit}>
                     <Row>
                         <Col md={{offset: 2, span: 8}} lg={{offset: 3, span: 6}} xxl={{offset: 4, span: 4}}>
                             <h2 className="mb-3">Відновлення паролю</h2>
@@ -77,6 +77,7 @@ const CompletePasswordReset: React.FC<PropsFromRedux> = props => {
                                 type="tel"
                                 pattern="\+380[0-9]{9}"
                                 placeholder="Номер телефону"
+                                autoComplete="off"
                                 className="mb-2"
                                 disabled={true}
                                 component={TextField}

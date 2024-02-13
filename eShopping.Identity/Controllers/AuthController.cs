@@ -41,7 +41,11 @@ namespace eShopping.Identity.Controllers
                     var result = await userManager.CreateAsync(user, request.Password);
 
                     response.Succeeded = result.Succeeded;
-                    if (!response.Succeeded)
+                    if (response.Succeeded)
+                    {
+                        await HttpContext.SignInAsync(PhoneNumberConfirmationCookie, BuildUserPrincipal(user));
+                    }
+                    else
                     {
                         response.ErrorCode = ErrorCode.InvalidPassword;
                     }
@@ -49,11 +53,6 @@ namespace eShopping.Identity.Controllers
                 else
                 {
                     response.ErrorCode = ErrorCode.UserAlreadyExists;
-                }
-
-                if (response.Succeeded)
-                {
-                    await HttpContext.SignInAsync(PhoneNumberConfirmationCookie, BuildUserPrincipal(user));
                 }
             }
 

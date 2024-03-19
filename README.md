@@ -4,7 +4,7 @@ The project represents by itself a web service developed for international shopp
 
 This web service aims to sutisfy buyer's, announcer's and, in future, customer's needs and currently offers delivery of announces to the buyer's audience according buyer's preferences though Viber & Telegram.
 
-## 
+## Architecture
 This project is splitted on frontend SPA application and backend services that were built based on microservices architecture. The frontend application is built with React/Redux and the microservices are built using:
 - *.NET 7*
 - *Ocelot Gateway* - used as a single entrypoint for the frontend and all the microservices
